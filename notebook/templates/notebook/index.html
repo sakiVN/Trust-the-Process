@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Learning Platform - Dashboard</title>
+    <title>AI学習支援プラットフォーム - ダッシュボード</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Inter', 'Noto Sans JP', sans-serif; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
@@ -16,11 +16,11 @@
     <!-- Header -->
     <header class="bg-gradient-to-r from-blue-900 to-teal-800 text-white shadow-md px-6 py-4 flex justify-between items-center">
         <div>
-            <h1 class="text-xl font-bold tracking-tight">AI Learning Platform</h1>
+            <h1 class="text-xl font-bold tracking-tight">AI学習支援プラットフォーム</h1>
             <p class="text-xs text-teal-200">AIを当たり前に使う時代の自律的学習支援アプリ</p>
         </div>
         <div class="flex items-center space-x-2">
-            <span class="bg-teal-700 text-teal-100 text-xs px-2.5 py-1 rounded-full font-medium">Bản Thử Nghiệm / Demo MVP</span>
+            <span class="bg-teal-700 text-teal-100 text-xs px-2.5 py-1 rounded-full font-medium">MVPデモ版</span>
         </div>
     </header>
 
@@ -30,15 +30,15 @@
         <!-- Sidebar: Notebook selection -->
         <aside class="w-full md:w-80 bg-white border-r border-slate-200 p-6 flex flex-col">
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-500">Sổ tay của bạn</h2>
+                <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-500">マイノートブック</h2>
                 <button onclick="openNewNotebookModal()" class="text-xs bg-blue-600 hover:bg-blue-700 text-white font-medium px-2.5 py-1.5 rounded transition">
-                    + Tạo mới
+                    + 新規作成
                 </button>
             </div>
             
             <!-- Notebook list -->
             <div id="notebooks-list" class="space-y-2 flex-1 overflow-y-auto max-h-[300px] md:max-h-none">
-                <div class="text-sm text-slate-400 py-4 text-center">Đang tải danh sách...</div>
+                <div class="text-sm text-slate-400 py-4 text-center">読み込み中...</div>
             </div>
         </aside>
 
@@ -48,8 +48,8 @@
             <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm mb-6">
                 <div class="flex flex-col md:flex-row md:justify-between md:items-start">
                     <div>
-                        <h2 id="active-notebook-name" class="text-2xl font-bold text-slate-800">Chọn hoặc tạo một Sổ tay</h2>
-                        <p id="active-notebook-desc" class="text-sm text-slate-500 mt-1">Chọn Sổ tay ở thanh bên để bắt đầu thêm tài liệu nguồn và học tập cùng AI.</p>
+                        <h2 id="active-notebook-name" class="text-2xl font-bold text-slate-800">ノートブックを選択するか、新規作成してください</h2>
+                        <p id="active-notebook-desc" class="text-sm text-slate-500 mt-1">サイドバーからノートブックを選択し、ソース資料を追加してAI学習を開始します。</p>
                     </div>
                     <div id="notebook-actions" class="mt-4 md:mt-0 space-x-2 hidden">
                         <!-- Actions dynamically visible when notebook selected -->
@@ -63,13 +63,13 @@
                 <!-- Tab Headers -->
                 <div class="flex border-b border-slate-200 bg-white rounded-lg p-1.5 shadow-sm">
                     <button onclick="switchTab('sources')" id="tab-btn-sources" class="flex-1 py-2.5 text-center text-sm font-medium rounded-md transition bg-blue-50 text-blue-700">
-                        📁 Nguồn tài liệu (Sources)
+                        📁 ソース資料 (Sources)
                     </button>
                     <button onclick="switchTab('notes')" id="tab-btn-notes" class="flex-1 py-2.5 text-center text-sm font-medium rounded-md transition text-slate-600 hover:text-slate-900">
-                        ✍️ Nhật ký & Phản biện (Notes)
+                        ✍️ 自己記述 ＆ AI反論 (Notes)
                     </button>
                     <button onclick="switchTab('ai-gen')" id="tab-btn-ai-gen" class="flex-1 py-2.5 text-center text-sm font-medium rounded-md transition text-slate-600 hover:text-slate-900">
-                        ✨ Trình tạo AI (AI Study)
+                        ✨ AI学習生成ツール
                     </button>
                 </div>
 
@@ -77,38 +77,38 @@
                 <div id="tab-content-sources" class="space-y-6">
                     <!-- Add Source -->
                     <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-                        <h3 class="text-lg font-semibold text-slate-800 mb-4">+ Thêm nguồn tài liệu học tập</h3>
+                        <h3 class="text-lg font-semibold text-slate-800 mb-4">+ ソース資料の追加</h3>
                         <form id="add-source-form" onsubmit="handleAddSource(event)" class="space-y-4">
                             <div>
-                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Tiêu đề tài liệu</label>
-                                <input type="text" id="source-title" required placeholder="Ví dụ: Chương 1 - Lịch sử Việt Nam" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">資料のタイトル</label>
+                                <input type="text" id="source-title" required placeholder="例：第1章 - 自律的学習の基本概念" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Loại nguồn</label>
+                                    <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">ソースの種類</label>
                                     <select id="source-type" onchange="toggleSourceInputs()" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                        <option value="text">Văn bản (Plain Text)</option>
-                                        <option value="link">Đường dẫn web (Link)</option>
+                                        <option value="text">テキスト (Plain Text)</option>
+                                        <option value="link">Webリンク (Link)</option>
                                     </select>
                                 </div>
                                 <div id="source-url-container" class="hidden">
-                                    <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Đường dẫn (URL)</label>
+                                    <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">URLリンク</label>
                                     <input type="url" id="source-url" placeholder="https://example.com" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Nội dung tài liệu (Dùng làm ngữ cảnh AI)</label>
-                                <textarea id="source-content" required rows="5" placeholder="Dán nội dung sách giáo khoa, bài viết, hoặc tài liệu nghiên cứu của bạn vào đây..." class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">資料の本文 (AIのコンテキストに使用)</label>
+                                <textarea id="source-content" required rows="5" placeholder="教科書の内容、Web記事、または研究資料などをここに貼り付けてください..." class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                             </div>
                             <button type="submit" class="w-full bg-teal-700 hover:bg-teal-800 text-white font-medium py-2 rounded-lg text-sm transition">
-                                Lưu tài liệu nguồn
+                                ソース資料を保存
                             </button>
                         </form>
                     </div>
 
                     <!-- List Sources -->
                     <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-                        <h3 class="text-lg font-semibold text-slate-800 mb-4">Các nguồn tài liệu hiện tại</h3>
+                        <h3 class="text-lg font-semibold text-slate-800 mb-4">登録済みのソース資料一覧</h3>
                         <div id="sources-list" class="space-y-3">
                             <!-- Dynamically loaded -->
                         </div>
@@ -120,11 +120,11 @@
                     
                     <!-- Create Note Form -->
                     <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-                        <h3 class="text-lg font-semibold text-slate-800 mb-4">+ Tạo Nhật ký học tập mới</h3>
+                        <h3 class="text-lg font-semibold text-slate-800 mb-4">+ 新規ノート作成</h3>
                         <form id="create-note-form" onsubmit="handleCreateNote(event)" class="flex space-x-3">
-                            <input type="text" id="note-title" required placeholder="Nhập chủ đề/câu hỏi cần suy ngẫm..." class="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="text" id="note-title" required placeholder="自己記述のテーマや問いを入力してください..." class="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg text-sm transition">
-                                Tạo ghi chép
+                                ノートを作成
                             </button>
                         </form>
                     </div>
@@ -138,54 +138,54 @@
                 <!-- Tab 3: AI study material generator -->
                 <div id="tab-content-ai-gen" class="hidden space-y-6">
                     <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-                        <h3 class="text-lg font-semibold text-slate-800 mb-2">Tạo tài liệu học tập cùng AI</h3>
-                        <p class="text-sm text-slate-500 mb-6">AI sẽ phân tích toàn bộ các nguồn tài liệu trong Sổ tay của bạn để tự động thiết kế bài tập, thẻ ghi nhớ, hoặc sơ đồ kiến thức.</p>
+                        <h3 class="text-lg font-semibold text-slate-800 mb-2">AIによる学習教材の自動生成</h3>
+                        <p class="text-sm text-slate-500 mb-6">AIがノートブック内のすべてのソース資料を分析し、問題集、フラッシュカード、またはマインドマップを自動生成します。</p>
                         
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                             <!-- Card type selector -->
                             <button onclick="selectGenType('quiz')" id="gen-card-quiz" class="border border-slate-200 hover:border-blue-400 rounded-xl p-4 text-left transition bg-white shadow-sm flex flex-col justify-between">
                                 <span class="text-2xl mb-2">❓</span>
-                                <span class="font-bold text-slate-800 block text-sm">Bài kiểm tra (Quiz)</span>
-                                <span class="text-xs text-slate-400 mt-1">Tạo 5 câu hỏi trắc nghiệm kèm lời giải chi tiết.</span>
+                                <span class="font-bold text-slate-800 block text-sm">テスト問題集 (Quiz)</span>
+                                <span class="text-xs text-slate-400 mt-1">解説付きの4択問題（5問）を生成します。</span>
                             </button>
                             <button onclick="selectGenType('flashcards')" id="gen-card-flashcards" class="border border-slate-200 hover:border-blue-400 rounded-xl p-4 text-left transition bg-white shadow-sm flex flex-col justify-between">
                                 <span class="text-2xl mb-2">🎴</span>
-                                <span class="font-bold text-slate-800 block text-sm">Thẻ ghi nhớ (Flashcards)</span>
-                                <span class="text-xs text-slate-400 mt-1">Thẻ câu hỏi và câu trả lời tóm tắt kiến thức.</span>
+                                <span class="font-bold text-slate-800 block text-sm">単語カード (Flashcards)</span>
+                                <span class="text-xs text-slate-400 mt-1">重要概念を整理するためのQ&Aカードを生成します。</span>
                             </button>
                             <button onclick="selectGenType('mind_map')" id="gen-card-mind_map" class="border border-slate-200 hover:border-blue-400 rounded-xl p-4 text-left transition bg-white shadow-sm flex flex-col justify-between">
                                 <span class="text-2xl mb-2">🌿</span>
-                                <span class="font-bold text-slate-800 block text-sm">Sơ đồ tư duy (Mind Map)</span>
-                                <span class="text-xs text-slate-400 mt-1">Cấu trúc thông tin dạng phân nhánh logic.</span>
+                                <span class="font-bold text-slate-800 block text-sm">マインドマップ (Mind Map)</span>
+                                <span class="text-xs text-slate-400 mt-1">知識のつながりを階層ツリー構造で視覚化します。</span>
                             </button>
                             <button onclick="selectGenType('report')" id="gen-card-report" class="border border-slate-200 hover:border-blue-400 rounded-xl p-4 text-left transition bg-white shadow-sm flex flex-col justify-between">
                                 <span class="text-2xl mb-2">📝</span>
-                                <span class="font-bold text-slate-800 block text-sm">Báo cáo tóm tắt (Report)</span>
-                                <span class="text-xs text-slate-400 mt-1">Báo cáo học thuật tóm lược toàn bộ tài liệu.</span>
+                                <span class="font-bold text-slate-800 block text-sm">要約レポート (Report)</span>
+                                <span class="text-xs text-slate-400 mt-1">資料を整理・学術的にまとめた要約文を生成します。</span>
                             </button>
                             <button onclick="selectGenType('audio_overview')" id="gen-card-audio_overview" class="border border-slate-200 hover:border-blue-400 rounded-xl p-4 text-left transition bg-white shadow-sm flex flex-col justify-between">
                                 <span class="text-2xl mb-2">🎙️</span>
-                                <span class="font-bold text-slate-800 block text-sm">Kịch bản Podcast (Audio)</span>
-                                <span class="text-xs text-slate-400 mt-1">Kịch bản đàm thoại giữa 2 người thảo luận về nguồn.</span>
+                                <span class="font-bold text-slate-800 block text-sm">ポッドキャスト台本 (Audio)</span>
+                                <span class="text-xs text-slate-400 mt-1">2人の対話形式で資料を解説する台本を生成します。</span>
                             </button>
                             <button onclick="selectGenType('presentation')" id="gen-card-presentation" class="border border-slate-200 hover:border-blue-400 rounded-xl p-4 text-left transition bg-white shadow-sm flex flex-col justify-between">
                                 <span class="text-2xl mb-2">📊</span>
-                                <span class="font-bold text-slate-800 block text-sm">Dàn ý Slide (Presentation)</span>
-                                <span class="text-xs text-slate-400 mt-1">Dàn ý bài thuyết trình từng slide chi tiết.</span>
+                                <span class="font-bold text-slate-800 block text-sm">スライド構成案 (Presentation)</span>
+                                <span class="text-xs text-slate-400 mt-1">発表用のスライド構成（目次と詳細）を生成します。</span>
                             </button>
                         </div>
 
                         <div class="flex items-center justify-between border-t border-slate-100 pt-4">
-                            <span class="text-sm font-medium text-slate-600">Loại đã chọn: <strong id="selected-type-label" class="text-blue-600">Bài kiểm tra (Quiz)</strong></span>
+                            <span class="text-sm font-medium text-slate-600">選択中の生成タイプ: <strong id="selected-type-label" class="text-blue-600">テスト問題集 (Quiz)</strong></span>
                             <button onclick="triggerAIGeneration()" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold px-6 py-2.5 rounded-lg text-sm shadow transition">
-                                Bắt đầu tạo bằng AI
+                                AI生成を実行
                             </button>
                         </div>
                     </div>
 
                     <!-- AI Outputs -->
                     <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-                        <h3 class="text-lg font-semibold text-slate-800 mb-4">Kết quả tạo từ AI</h3>
+                        <h3 class="text-lg font-semibold text-slate-800 mb-4">AI生成結果の表示</h3>
                         <div id="ai-generations-container" class="space-y-6">
                             <!-- Dynamic generations list -->
                         </div>
@@ -200,20 +200,20 @@
     <!-- Create Notebook Modal (simple prompts) -->
     <div id="new-notebook-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4">
-            <h3 class="text-lg font-bold text-slate-800">Tạo Sổ tay học tập mới</h3>
+            <h3 class="text-lg font-bold text-slate-800">新規ノートブックの作成</h3>
             <div class="space-y-3">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Tên sổ tay</label>
-                    <input type="text" id="new-notebook-name" placeholder="Ví dụ: Môn Lịch Sử VN" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">ノートブック名</label>
+                    <input type="text" id="new-notebook-name" placeholder="例：歴史の学習ノート" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Mô tả mục tiêu</label>
-                    <textarea id="new-notebook-desc" rows="3" placeholder="Đưa ra chủ đề nghiên cứu..." class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">学習の目標・説明</label>
+                    <textarea id="new-notebook-desc" rows="3" placeholder="学習のテーマやメモ..." class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                 </div>
             </div>
             <div class="flex justify-end space-x-3 pt-2">
-                <button onclick="closeNewNotebookModal()" class="px-4 py-2 border border-slate-200 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition">Hủy</button>
-                <button onclick="handleCreateNotebook()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition">Tạo ngay</button>
+                <button onclick="closeNewNotebookModal()" class="px-4 py-2 border border-slate-200 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition">キャンセル</button>
+                <button onclick="handleCreateNotebook()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition">作成する</button>
             </div>
         </div>
     </div>
@@ -256,12 +256,12 @@
         function selectGenType(type) {
             selectedGenType = type;
             const labels = {
-                'quiz': 'Bài kiểm tra (Quiz)',
-                'flashcards': 'Thẻ ghi nhớ (Flashcards)',
-                'mind_map': 'Sơ đồ tư duy (Mind Map)',
-                'report': 'Báo cáo tóm tắt (Report)',
-                'audio_overview': 'Kịch bản Podcast (Audio)',
-                'presentation': 'Dàn ý Slide (Presentation)'
+                'quiz': 'テスト問題集 (Quiz)',
+                'flashcards': '単語カード (Flashcards)',
+                'mind_map': 'マインドマップ (Mind Map)',
+                'report': '要約レポート (Report)',
+                'audio_overview': 'ポッドキャスト台本 (Audio)',
+                'presentation': 'スライド構成案 (Presentation)'
             };
             document.getElementById('selected-type-label').innerText = labels[type];
             
@@ -287,20 +287,20 @@
                 notebooks = await res.json();
                 renderNotebooksList();
             } catch (err) {
-                console.error("Lỗi khi tải danh sách Sổ tay:", err);
+                console.error("ノートブック読み込みエラー:", err);
             }
         }
 
         function renderNotebooksList() {
             const container = document.getElementById('notebooks-list');
             if (notebooks.length === 0) {
-                container.innerHTML = `<div class="text-xs text-slate-400 py-6 text-center">Chưa có sổ tay nào. Hãy bấm "Tạo mới".</div>`;
+                container.innerHTML = `<div class="text-xs text-slate-400 py-6 text-center">ノートブックがありません。「+ 新規作成」をクリックしてください。</div>`;
                 return;
             }
             container.innerHTML = notebooks.map(nb => `
                 <button onclick="selectNotebook(${nb.id})" class="w-full text-left px-4 py-3 rounded-xl transition text-sm flex flex-col space-y-1 ${nb.id === activeNotebookId ? 'bg-blue-600 text-white font-medium shadow-md shadow-blue-100' : 'hover:bg-slate-100 text-slate-700' }">
                     <span class="truncate block font-semibold">${nb.name}</span>
-                    <span class="truncate text-xs ${nb.id === activeNotebookId ? 'text-blue-100' : 'text-slate-400'}">${nb.description || 'Không có mô tả'}</span>
+                    <span class="truncate text-xs ${nb.id === activeNotebookId ? 'text-blue-100' : 'text-slate-400'}">${nb.description || '説明なし'}</span>
                 </button>
             `).join('');
         }
@@ -315,7 +315,7 @@
                 const notebook = await res.json();
                 
                 document.getElementById('active-notebook-name').innerText = notebook.name;
-                document.getElementById('active-notebook-desc').innerText = notebook.description || 'Không có mô tả mục tiêu học tập.';
+                document.getElementById('active-notebook-desc').innerText = notebook.description || '学習目標の説明はありません。';
                 
                 document.getElementById('notebook-workspace').classList.remove('hidden');
                 document.getElementById('notebook-actions').classList.remove('hidden');
@@ -328,7 +328,7 @@
                 // Select default generator card
                 selectGenType('quiz');
             } catch (err) {
-                console.error("Lỗi khi tải dữ liệu Sổ tay:", err);
+                console.error("ノートブック詳細の読み込みエラー:", err);
             }
         }
 
@@ -348,7 +348,7 @@
         async function handleCreateNotebook() {
             const name = document.getElementById('new-notebook-name').value.trim();
             const desc = document.getElementById('new-notebook-desc').value.trim();
-            if (!name) return alert("Vui lòng nhập tên sổ tay.");
+            if (!name) return alert("ノートブック名を入力してください。");
             
             try {
                 const res = await fetch(`${API_URL}/notebooks/`, {
@@ -361,7 +361,7 @@
                 await loadNotebooks();
                 selectNotebook(newNb.id);
             } catch (err) {
-                console.error("Lỗi tạo Sổ tay mới:", err);
+                console.error("ノートブック作成エラー:", err);
             }
         }
 
@@ -389,24 +389,24 @@
                     selectNotebook(activeNotebookId);
                 } else {
                     const data = await res.json();
-                    alert("Lỗi: " + JSON.stringify(data));
+                    alert("エラー: " + JSON.stringify(data));
                 }
             } catch (err) {
-                console.error("Lỗi thêm nguồn tài liệu:", err);
+                console.error("ソース資料登録エラー:", err);
             }
         }
 
         function renderSources(sources) {
             const container = document.getElementById('sources-list');
             if (sources.length === 0) {
-                container.innerHTML = `<div class="text-xs text-slate-400 text-center py-6">Chưa có nguồn tài liệu học tập nào.</div>`;
+                container.innerHTML = `<div class="text-xs text-slate-400 text-center py-6">登録済みのソース資料はありません。</div>`;
                 return;
             }
             container.innerHTML = sources.map(src => `
                 <div class="border border-slate-100 bg-slate-50/50 rounded-xl p-4 flex flex-col justify-between space-y-2">
                     <div class="flex justify-between items-start">
                         <span class="font-bold text-slate-800 text-sm">${src.title}</span>
-                        <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${src.source_type === 'link' ? 'bg-indigo-50 text-indigo-700' : 'bg-teal-50 text-teal-700'}">${src.source_type === 'link' ? 'Link Web' : 'Văn bản'}</span>
+                        <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${src.source_type === 'link' ? 'bg-indigo-50 text-indigo-700' : 'bg-teal-50 text-teal-700'}">${src.source_type === 'link' ? 'Webリンク' : 'テキスト'}</span>
                     </div>
                     ${src.url ? `<a href="${src.url}" target="_blank" class="text-xs text-blue-500 truncate block">${src.url}</a>` : ''}
                     <p class="text-xs text-slate-500 line-clamp-3 bg-white p-2.5 rounded border border-slate-100">${src.content}</p>
@@ -432,17 +432,17 @@
                     selectNotebook(activeNotebookId);
                 } else {
                     const data = await res.json();
-                    alert("Lỗi: " + JSON.stringify(data));
+                    alert("エラー: " + JSON.stringify(data));
                 }
             } catch (err) {
-                console.error("Lỗi tạo Nhật ký:", err);
+                console.error("ノート作成エラー:", err);
             }
         }
 
         function renderNotes(notes) {
             const container = document.getElementById('notes-list');
             if (notes.length === 0) {
-                container.innerHTML = `<div class="text-xs text-slate-400 text-center py-6">Chưa có ghi chép nhật ký nào. Hãy tạo một ghi chép để bắt đầu rèn luyện tư duy.</div>`;
+                container.innerHTML = `<div class="text-xs text-slate-400 text-center py-6">ノートはまだありません。自己記述を行うためのノートを新規作成してください。</div>`;
                 return;
             }
             
@@ -452,16 +452,16 @@
                     return `
                         <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-4">
                             <div class="flex justify-between items-center border-b border-slate-100 pb-3">
-                                <h4 class="font-bold text-slate-800 text-base">Chủ đề: ${note.title}</h4>
-                                <span class="bg-rose-50 text-rose-700 text-xs font-bold px-2.5 py-1 rounded-full flex items-center">🔒 Phản biện AI đang khóa</span>
+                                <h4 class="font-bold text-slate-800 text-base">テーマ: ${note.title}</h4>
+                                <span class="bg-rose-50 text-rose-700 text-xs font-bold px-2.5 py-1 rounded-full flex items-center">🔒 AIの反論（ロック中）</span>
                             </div>
                             <div class="space-y-2">
-                                <label class="block text-xs font-semibold text-slate-500 uppercase">Nhập ý kiến cá nhân của bạn (Tối thiểu 20 ký tự để mở khóa AI)</label>
-                                <textarea id="initial-input-${note.id}" rows="4" placeholder="Viết những gì bạn nghĩ ngay bây giờ về chủ đề này. Hãy tự tư duy và lập luận trước, sau đó AI mới cho phép bạn đối chiếu..." class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                                <label class="block text-xs font-semibold text-slate-500 uppercase">自分の考えを入力してください（AI反論をアンロックするには20文字以上入力が必要）</label>
+                                <textarea id="initial-input-${note.id}" rows="4" placeholder="このテーマについて、今あなたが考えていることを記述してください。まず自分の頭で考え、記述したあとにAIの対話・反論機能が利用可能になります..." class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                             </div>
                             <div class="flex justify-end">
                                 <button onclick="unlockNote(${note.id})" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg text-sm transition">
-                                    Gửi ý kiến & Mở khóa AI Phản biện
+                                    考えを送信してAI反論をアンロック
                                 </button>
                             </div>
                         </div>
@@ -471,31 +471,31 @@
                     return `
                         <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-6">
                             <div class="flex justify-between items-center border-b border-slate-100 pb-3">
-                                <h4 class="font-bold text-slate-800 text-base">Chủ đề: ${note.title}</h4>
-                                <span class="bg-emerald-50 text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-full">🔓 Đã mở khóa AI</span>
+                                <h4 class="font-bold text-slate-800 text-base">テーマ: ${note.title}</h4>
+                                <span class="bg-emerald-50 text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-full">🔓 AIアンロック済み</span>
                             </div>
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <!-- Student Thought -->
                                 <div class="bg-slate-50 rounded-xl p-4 border border-slate-100">
-                                    <h5 class="text-xs font-bold text-slate-500 uppercase mb-2">Ý kiến ban đầu của bạn</h5>
+                                    <h5 class="text-xs font-bold text-slate-500 uppercase mb-2">あなたの初期の意見</h5>
                                     <p class="text-sm text-slate-800 whitespace-pre-wrap">${note.initial_content}</p>
                                 </div>
                                 <!-- AI Rebuttal -->
                                 <div class="bg-teal-50/50 rounded-xl p-4 border border-teal-100">
-                                    <h5 class="text-xs font-bold text-teal-600 uppercase mb-2">AI phản biện đối lập</h5>
+                                    <h5 class="text-xs font-bold text-teal-600 uppercase mb-2">AIによる論理的反論</h5>
                                     <p class="text-sm text-slate-800 whitespace-pre-wrap font-medium">${note.ai_rebuttal}</p>
                                 </div>
                             </div>
                             
                             <!-- Student Revision -->
                             <div class="border-t border-slate-100 pt-4 space-y-3">
-                                <h5 class="text-sm font-semibold text-slate-700">✍️ Điều chỉnh và nâng cao suy nghĩ của bạn</h5>
-                                <p class="text-xs text-slate-400">Đọc kỹ lập luận phản biện của AI phía trên để tự điều chỉnh, đào sâu hoặc bổ sung lập luận bảo vệ ý kiến của bạn vào khung bên dưới.</p>
-                                <textarea id="revise-input-${note.id}" rows="3" placeholder="Sau khi đọc phản biện, tôi nhận thấy... Hoặc tôi muốn bảo vệ quan điểm vì..." class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">${note.revised_content || ''}</textarea>
+                                <h5 class="text-sm font-semibold text-slate-700">✍️ 自分の考えをブラッシュアップする</h5>
+                                <p class="text-xs text-slate-400">上のAIの論理的反論をよく読み、自分の考えを再検討し、さらに深めたり反論に対する意見を下に記述してください。</p>
+                                <textarea id="revise-input-${note.id}" rows="3" placeholder="AIの意見を受けて、私は...と考えます。または、次の理由により当初の主張を維持します..." class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">${note.revised_content || ''}</textarea>
                                 <div class="flex justify-end">
                                     <button onclick="saveRevision(${note.id})" class="bg-teal-700 hover:bg-teal-800 text-white font-medium px-4 py-2 rounded-lg text-sm transition">
-                                        Lưu suy nghĩ đã điều chỉnh
+                                        修正した考えを保存
                                     </button>
                                 </div>
                             </div>
@@ -509,7 +509,7 @@
         async function unlockNote(noteId) {
             const content = document.getElementById(`initial-input-${noteId}`).value.trim();
             if (content.length < 20) {
-                return alert("Vui lòng nhập suy nghĩ ban đầu dài tối thiểu 20 ký tự để bắt đầu rèn luyện tư duy.");
+                return alert("自己記述を引き出すため、20文字以上入力してください。");
             }
             
             try {
@@ -523,17 +523,17 @@
                     selectNotebook(activeNotebookId);
                 } else {
                     const data = await res.json();
-                    alert("Lỗi: " + (data.error || JSON.stringify(data)));
+                    alert("エラー: " + (data.error || JSON.stringify(data)));
                 }
             } catch (err) {
-                console.error("Lỗi mở khóa ghi chép:", err);
+                console.error("アンロック処理エラー:", err);
             }
         }
 
         // Submit revised content
         async function saveRevision(noteId) {
             const content = document.getElementById(`revise-input-${noteId}`).value.trim();
-            if (!content) return alert("Vui lòng nhập nội dung trước khi lưu.");
+            if (!content) return alert("内容を入力してください。");
             
             try {
                 const res = await fetch(`${API_URL}/notes/${noteId}/revise/`, {
@@ -543,14 +543,14 @@
                 });
                 
                 if (res.ok) {
-                    alert("Lưu suy nghĩ điều chỉnh thành công!");
+                    alert("修正した考えを保存しました！");
                     selectNotebook(activeNotebookId);
                 } else {
                     const data = await res.json();
-                    alert("Lỗi: " + JSON.stringify(data));
+                    alert("エラー: " + JSON.stringify(data));
                 }
             } catch (err) {
-                console.error("Lỗi lưu suy nghĩ điều chỉnh:", err);
+                console.error("修正保存エラー:", err);
             }
         }
 
@@ -567,28 +567,28 @@
                     selectNotebook(activeNotebookId);
                 } else {
                     const data = await res.json();
-                    alert("Lỗi: " + (data.error || JSON.stringify(data)));
+                    alert("エラー: " + (data.error || JSON.stringify(data)));
                 }
             } catch (err) {
-                console.error("Lỗi gọi sinh tài liệu AI:", err);
+                console.error("AI生成処理エラー:", err);
             }
         }
 
         function renderAIGenerations(generations) {
             const container = document.getElementById('ai-generations-container');
             if (generations.length === 0) {
-                container.innerHTML = `<div class="text-xs text-slate-400 text-center py-6">Chưa có sản phẩm AI nào được sinh ra trong Sổ tay này.</div>`;
+                container.innerHTML = `<div class="text-xs text-slate-400 text-center py-6">AIによって生成された教材はありません。</div>`;
                 return;
             }
             
             container.innerHTML = generations.map(gen => {
                 const titles = {
-                    'quiz': '❓ Bài kiểm tra trắc nghiệm',
-                    'flashcards': '🎴 Thẻ ghi nhớ thông minh',
-                    'mind_map': '🌿 Sơ đồ phân nhánh tư duy',
-                    'report': '📝 Báo cáo tóm tắt nghiên cứu',
-                    'audio_overview': '🎙️ Kịch bản Audio Podcast',
-                    'presentation': '📊 Dàn ý Slide thuyết trình'
+                    'quiz': '❓ テスト問題集 (Quiz)',
+                    'flashcards': '🎴 単語カード (Flashcards)',
+                    'mind_map': '🌿 マインドマップ (Mind Map)',
+                    'report': '📝 要約レポート (Report)',
+                    'audio_overview': '🎙️ ポッドキャスト台本 (Audio)',
+                    'presentation': '📊 スライド構成案 (Presentation)'
                 };
                 
                 let renderedContent = '';
@@ -598,23 +598,23 @@
                         if (gen.generation_type === 'quiz') {
                             renderedContent = items.map((q, idx) => `
                                 <div class="bg-slate-50 border border-slate-100 rounded-lg p-4 space-y-2">
-                                    <div class="font-bold text-slate-800 text-sm">Câu ${idx + 1}: ${q.question}</div>
+                                    <div class="font-bold text-slate-800 text-sm">問 ${idx + 1}: ${q.question}</div>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
                                         ${q.options.map(opt => `<div class="bg-white border border-slate-200 px-3 py-2 rounded text-xs text-slate-600">${opt}</div>`).join('')}
                                     </div>
-                                    <div class="text-xs text-teal-700 font-semibold mt-2">Đáp án đúng: ${q.answer}</div>
-                                    <div class="text-xs text-slate-400 italic">Giải thích: ${q.explanation}</div>
+                                    <div class="text-xs text-teal-700 font-semibold mt-2">正解: ${q.answer}</div>
+                                    <div class="text-xs text-slate-400 italic">解説: ${q.explanation}</div>
                                 </div>
                             `).join('');
                         } else {
                             renderedContent = items.map((f, idx) => `
                                 <div class="bg-slate-50 border border-slate-100 rounded-lg p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div class="border-b md:border-b-0 md:border-r border-slate-200 pb-3 md:pb-0 md:pr-4">
-                                        <div class="text-xs font-bold text-slate-400 uppercase">Mặt A (Câu hỏi/Thuật ngữ)</div>
+                                        <div class="text-xs font-bold text-slate-400 uppercase">カード表面 (問題/用語)</div>
                                         <div class="text-sm font-semibold text-slate-800 mt-1">${f.question}</div>
                                     </div>
                                     <div>
-                                        <div class="text-xs font-bold text-teal-500 uppercase">Mặt B (Đáp án/Giải nghĩa)</div>
+                                        <div class="text-xs font-bold text-teal-500 uppercase">カード裏面 (解答/説明)</div>
                                         <div class="text-sm text-slate-700 mt-1 font-medium">${f.answer}</div>
                                     </div>
                                 </div>
@@ -631,7 +631,7 @@
                     <div class="border border-slate-200 rounded-xl p-5 shadow-sm space-y-3">
                         <div class="flex justify-between items-center border-b border-slate-100 pb-2">
                             <h4 class="font-bold text-slate-800 text-sm">${titles[gen.generation_type] || gen.generation_type}</h4>
-                            <span class="text-[10px] text-slate-400 font-semibold">${new Date(gen.created_at).toLocaleString('vi-VN')}</span>
+                            <span class="text-[10px] text-slate-400 font-semibold">${new Date(gen.created_at).toLocaleString('ja-JP')}</span>
                         </div>
                         <div class="space-y-3">
                             ${renderedContent}
