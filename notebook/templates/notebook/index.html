@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Learning Platform - Dashboard</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-blue-900 to-teal-800 text-white shadow-md px-6 py-4 flex justify-between items-center">
+        <div>
+            <h1 class="text-xl font-bold tracking-tight">AI Learning Platform</h1>
+            <p class="text-xs text-teal-200">AIを当たり前に使う時代の自律的学習支援アプリ</p>
+        </div>
+        <div class="flex items-center space-x-2">
+            <span class="bg-teal-700 text-teal-100 text-xs px-2.5 py-1 rounded-full font-medium">Bản Thử Nghiệm / Demo MVP</span>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col md:flex-row">
+        
+        <!-- Sidebar: Notebook selection -->
+        <aside class="w-full md:w-80 bg-white border-r border-slate-200 p-6 flex flex-col">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-500">Sổ tay của bạn</h2>
+                <button onclick="openNewNotebookModal()" class="text-xs bg-blue-600 hover:bg-blue-700 text-white font-medium px-2.5 py-1.5 rounded transition">
+                    + Tạo mới
+                </button>
+            </div>
+            
+            <!-- Notebook list -->
+            <div id="notebooks-list" class="space-y-2 flex-1 overflow-y-auto max-h-[300px] md:max-h-none">
+                <div class="text-sm text-slate-400 py-4 text-center">Đang tải danh sách...</div>
+            </div>
+        </aside>
+
+        <!-- Main Panel -->
+        <main class="flex-1 p-6 md:p-8 flex flex-col">
+            <!-- Active Notebook Title -->
+            <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm mb-6">
+                <div class="flex flex-col md:flex-row md:justify-between md:items-start">
+                    <div>
+                        <h2 id="active-notebook-name" class="text-2xl font-bold text-slate-800">Chọn hoặc tạo một Sổ tay</h2>
+                        <p id="active-notebook-desc" class="text-sm text-slate-500 mt-1">Chọn Sổ tay ở thanh bên để bắt đầu thêm tài liệu nguồn và học tập cùng AI.</p>
+                    </div>
+                    <div id="notebook-actions" class="mt-4 md:mt-0 space-x-2 hidden">
+                        <!-- Actions dynamically visible when notebook selected -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Area Dashboard (Only visible when active notebook exists) -->
+            <div id="notebook-workspace" class="hidden flex-1 flex flex-col space-y-6">
+                
+                <!-- Tab Headers -->
+                <div class="flex border-b border-slate-200 bg-white rounded-lg p-1.5 shadow-sm">
+                    <button onclick="switchTab('sources')" id="tab-btn-sources" class="flex-1 py-2.5 text-center text-sm font-medium rounded-md transition bg-blue-50 text-blue-700">
+                        📁 Nguồn tài liệu (Sources)
+                    </button>
+                    <button onclick="switchTab('notes')" id="tab-btn-notes" class="flex-1 py-2.5 text-center text-sm font-medium rounded-md transition text-slate-600 hover:text-slate-900">
+                        ✍️ Nhật ký & Phản biện (Notes)
+                    </button>
+                    <button onclick="switchTab('ai-gen')" id="tab-btn-ai-gen" class="flex-1 py-2.5 text-center text-sm font-medium rounded-md transition text-slate-600 hover:text-slate-900">
+                        ✨ Trình tạo AI (AI Study)
+                    </button>
+                </div>
+
+                <!-- Tab 1: Sources -->
+                <div id="tab-content-sources" class="space-y-6">
+                    <!-- Add Source -->
+                    <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+                        <h3 class="text-lg font-semibold text-slate-800 mb-4">+ Thêm nguồn tài liệu học tập</h3>
+                        <form id="add-source-form" onsubmit="handleAddSource(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Tiêu đề tài liệu</label>
+                                <input type="text" id="source-title" required placeholder="Ví dụ: Chương 1 - Lịch sử Việt Nam" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Loại nguồn</label>
+                                    <select id="source-type" onchange="toggleSourceInputs()" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <option value="text">Văn bản (Plain Text)</option>
+                                        <option value="link">Đường dẫn web (Link)</option>
+                                    </select>
+                                </div>
+                                <div id="source-url-container" class="hidden">
+                                    <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Đường dẫn (URL)</label>
+                                    <input type="url" id="source-url" placeholder="https://example.com" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Nội dung tài liệu (Dùng làm ngữ cảnh AI)</label>
+                                <textarea id="source-content" required rows="5" placeholder="Dán nội dung sách giáo khoa, bài viết, hoặc tài liệu nghiên cứu của bạn vào đây..." class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                            </div>
+                            <button type="submit" class="w-full bg-teal-700 hover:bg-teal-800 text-white font-medium py-2 rounded-lg text-sm transition">
+                                Lưu tài liệu nguồn
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- List Sources -->
+                    <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+                        <h3 class="text-lg font-semibold text-slate-800 mb-4">Các nguồn tài liệu hiện tại</h3>
+                        <div id="sources-list" class="space-y-3">
+                            <!-- Dynamically loaded -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 2: Notes & Lock/Unlock AI Flow -->
+                <div id="tab-content-notes" class="hidden space-y-6">
+                    
+                    <!-- Create Note Form -->
+                    <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+                        <h3 class="text-lg font-semibold text-slate-800 mb-4">+ Tạo Nhật ký học tập mới</h3>
+                        <form id="create-note-form" onsubmit="handleCreateNote(event)" class="flex space-x-3">
+                            <input type="text" id="note-title" required placeholder="Nhập chủ đề/câu hỏi cần suy ngẫm..." class="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg text-sm transition">
+                                Tạo ghi chép
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Notes lists -->
+                    <div id="notes-list" class="space-y-4">
+                        <!-- Note blocks dynamic -->
+                    </div>
+                </div>
+
+                <!-- Tab 3: AI study material generator -->
+                <div id="tab-content-ai-gen" class="hidden space-y-6">
+                    <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+                        <h3 class="text-lg font-semibold text-slate-800 mb-2">Tạo tài liệu học tập cùng AI</h3>
+                        <p class="text-sm text-slate-500 mb-6">AI sẽ phân tích toàn bộ các nguồn tài liệu trong Sổ tay của bạn để tự động thiết kế bài tập, thẻ ghi nhớ, hoặc sơ đồ kiến thức.</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                            <!-- Card type selector -->
+                            <button onclick="selectGenType('quiz')" id="gen-card-quiz" class="border border-slate-200 hover:border-blue-400 rounded-xl p-4 text-left transition bg-white shadow-sm flex flex-col justify-between">
+                                <span class="text-2xl mb-2">❓</span>
+                                <span class="font-bold text-slate-800 block text-sm">Bài kiểm tra (Quiz)</span>
+                                <span class="text-xs text-slate-400 mt-1">Tạo 5 câu hỏi trắc nghiệm kèm lời giải chi tiết.</span>
+                            </button>
+                            <button onclick="selectGenType('flashcards')" id="gen-card-flashcards" class="border border-slate-200 hover:border-blue-400 rounded-xl p-4 text-left transition bg-white shadow-sm flex flex-col justify-between">
+                                <span class="text-2xl mb-2">🎴</span>
+                                <span class="font-bold text-slate-800 block text-sm">Thẻ ghi nhớ (Flashcards)</span>
+                                <span class="text-xs text-slate-400 mt-1">Thẻ câu hỏi và câu trả lời tóm tắt kiến thức.</span>
+                            </button>
+                            <button onclick="selectGenType('mind_map')" id="gen-card-mind_map" class="border border-slate-200 hover:border-blue-400 rounded-xl p-4 text-left transition bg-white shadow-sm flex flex-col justify-between">
+                                <span class="text-2xl mb-2">🌿</span>
+                                <span class="font-bold text-slate-800 block text-sm">Sơ đồ tư duy (Mind Map)</span>
+                                <span class="text-xs text-slate-400 mt-1">Cấu trúc thông tin dạng phân nhánh logic.</span>
+                            </button>
+                            <button onclick="selectGenType('report')" id="gen-card-report" class="border border-slate-200 hover:border-blue-400 rounded-xl p-4 text-left transition bg-white shadow-sm flex flex-col justify-between">
+                                <span class="text-2xl mb-2">📝</span>
+                                <span class="font-bold text-slate-800 block text-sm">Báo cáo tóm tắt (Report)</span>
+                                <span class="text-xs text-slate-400 mt-1">Báo cáo học thuật tóm lược toàn bộ tài liệu.</span>
+                            </button>
+                            <button onclick="selectGenType('audio_overview')" id="gen-card-audio_overview" class="border border-slate-200 hover:border-blue-400 rounded-xl p-4 text-left transition bg-white shadow-sm flex flex-col justify-between">
+                                <span class="text-2xl mb-2">🎙️</span>
+                                <span class="font-bold text-slate-800 block text-sm">Kịch bản Podcast (Audio)</span>
+                                <span class="text-xs text-slate-400 mt-1">Kịch bản đàm thoại giữa 2 người thảo luận về nguồn.</span>
+                            </button>
+                            <button onclick="selectGenType('presentation')" id="gen-card-presentation" class="border border-slate-200 hover:border-blue-400 rounded-xl p-4 text-left transition bg-white shadow-sm flex flex-col justify-between">
+                                <span class="text-2xl mb-2">📊</span>
+                                <span class="font-bold text-slate-800 block text-sm">Dàn ý Slide (Presentation)</span>
+                                <span class="text-xs text-slate-400 mt-1">Dàn ý bài thuyết trình từng slide chi tiết.</span>
+                            </button>
+                        </div>
+
+                        <div class="flex items-center justify-between border-t border-slate-100 pt-4">
+                            <span class="text-sm font-medium text-slate-600">Loại đã chọn: <strong id="selected-type-label" class="text-blue-600">Bài kiểm tra (Quiz)</strong></span>
+                            <button onclick="triggerAIGeneration()" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold px-6 py-2.5 rounded-lg text-sm shadow transition">
+                                Bắt đầu tạo bằng AI
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- AI Outputs -->
+                    <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+                        <h3 class="text-lg font-semibold text-slate-800 mb-4">Kết quả tạo từ AI</h3>
+                        <div id="ai-generations-container" class="space-y-6">
+                            <!-- Dynamic generations list -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+    </div>
+
+    <!-- Create Notebook Modal (simple prompts) -->
+    <div id="new-notebook-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4">
+            <h3 class="text-lg font-bold text-slate-800">Tạo Sổ tay học tập mới</h3>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Tên sổ tay</label>
+                    <input type="text" id="new-notebook-name" placeholder="Ví dụ: Môn Lịch Sử VN" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Mô tả mục tiêu</label>
+                    <textarea id="new-notebook-desc" rows="3" placeholder="Đưa ra chủ đề nghiên cứu..." class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+            </div>
+            <div class="flex justify-end space-x-3 pt-2">
+                <button onclick="closeNewNotebookModal()" class="px-4 py-2 border border-slate-200 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition">Hủy</button>
+                <button onclick="handleCreateNotebook()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition">Tạo ngay</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logic Script Javascript -->
+    <script>
+        const API_URL = '/api';
+        let notebooks = [];
+        let activeNotebookId = null;
+        let activeTab = 'sources';
+        let selectedGenType = 'quiz';
+
+        // Initial Load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadNotebooks();
+        });
+
+        // Tab Switching
+        function switchTab(tab) {
+            activeTab = tab;
+            
+            // Toggle classes on buttons
+            document.getElementById('tab-btn-sources').className = `flex-1 py-2.5 text-center text-sm font-medium rounded-md transition ${tab === 'sources' ? 'bg-blue-50 text-blue-700' : 'text-slate-600 hover:text-slate-900'}`;
+            document.getElementById('tab-btn-notes').className = `flex-1 py-2.5 text-center text-sm font-medium rounded-md transition ${tab === 'notes' ? 'bg-blue-50 text-blue-700' : 'text-slate-600 hover:text-slate-900'}`;
+            document.getElementById('tab-btn-ai-gen').className = `flex-1 py-2.5 text-center text-sm font-medium rounded-md transition ${tab === 'ai-gen' ? 'bg-blue-50 text-blue-700' : 'text-slate-600 hover:text-slate-900'}`;
+
+            // Show/Hide sections
+            document.getElementById('tab-content-sources').classList.toggle('hidden', tab !== 'sources');
+            document.getElementById('tab-content-notes').classList.toggle('hidden', tab !== 'notes');
+            document.getElementById('tab-content-ai-gen').classList.toggle('hidden', tab !== 'ai-gen');
+        }
+
+        // Toggle Source fields
+        function toggleSourceInputs() {
+            const type = document.getElementById('source-type').value;
+            document.getElementById('source-url-container').classList.toggle('hidden', type !== 'link');
+        }
+
+        // AI generator select type
+        function selectGenType(type) {
+            selectedGenType = type;
+            const labels = {
+                'quiz': 'Bài kiểm tra (Quiz)',
+                'flashcards': 'Thẻ ghi nhớ (Flashcards)',
+                'mind_map': 'Sơ đồ tư duy (Mind Map)',
+                'report': 'Báo cáo tóm tắt (Report)',
+                'audio_overview': 'Kịch bản Podcast (Audio)',
+                'presentation': 'Dàn ý Slide (Presentation)'
+            };
+            document.getElementById('selected-type-label').innerText = labels[type];
+            
+            // Visual highlight active selection
+            ['quiz', 'flashcards', 'mind_map', 'report', 'audio_overview', 'presentation'].forEach(t => {
+                const card = document.getElementById(`gen-card-${t}`);
+                if (card) {
+                    if (t === type) {
+                        card.classList.add('border-blue-500', 'ring-2', 'ring-blue-100');
+                        card.classList.remove('border-slate-200');
+                    } else {
+                        card.classList.remove('border-blue-500', 'ring-2', 'ring-blue-100');
+                        card.classList.add('border-slate-200');
+                    }
+                }
+            });
+        }
+
+        // API Requests: Notebooks list
+        async function loadNotebooks() {
+            try {
+                const res = await fetch(`${API_URL}/notebooks/`);
+                notebooks = await res.json();
+                renderNotebooksList();
+            } catch (err) {
+                console.error("Lỗi khi tải danh sách Sổ tay:", err);
+            }
+        }
+
+        function renderNotebooksList() {
+            const container = document.getElementById('notebooks-list');
+            if (notebooks.length === 0) {
+                container.innerHTML = `<div class="text-xs text-slate-400 py-6 text-center">Chưa có sổ tay nào. Hãy bấm "Tạo mới".</div>`;
+                return;
+            }
+            container.innerHTML = notebooks.map(nb => `
+                <button onclick="selectNotebook(${nb.id})" class="w-full text-left px-4 py-3 rounded-xl transition text-sm flex flex-col space-y-1 ${nb.id === activeNotebookId ? 'bg-blue-600 text-white font-medium shadow-md shadow-blue-100' : 'hover:bg-slate-100 text-slate-700' }">
+                    <span class="truncate block font-semibold">${nb.name}</span>
+                    <span class="truncate text-xs ${nb.id === activeNotebookId ? 'text-blue-100' : 'text-slate-400'}">${nb.description || 'Không có mô tả'}</span>
+                </button>
+            `).join('');
+        }
+
+        async function selectNotebook(id) {
+            activeNotebookId = id;
+            renderNotebooksList();
+            
+            // Load notebook details
+            try {
+                const res = await fetch(`${API_URL}/notebooks/${id}/`);
+                const notebook = await res.json();
+                
+                document.getElementById('active-notebook-name').innerText = notebook.name;
+                document.getElementById('active-notebook-desc').innerText = notebook.description || 'Không có mô tả mục tiêu học tập.';
+                
+                document.getElementById('notebook-workspace').classList.remove('hidden');
+                document.getElementById('notebook-actions').classList.remove('hidden');
+                
+                // Load details of sources and notes
+                renderSources(notebook.sources || []);
+                renderNotes(notebook.notes || []);
+                renderAIGenerations(notebook.generations || []);
+                
+                // Select default generator card
+                selectGenType('quiz');
+            } catch (err) {
+                console.error("Lỗi khi tải dữ liệu Sổ tay:", err);
+            }
+        }
+
+        // Modal Controls
+        function openNewNotebookModal() {
+            document.getElementById('new-notebook-modal').classList.remove('hidden');
+            document.getElementById('new-notebook-modal').classList.add('flex');
+        }
+
+        function closeNewNotebookModal() {
+            document.getElementById('new-notebook-modal').classList.add('hidden');
+            document.getElementById('new-notebook-modal').classList.remove('flex');
+            document.getElementById('new-notebook-name').value = '';
+            document.getElementById('new-notebook-desc').value = '';
+        }
+
+        async function handleCreateNotebook() {
+            const name = document.getElementById('new-notebook-name').value.trim();
+            const desc = document.getElementById('new-notebook-desc').value.trim();
+            if (!name) return alert("Vui lòng nhập tên sổ tay.");
+            
+            try {
+                const res = await fetch(`${API_URL}/notebooks/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, description: desc })
+                });
+                const newNb = await res.json();
+                closeNewNotebookModal();
+                await loadNotebooks();
+                selectNotebook(newNb.id);
+            } catch (err) {
+                console.error("Lỗi tạo Sổ tay mới:", err);
+            }
+        }
+
+        // Add Sources
+        async function handleAddSource(e) {
+            e.preventDefault();
+            const title = document.getElementById('source-title').value.trim();
+            const type = document.getElementById('source-type').value;
+            const content = document.getElementById('source-content').value.trim();
+            const url = document.getElementById('source-url').value.trim();
+            
+            try {
+                const res = await fetch(`${API_URL}/notebooks/${activeNotebookId}/sources/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, source_type: type, content, url: type === 'link' ? url : null })
+                });
+                
+                if (res.ok) {
+                    // Reset form
+                    document.getElementById('source-title').value = '';
+                    document.getElementById('source-content').value = '';
+                    document.getElementById('source-url').value = '';
+                    // Reload
+                    selectNotebook(activeNotebookId);
+                } else {
+                    const data = await res.json();
+                    alert("Lỗi: " + JSON.stringify(data));
+                }
+            } catch (err) {
+                console.error("Lỗi thêm nguồn tài liệu:", err);
+            }
+        }
+
+        function renderSources(sources) {
+            const container = document.getElementById('sources-list');
+            if (sources.length === 0) {
+                container.innerHTML = `<div class="text-xs text-slate-400 text-center py-6">Chưa có nguồn tài liệu học tập nào.</div>`;
+                return;
+            }
+            container.innerHTML = sources.map(src => `
+                <div class="border border-slate-100 bg-slate-50/50 rounded-xl p-4 flex flex-col justify-between space-y-2">
+                    <div class="flex justify-between items-start">
+                        <span class="font-bold text-slate-800 text-sm">${src.title}</span>
+                        <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${src.source_type === 'link' ? 'bg-indigo-50 text-indigo-700' : 'bg-teal-50 text-teal-700'}">${src.source_type === 'link' ? 'Link Web' : 'Văn bản'}</span>
+                    </div>
+                    ${src.url ? `<a href="${src.url}" target="_blank" class="text-xs text-blue-500 truncate block">${src.url}</a>` : ''}
+                    <p class="text-xs text-slate-500 line-clamp-3 bg-white p-2.5 rounded border border-slate-100">${src.content}</p>
+                </div>
+            `).join('');
+        }
+
+        // Add Notes
+        async function handleCreateNote(e) {
+            e.preventDefault();
+            const title = document.getElementById('note-title').value.trim();
+            if (!title) return;
+            
+            try {
+                const res = await fetch(`${API_URL}/notebooks/${activeNotebookId}/notes/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, initial_content: '' })
+                });
+                
+                if (res.ok) {
+                    document.getElementById('note-title').value = '';
+                    selectNotebook(activeNotebookId);
+                } else {
+                    const data = await res.json();
+                    alert("Lỗi: " + JSON.stringify(data));
+                }
+            } catch (err) {
+                console.error("Lỗi tạo Nhật ký:", err);
+            }
+        }
+
+        function renderNotes(notes) {
+            const container = document.getElementById('notes-list');
+            if (notes.length === 0) {
+                container.innerHTML = `<div class="text-xs text-slate-400 text-center py-6">Chưa có ghi chép nhật ký nào. Hãy tạo một ghi chép để bắt đầu rèn luyện tư duy.</div>`;
+                return;
+            }
+            
+            container.innerHTML = notes.map(note => {
+                if (note.is_locked) {
+                    // Locked View
+                    return `
+                        <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-4">
+                            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                                <h4 class="font-bold text-slate-800 text-base">Chủ đề: ${note.title}</h4>
+                                <span class="bg-rose-50 text-rose-700 text-xs font-bold px-2.5 py-1 rounded-full flex items-center">🔒 Phản biện AI đang khóa</span>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="block text-xs font-semibold text-slate-500 uppercase">Nhập ý kiến cá nhân của bạn (Tối thiểu 20 ký tự để mở khóa AI)</label>
+                                <textarea id="initial-input-${note.id}" rows="4" placeholder="Viết những gì bạn nghĩ ngay bây giờ về chủ đề này. Hãy tự tư duy và lập luận trước, sau đó AI mới cho phép bạn đối chiếu..." class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                            </div>
+                            <div class="flex justify-end">
+                                <button onclick="unlockNote(${note.id})" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg text-sm transition">
+                                    Gửi ý kiến & Mở khóa AI Phản biện
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // Unlocked View
+                    return `
+                        <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-6">
+                            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                                <h4 class="font-bold text-slate-800 text-base">Chủ đề: ${note.title}</h4>
+                                <span class="bg-emerald-50 text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-full">🔓 Đã mở khóa AI</span>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Student Thought -->
+                                <div class="bg-slate-50 rounded-xl p-4 border border-slate-100">
+                                    <h5 class="text-xs font-bold text-slate-500 uppercase mb-2">Ý kiến ban đầu của bạn</h5>
+                                    <p class="text-sm text-slate-800 whitespace-pre-wrap">${note.initial_content}</p>
+                                </div>
+                                <!-- AI Rebuttal -->
+                                <div class="bg-teal-50/50 rounded-xl p-4 border border-teal-100">
+                                    <h5 class="text-xs font-bold text-teal-600 uppercase mb-2">AI phản biện đối lập</h5>
+                                    <p class="text-sm text-slate-800 whitespace-pre-wrap font-medium">${note.ai_rebuttal}</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Student Revision -->
+                            <div class="border-t border-slate-100 pt-4 space-y-3">
+                                <h5 class="text-sm font-semibold text-slate-700">✍️ Điều chỉnh và nâng cao suy nghĩ của bạn</h5>
+                                <p class="text-xs text-slate-400">Đọc kỹ lập luận phản biện của AI phía trên để tự điều chỉnh, đào sâu hoặc bổ sung lập luận bảo vệ ý kiến của bạn vào khung bên dưới.</p>
+                                <textarea id="revise-input-${note.id}" rows="3" placeholder="Sau khi đọc phản biện, tôi nhận thấy... Hoặc tôi muốn bảo vệ quan điểm vì..." class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">${note.revised_content || ''}</textarea>
+                                <div class="flex justify-end">
+                                    <button onclick="saveRevision(${note.id})" class="bg-teal-700 hover:bg-teal-800 text-white font-medium px-4 py-2 rounded-lg text-sm transition">
+                                        Lưu suy nghĩ đã điều chỉnh
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            }).join('');
+        }
+
+        // Unlock and submit initial content to unlock AI rebuttal
+        async function unlockNote(noteId) {
+            const content = document.getElementById(`initial-input-${noteId}`).value.trim();
+            if (content.length < 20) {
+                return alert("Vui lòng nhập suy nghĩ ban đầu dài tối thiểu 20 ký tự để bắt đầu rèn luyện tư duy.");
+            }
+            
+            try {
+                const res = await fetch(`${API_URL}/notes/${noteId}/unlock/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ initial_content: content })
+                });
+                
+                if (res.ok) {
+                    selectNotebook(activeNotebookId);
+                } else {
+                    const data = await res.json();
+                    alert("Lỗi: " + (data.error || JSON.stringify(data)));
+                }
+            } catch (err) {
+                console.error("Lỗi mở khóa ghi chép:", err);
+            }
+        }
+
+        // Submit revised content
+        async function saveRevision(noteId) {
+            const content = document.getElementById(`revise-input-${noteId}`).value.trim();
+            if (!content) return alert("Vui lòng nhập nội dung trước khi lưu.");
+            
+            try {
+                const res = await fetch(`${API_URL}/notes/${noteId}/revise/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ revised_content: content })
+                });
+                
+                if (res.ok) {
+                    alert("Lưu suy nghĩ điều chỉnh thành công!");
+                    selectNotebook(activeNotebookId);
+                } else {
+                    const data = await res.json();
+                    alert("Lỗi: " + JSON.stringify(data));
+                }
+            } catch (err) {
+                console.error("Lỗi lưu suy nghĩ điều chỉnh:", err);
+            }
+        }
+
+        // Trigger AI Generation based on all sources
+        async function triggerAIGeneration() {
+            try {
+                const res = await fetch(`${API_URL}/notebooks/${activeNotebookId}/generate/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ generation_type: selectedGenType })
+                });
+                
+                if (res.ok) {
+                    selectNotebook(activeNotebookId);
+                } else {
+                    const data = await res.json();
+                    alert("Lỗi: " + (data.error || JSON.stringify(data)));
+                }
+            } catch (err) {
+                console.error("Lỗi gọi sinh tài liệu AI:", err);
+            }
+        }
+
+        function renderAIGenerations(generations) {
+            const container = document.getElementById('ai-generations-container');
+            if (generations.length === 0) {
+                container.innerHTML = `<div class="text-xs text-slate-400 text-center py-6">Chưa có sản phẩm AI nào được sinh ra trong Sổ tay này.</div>`;
+                return;
+            }
+            
+            container.innerHTML = generations.map(gen => {
+                const titles = {
+                    'quiz': '❓ Bài kiểm tra trắc nghiệm',
+                    'flashcards': '🎴 Thẻ ghi nhớ thông minh',
+                    'mind_map': '🌿 Sơ đồ phân nhánh tư duy',
+                    'report': '📝 Báo cáo tóm tắt nghiên cứu',
+                    'audio_overview': '🎙️ Kịch bản Audio Podcast',
+                    'presentation': '📊 Dàn ý Slide thuyết trình'
+                };
+                
+                let renderedContent = '';
+                if (gen.generation_type === 'quiz' || gen.generation_type === 'flashcards') {
+                    try {
+                        const items = JSON.parse(gen.content);
+                        if (gen.generation_type === 'quiz') {
+                            renderedContent = items.map((q, idx) => `
+                                <div class="bg-slate-50 border border-slate-100 rounded-lg p-4 space-y-2">
+                                    <div class="font-bold text-slate-800 text-sm">Câu ${idx + 1}: ${q.question}</div>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
+                                        ${q.options.map(opt => `<div class="bg-white border border-slate-200 px-3 py-2 rounded text-xs text-slate-600">${opt}</div>`).join('')}
+                                    </div>
+                                    <div class="text-xs text-teal-700 font-semibold mt-2">Đáp án đúng: ${q.answer}</div>
+                                    <div class="text-xs text-slate-400 italic">Giải thích: ${q.explanation}</div>
+                                </div>
+                            `).join('');
+                        } else {
+                            renderedContent = items.map((f, idx) => `
+                                <div class="bg-slate-50 border border-slate-100 rounded-lg p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="border-b md:border-b-0 md:border-r border-slate-200 pb-3 md:pb-0 md:pr-4">
+                                        <div class="text-xs font-bold text-slate-400 uppercase">Mặt A (Câu hỏi/Thuật ngữ)</div>
+                                        <div class="text-sm font-semibold text-slate-800 mt-1">${f.question}</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-xs font-bold text-teal-500 uppercase">Mặt B (Đáp án/Giải nghĩa)</div>
+                                        <div class="text-sm text-slate-700 mt-1 font-medium">${f.answer}</div>
+                                    </div>
+                                </div>
+                            `).join('');
+                        }
+                    } catch (e) {
+                        renderedContent = `<pre class="text-xs bg-slate-900 text-teal-400 p-4 rounded overflow-auto whitespace-pre-wrap">${gen.content}</pre>`;
+                    }
+                } else {
+                    renderedContent = `<div class="whitespace-pre-wrap text-sm text-slate-700 bg-slate-50 p-4 rounded-xl border border-slate-100 font-mono leading-relaxed">${gen.content}</div>`;
+                }
+
+                return `
+                    <div class="border border-slate-200 rounded-xl p-5 shadow-sm space-y-3">
+                        <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                            <h4 class="font-bold text-slate-800 text-sm">${titles[gen.generation_type] || gen.generation_type}</h4>
+                            <span class="text-[10px] text-slate-400 font-semibold">${new Date(gen.created_at).toLocaleString('vi-VN')}</span>
+                        </div>
+                        <div class="space-y-3">
+                            ${renderedContent}
+                        </div>
+                    </div>
+                `;
+            }).reverse().join('');
+        }
+    </script>
+</body>
+</html>
