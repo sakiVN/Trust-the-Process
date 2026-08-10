@@ -67,7 +67,79 @@ def generate_notebook_materials(sources_text, generation_type, source_title="Tà
     """
     Generates study materials (quiz, flashcards, mind map, etc.) based on all sources offline.
     """
-    # Forced Offline Mode: return mock templates directly
+    system_prompt = f"""Bạn là công cụ tự động tạo sơ đồ tư duy dạng Mermaid.js. 
+Khi nhận được chủ đề: '{source_title}'
+
+Hãy trả về đoạn code Mermaid Mindmap phân tích đầy đủ kiến thức của chủ đề đó theo đúng cấu trúc:
+
+mindmap
+  root(({source_title}))
+    Nhánh Cấp 1 A
+      Chi tiết A1
+      Chi tiết A2
+    Nhánh Cấp 2 B
+      Chi tiết B1
+      Chi tiết B2
+
+Quy tắc bắt buộc:
+- Dùng 2 khoảng trắng (spaces) để thụt lề cấp con.
+- Chỉ trả về duy nhất đoạn mã Mermaid, không thêm bất kỳ văn bản nào khác.
+- Tuyệt đối không bao bọc code trong thẻ markdown ```."""
+
+    # Forced Offline Mode: return mock templates dynamically
+    title_lower = source_title.lower()
+    
+    if generation_type == 'mind_map':
+        if any(w in title_lower for w in ["toán", "math", "đại số", "hình học", "giải tích", "lượng giác"]):
+            return f"""mindmap
+  root(({source_title}))
+    [Dai so & Giai tich]
+      (Ham so va Do thi)
+      (Phuong trinh va He phuong trinh)
+      (Dao ham va Tich phan)
+    [Hinh hoc khong gian]
+      (Hinh chop va Hinh lang tru)
+      (Vecto va He toa do Oxyz)
+    [Luong giac]
+      (Cong thuc luong giac)
+      (Phuong trinh luong giac)"""
+        elif any(w in title_lower for w in ["vật lý", "vật lí", "physics", "cơ học", "điện", "quang học"]):
+            return f"""mindmap
+  root(({source_title}))
+    [Co hoc]
+      (Dong luc hoc chat diem)
+      (Dinh luat bao toan nang luong)
+    [Dien tu hoc]
+      (Dien tich va Dien truong)
+      (Dong dien khong doi)
+    [Quang hoc & Hat nhan]
+      (Khuc xa va Phan xa anh sang)
+      (Phong xa va Phan ung hat nhan)"""
+        elif any(w in title_lower for w in ["tin học", "lập trình", "code", "python", "javascript", "máy tính"]):
+            return f"""mindmap
+  root(({source_title}))
+    [Cau truc du lieu]
+      (Mang va Danh sach lien ket)
+      (Cay va Do thi)
+    [Lap trinh huong doi tuong]
+      (Ke thua va Da hinh)
+      (Dong goi va Truu tuong)
+    [Co so du lieu]
+      (SQL va Thiet ke bang)
+      (NoSQL va Toi uu truy van)"""
+        else:
+            return f"""mindmap
+  root(({source_title}))
+    [Khai niem nen tang]
+      (Dinh nghia & Lich su phat trien)
+      (Co so ly thuyet cot loi)
+    [Thanh phan & Cau truc]
+      (Nguyen ly hoat dong)
+      (Quy trinh van hanh he thong)
+    [Ung dung & Huong phat trien]
+      (Giai quyet bai toan thuc te)
+      (Huong toi uu va Tich hop)"""
+
     mock_data = {
         'audio_overview': (
             "【Audio Podcast Script - Kịch bản thảo luận âm thanh】\n\n"
@@ -95,58 +167,6 @@ def generate_notebook_materials(sources_text, generation_type, source_title="Tà
             "- JP: 思考のロック解除機能のデモ / VI: Trình diễn tính năng khóa & mở khóa nội dung.\n"
             "3:00 - 5:00: Kết luận (まとめ)\n"
             "- JP: 自律的な成長のための学習効果 / VI: Ý nghĩa thực tiễn đối với sự phát triển tự chủ."
-        ),
-        'mind_map': (
-            "```mermaid\n"
-            "mindmap\n"
-            f"  root(({source_title}))\n"
-            "    [Frontend Dashboard]\n"
-            "      (Sidebar Navigation)\n"
-            "        Quick Action Button\n"
-            "        Responsive View Switches\n"
-            "      (Header Actions)\n"
-            "        Global Search Filters\n"
-            "        Light Dark Theme Toggle\n"
-            "        Notification Badges\n"
-            "      (Dashboard Overview)\n"
-            "        Study Progress Charts\n"
-            "        Recent Activities Redirects\n"
-            "      (Workspace Management)\n"
-            "        PDF Plain Text Sources\n"
-            "        Interactive Quiz Options\n"
-            "        Lockable AI Notes\n"
-            "    [Django Backend API]\n"
-            "      (REST Endpoints)\n"
-            "        Notebooks URLs\n"
-            "        Sources URLs\n"
-            "        Generations URLs\n"
-            "        Notes URLs\n"
-            "      (Custom Views Logic)\n"
-            "        pypdf PDF Text Extraction\n"
-            "        Note revision status check\n"
-            "      (Serializers validation)\n"
-            "        NoteReviseSerializer\n"
-            "        Custom NoteValidationError\n"
-            "    [Database Models]\n"
-            "      (User auth_user)\n"
-            "        id PK\n"
-            "        username\n"
-            "      (Notebook Workspace)\n"
-            "        id PK\n"
-            "        name\n"
-            "      (Note AI Rebuttal)\n"
-            "        id PK\n"
-            "        title\n"
-            "      (Source Files Link Text)\n"
-            "        id PK\n"
-            "        source_type\n"
-            "      (AIGeneration Output)\n"
-            "        id PK\n"
-            "        generation_type\n"
-            "    [Offline System Config]\n"
-            "      (No API Key Required)\n"
-            "      (Mermaid.js CDN Rendering)\n"
-            "```"
         ),
         'report': (
             f"【Summary Report - Báo cáo Tóm tắt Tài liệu: {source_title}】\n\n"
