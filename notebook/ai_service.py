@@ -63,7 +63,7 @@ def generate_rebuttal(initial_content):
         "Phải chăng chính môi trường 'hạn chế' việc sử dụng AI mới là thứ kích thích tư duy phát triển?"
     )
 
-def generate_notebook_materials(sources_text, generation_type):
+def generate_notebook_materials(sources_text, generation_type, source_title="Tài liệu"):
     """
     Generates study materials (quiz, flashcards, mind map, etc.) based on all sources offline.
     """
@@ -99,7 +99,7 @@ def generate_notebook_materials(sources_text, generation_type):
         'mind_map': (
             "```mermaid\n"
             "mindmap\n"
-            "  root((EduBrain NotebookLM))\n"
+            f"  root(({source_title}))\n"
             "    [Frontend Dashboard]\n"
             "      (Sidebar Navigation)\n"
             "        Quick Action Button\n"
@@ -149,7 +149,7 @@ def generate_notebook_materials(sources_text, generation_type):
             "```"
         ),
         'report': (
-            "【Summary Report - Báo cáo Tóm tắt Tài liệu】\n\n"
+            f"【Summary Report - Báo cáo Tóm tắt Tài liệu: {source_title}】\n\n"
             "■ JP: 本報告書は、AIとの対話を通じて学生の判断力を養うWebアプリケーションの開発方針をまとめています。 "
             "PythonおよびDjangoの強みを活かし、5日間という極めて短期間でのMVP構築を実現します。 "
             "主体的思考を促すため、自己入力を必須とするロック機能が最大の特徴です。\n\n"
@@ -159,27 +159,27 @@ def generate_notebook_materials(sources_text, generation_type):
         ),
         'flashcards': json.dumps([
             {
-                "question": "JP: AI学習アプリの核心的な機能は何ですか？ / VI: Tính năng cốt lõi của ứng dụng AI này là gì?",
+                "question": f"【TÀI LIỆU: {source_title}】\n\nJP: AI学習アプリの核心的な機能は何ですか？ / VI: Tính năng cốt lõi của ứng dụng AI này là gì?",
                 "answer": "JP: 学生の自己入力を強制する「思考 of ロック」と「AIによる論理的反論」です。 / VI: Đó là 'Khóa tư duy' bắt buộc học sinh tự viết và 'Phản biện logic từ AI'."
             },
             {
-                "question": "JP: なぜWebフレームワークにDjangoを選定しましたか？ / VI: Tại sao lại chọn Django làm Web Framework?",
+                "question": f"【TÀI LIỆU: {source_title}】\n\nJP: なぜWebフレームワークにDjangoを選定しましたか？ / VI: Tại sao lại chọn Django làm Web Framework?",
                 "answer": "JP: 認証や管理画面、ORMが最初から揃っており、5日間の短期間で安全に開発できるためです。 / VI: Vì nó tích hợp sẵn đăng nhập, trang admin, ORM giúp hoàn thành code an toàn chỉ trong 5 ngày."
             },
             {
-                "question": "JP: AI APIとの連携には何の ngôn ngữ を使用しますか？ / VI: Sử dụng ngôn ngữ nào để kết nối với AI API?",
+                "question": f"【TÀI LIỆU: {source_title}】\n\nJP: AI APIとの連携には何の言語 を使用しますか？ / VI: Sử dụng ngôn ngữ nào để kết nối với AI API?",
                 "answer": "JP: Pythonです。SDK of 親和性が高く、素早いAPI実装が可能です。 / VI: Python. Nhờ tính tương thích SDK cao giúp tích hợp API nhanh chóng."
             }
         ], ensure_ascii=False, indent=2),
         'quiz': json.dumps([
             {
-                "question": "JP: データベースをPythonで操作するDjangoの機能を何と呼びますか？ / VI: Tính năng của Django giúp thao tác cơ sở dữ liệu bằng Python gọi là gì?",
+                "question": f"【TÀI LIỆU: {source_title}】\n\nJP: データベースをPythonで操作するDjangoの機能を何と呼びますか？ / VI: Tính năng của Django giúp thao tác cơ sở dữ liệu bằng Python gọi là gì?",
                 "options": ["A. SQL Parser", "B. Django ORM", "C. DB Migrator", "D. Django Form"],
                 "answer": "B",
                 "explanation": "JP: Django ORMはPythonクラスをSQLに変換し、DBとのやり取りをオブジェクト操作で行えるようにします。 / VI: Django ORM tự động dịch class Python thành SQL và quản lý thao tác DB dưới dạng hướng đối tượng."
             },
             {
-                "question": "JP: AIの反論を見るために必要な学生のアクションはどれですか？ / VI: Học sinh cần thực hiện hành động nào để mở khóa phản biện của AI?",
+                "question": f"【TÀI LIỆU: {source_title}】\n\nJP: AIの反論を見るために必要な学生のアクションはどれですか？ / VI: Học sinh cần thực hiện hành động nào để mở khóa phản biện của AI?",
                 "options": ["A. 料金を支払う (Thanh toán phí)", "B. Googleログインする (Đăng nhập Google)", "C. 自分の考えを入力して保存する (Tự viết ý kiến và lưu lại)", "D. 30秒間待つ (Chờ 30 giây)"],
                 "answer": "C",
                 "explanation": "JP: 主体的な思考を促すため、一定文字数以上の自己入力と保存が必要です。 / VI: Để kích thích tư duy chủ động, học sinh bắt buộc phải tự nhập ý kiến của mình trước."

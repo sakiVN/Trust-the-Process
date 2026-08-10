@@ -36,6 +36,7 @@ class Source(models.Model):
     content = models.TextField(help_text="Extracted text content from the source used for AI context.")
     file_path = models.FileField(upload_to='sources/', blank=True, null=True)
     url = models.URLField(blank=True, null=True)
+    category = models.CharField(max_length=50, default='all', help_text="Target category: quiz, flashcards, mind_map, report, or all.")
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

@@ -88,12 +88,14 @@ class NotebookAPITests(APITestCase):
         data = {
             'title': 'Tài liệu Python cơ bản',
             'source_type': 'text',
+            'category': 'quiz',
             'content': 'Python là một ngôn ngữ lập trình đa năng, hướng đối tượng và dễ học.'
         }
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Source.objects.count(), 1)
         self.assertEqual(Source.objects.first().title, 'Tài liệu Python cơ bản')
+        self.assertEqual(Source.objects.first().category, 'quiz')
 
     def test_add_source_pdf(self):
         """API: Add a source PDF document to a notebook and extract its text."""
@@ -179,6 +181,7 @@ class NotebookAPITests(APITestCase):
             notebook=self.notebook,
             title="Đặc điểm Django",
             source_type="text",
+            category="quiz",
             content="Django có triết lý batteries-included giúp phát triển nhanh."
         )
         

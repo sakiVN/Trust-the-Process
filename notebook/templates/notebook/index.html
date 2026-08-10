@@ -438,54 +438,200 @@
 
                                 <!-- Dynamic notes list -->
                                 <div id="notes-list" class="space-y-4">
-                                    <!-- Notes details -->
+                                <!-- Tab Content 3: AI study material generator -->
+                            <div id="tab-content-ai-gen" class="hidden space-y-6">
+                                <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                                    
+                                    <!-- Section 1: Quiz -->
+                                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4 flex flex-col justify-between">
+                                        <div class="space-y-4">
+                                            <div class="flex items-center space-x-3 border-b border-slate-100 dark:border-slate-800 pb-3">
+                                                <span class="text-2xl">❓</span>
+                                                <div>
+                                                    <h4 class="font-bold text-slate-850 dark:text-white text-xs">1. Trắc nghiệm ôn tập (Quiz)</h4>
+                                                    <p class="text-[10px] text-slate-400">Sinh 5 câu hỏi trắc nghiệm có giải thích chi tiết</p>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl space-y-3 border border-slate-100 dark:border-slate-850/50">
+                                                <div class="text-[9px] font-bold text-slate-450 uppercase tracking-wider">Tài liệu cho phần Trắc nghiệm</div>
+                                                <div id="sources-list-quiz" class="space-y-2 max-h-36 overflow-y-auto"></div>
+                                                
+                                                <form id="inline-source-form-quiz" onsubmit="handleInlineSourceSubmit(event, 'quiz')" class="space-y-2 pt-2 border-t border-slate-200/50 dark:border-slate-800">
+                                                    <div class="flex gap-2">
+                                                        <select id="inline-source-type-quiz" onchange="toggleInlineFields('quiz')" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-600 dark:text-slate-400 font-semibold focus:outline-none w-1/3">
+                                                            <option value="file">📁 File PDF</option>
+                                                            <option value="text">✏️ Văn bản</option>
+                                                            <option value="link">🔗 Link</option>
+                                                        </select>
+                                                        <input type="text" id="inline-source-title-quiz" placeholder="Tiêu đề..." required class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-700 dark:text-slate-300 placeholder-slate-400 focus:outline-none w-2/3">
+                                                    </div>
+                                                    <div id="inline-field-file-quiz" class="w-full">
+                                                        <input type="file" id="inline-file-path-quiz" accept=".pdf" required class="block w-full text-[9px] text-slate-505 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[9px] file:font-semibold file:bg-brand-50 file:text-brand-700 dark:file:bg-slate-800 dark:file:text-slate-350">
+                                                    </div>
+                                                    <div id="inline-field-text-quiz" class="hidden w-full">
+                                                        <textarea id="inline-content-quiz" rows="2" placeholder="Nhập nội dung..." class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-755 dark:text-slate-300 focus:outline-none font-mono"></textarea>
+                                                    </div>
+                                                    <div id="inline-field-link-quiz" class="hidden w-full">
+                                                        <input type="url" id="inline-url-quiz" placeholder="https://..." class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-755 dark:text-slate-300 focus:outline-none">
+                                                    </div>
+                                                    <button type="submit" class="w-full bg-brand-500 hover:bg-brand-600 text-white font-bold py-1.5 rounded-lg text-[9px] transition">
+                                                        + Thêm tài liệu trắc nghiệm
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <div class="space-y-4 pt-2">
+                                            <button onclick="triggerAIGeneration('quiz')" class="w-full bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold py-2 rounded-xl text-[11px] shadow transition">
+                                                Yêu cầu hệ thống sinh Trắc nghiệm
+                                            </button>
+                                            <div id="ai-generations-quiz" class="space-y-3 pt-1 border-t border-slate-100 dark:border-slate-800 max-h-96 overflow-y-auto"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Section 2: Flashcards -->
+                                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4 flex flex-col justify-between">
+                                        <div class="space-y-4">
+                                            <div class="flex items-center space-x-3 border-b border-slate-100 dark:border-slate-800 pb-3">
+                                                <span class="text-2xl">🎴</span>
+                                                <div>
+                                                    <h4 class="font-bold text-slate-850 dark:text-white text-xs">2. Thẻ nhớ thông minh (Flashcards)</h4>
+                                                    <p class="text-[10px] text-slate-400">Tóm tắt thuật ngữ dưới dạng hỏi và trả lời nhanh</p>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl space-y-3 border border-slate-100 dark:border-slate-850/50">
+                                                <div class="text-[9px] font-bold text-slate-450 uppercase tracking-wider">Tài liệu cho phần Thẻ nhớ</div>
+                                                <div id="sources-list-flashcards" class="space-y-2 max-h-36 overflow-y-auto"></div>
+                                                
+                                                <form id="inline-source-form-flashcards" onsubmit="handleInlineSourceSubmit(event, 'flashcards')" class="space-y-2 pt-2 border-t border-slate-200/50 dark:border-slate-800">
+                                                    <div class="flex gap-2">
+                                                        <select id="inline-source-type-flashcards" onchange="toggleInlineFields('flashcards')" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-600 dark:text-slate-400 font-semibold focus:outline-none w-1/3">
+                                                            <option value="file">📁 File PDF</option>
+                                                            <option value="text">✏️ Văn bản</option>
+                                                            <option value="link">🔗 Link</option>
+                                                        </select>
+                                                        <input type="text" id="inline-source-title-flashcards" placeholder="Tiêu đề..." required class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-700 dark:text-slate-300 placeholder-slate-400 focus:outline-none w-2/3">
+                                                    </div>
+                                                    <div id="inline-field-file-flashcards" class="w-full">
+                                                        <input type="file" id="inline-file-path-flashcards" accept=".pdf" required class="block w-full text-[9px] text-slate-505 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[9px] file:font-semibold file:bg-brand-50 file:text-brand-700 dark:file:bg-slate-800 dark:file:text-slate-350">
+                                                    </div>
+                                                    <div id="inline-field-text-flashcards" class="hidden w-full">
+                                                        <textarea id="inline-content-flashcards" rows="2" placeholder="Nhập nội dung..." class="w-full bg-white dark:bg-slate-900 border border-slate-200 border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-755 dark:text-slate-300 focus:outline-none font-mono"></textarea>
+                                                    </div>
+                                                    <div id="inline-field-link-flashcards" class="hidden w-full">
+                                                        <input type="url" id="inline-url-flashcards" placeholder="https://..." class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-755 dark:text-slate-300 focus:outline-none">
+                                                    </div>
+                                                    <button type="submit" class="w-full bg-brand-500 hover:bg-brand-600 text-white font-bold py-1.5 rounded-lg text-[9px] transition">
+                                                        + Thêm tài liệu thẻ nhớ
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <div class="space-y-4 pt-2">
+                                            <button onclick="triggerAIGeneration('flashcards')" class="w-full bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold py-2 rounded-xl text-[11px] shadow transition">
+                                                Yêu cầu hệ thống sinh Thẻ nhớ
+                                            </button>
+                                            <div id="ai-generations-flashcards" class="space-y-3 pt-1 border-t border-slate-100 dark:border-slate-800 max-h-96 overflow-y-auto"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Section 3: Mind Map -->
+                                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4 flex flex-col justify-between">
+                                        <div class="space-y-4">
+                                            <div class="flex items-center space-x-3 border-b border-slate-100 dark:border-slate-800 pb-3">
+                                                <span class="text-2xl">🌿</span>
+                                                <div>
+                                                    <h4 class="font-bold text-slate-850 dark:text-white text-xs">3. Sơ đồ tư duy (Mind Map)</h4>
+                                                    <p class="text-[10px] text-slate-400">Vẽ sơ đồ tư duy liên kết trực quan bằng Mermaid</p>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl space-y-3 border border-slate-100 dark:border-slate-850/50">
+                                                <div class="text-[9px] font-bold text-slate-450 uppercase tracking-wider">Tài liệu cho phần Sơ đồ tư duy</div>
+                                                <div id="sources-list-mind_map" class="space-y-2 max-h-36 overflow-y-auto"></div>
+                                                
+                                                <form id="inline-source-form-mind_map" onsubmit="handleInlineSourceSubmit(event, 'mind_map')" class="space-y-2 pt-2 border-t border-slate-200/50 dark:border-slate-800">
+                                                    <div class="flex gap-2">
+                                                        <select id="inline-source-type-mind_map" onchange="toggleInlineFields('mind_map')" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-600 dark:text-slate-400 font-semibold focus:outline-none w-1/3">
+                                                            <option value="file">📁 File PDF</option>
+                                                            <option value="text">✏️ Văn bản</option>
+                                                            <option value="link">🔗 Link</option>
+                                                        </select>
+                                                        <input type="text" id="inline-source-title-mind_map" placeholder="Tiêu đề..." required class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-700 dark:text-slate-300 placeholder-slate-400 focus:outline-none w-2/3">
+                                                    </div>
+                                                    <div id="inline-field-file-mind_map" class="w-full">
+                                                        <input type="file" id="inline-file-path-mind_map" accept=".pdf" required class="block w-full text-[9px] text-slate-505 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[9px] file:font-semibold file:bg-brand-50 file:text-brand-700 dark:file:bg-slate-800 dark:file:text-slate-350">
+                                                    </div>
+                                                    <div id="inline-field-text-mind_map" class="hidden w-full">
+                                                        <textarea id="inline-content-mind_map" rows="2" placeholder="Nhập nội dung..." class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-755 dark:text-slate-300 focus:outline-none font-mono"></textarea>
+                                                    </div>
+                                                    <div id="inline-field-link-mind_map" class="hidden w-full">
+                                                        <input type="url" id="inline-url-mind_map" placeholder="https://..." class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-755 dark:text-slate-300 focus:outline-none">
+                                                    </div>
+                                                    <button type="submit" class="w-full bg-brand-500 hover:bg-brand-600 text-white font-bold py-1.5 rounded-lg text-[9px] transition">
+                                                        + Thêm tài liệu sơ đồ tư duy
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <div class="space-y-4 pt-2">
+                                            <button onclick="triggerAIGeneration('mind_map')" class="w-full bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold py-2 rounded-xl text-[11px] shadow transition">
+                                                Yêu cầu hệ thống sinh Sơ đồ tư duy
+                                            </button>
+                                            <div id="ai-generations-mind_map" class="space-y-3 pt-1 border-t border-slate-100 dark:border-slate-800 max-h-96 overflow-y-auto flex flex-col justify-center"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Section 4: Report -->
+                                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4 flex flex-col justify-between font-sans">
+                                        <div class="space-y-4">
+                                            <div class="flex items-center space-x-3 border-b border-slate-100 dark:border-slate-800 pb-3">
+                                                <span class="text-2xl">📝</span>
+                                                <div>
+                                                    <h4 class="font-bold text-slate-850 dark:text-white text-xs">4. Báo cáo tóm tắt (Report)</h4>
+                                                    <p class="text-[10px] text-slate-400">Sinh báo cáo tóm lược học thuật ngắn gọn của tài liệu</p>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl space-y-3 border border-slate-100 dark:border-slate-850/50">
+                                                <div class="text-[9px] font-bold text-slate-450 uppercase tracking-wider">Tài liệu cho phần Báo cáo</div>
+                                                <div id="sources-list-report" class="space-y-2 max-h-36 overflow-y-auto"></div>
+                                                
+                                                <form id="inline-source-form-report" onsubmit="handleInlineSourceSubmit(event, 'report')" class="space-y-2 pt-2 border-t border-slate-200/50 dark:border-slate-800">
+                                                    <div class="flex gap-2">
+                                                        <select id="inline-source-type-report" onchange="toggleInlineFields('report')" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-600 dark:text-slate-400 font-semibold focus:outline-none w-1/3">
+                                                            <option value="file">📁 File PDF</option>
+                                                            <option value="text">✏️ Văn bản</option>
+                                                            <option value="link">🔗 Link</option>
+                                                        </select>
+                                                        <input type="text" id="inline-source-title-report" placeholder="Tiêu đề..." required class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-700 dark:text-slate-300 placeholder-slate-400 focus:outline-none w-2/3">
+                                                    </div>
+                                                    <div id="inline-field-file-report" class="w-full">
+                                                        <input type="file" id="inline-file-path-report" accept=".pdf" required class="block w-full text-[9px] text-slate-550 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[9px] file:font-semibold file:bg-brand-50 file:text-brand-700 dark:file:bg-slate-800 dark:file:text-slate-350">
+                                                    </div>
+                                                    <div id="inline-field-text-report" class="hidden w-full">
+                                                        <textarea id="inline-content-report" rows="2" placeholder="Nhập nội dung..." class="w-full bg-white dark:bg-slate-900 border border-slate-200 border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-755 dark:text-slate-300 focus:outline-none font-mono"></textarea>
+                                                    </div>
+                                                    <div id="inline-field-link-report" class="hidden w-full">
+                                                        <input type="url" id="inline-url-report" placeholder="https://..." class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-755 dark:text-slate-300 focus:outline-none">
+                                                    </div>
+                                                    <button type="submit" class="w-full bg-brand-500 hover:bg-brand-600 text-white font-bold py-1.5 rounded-lg text-[9px] transition">
+                                                        + Thêm tài liệu báo cáo
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <div class="space-y-4 pt-2">
+                                            <button onclick="triggerAIGeneration('report')" class="w-full bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold py-2 rounded-xl text-[11px] shadow transition">
+                                                Yêu cầu hệ thống sinh Báo cáo
+                                            </button>
+                                            <div id="ai-generations-report" class="space-y-3 pt-1 border-t border-slate-100 dark:border-slate-800 max-h-96 overflow-y-auto"></div>
+                                        </div>
+                                    </div>
+                                    
                                 </div>
                             </div>
-
-                            <!-- Tab Content 3: AI study material generator -->
-                            <div id="tab-content-ai-gen" class="hidden space-y-6">
-                                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
-                                    <h3 class="text-base font-bold text-slate-800 dark:text-white mb-1.5">Tạo tài liệu học tập từ tài liệu gốc bằng AI</h3>
-                                    <p class="text-xs text-slate-400 mb-6">AI sẽ phân tích toàn bộ tài liệu nguồn bạn đã lưu để thiết kế các câu hỏi trắc nghiệm, thẻ nhớ hoặc sơ đồ tư duy.</p>
-                                    
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                                        <!-- Card type selectors -->
-                                        <button onclick="selectGenType('quiz')" id="gen-card-quiz" class="border border-slate-200 dark:border-slate-800 hover:border-brand-500 dark:hover:border-brand-500 rounded-xl p-4 text-left transition bg-white dark:bg-slate-950 shadow-sm flex flex-col justify-between h-36">
-                                            <span class="text-2xl">❓</span>
-                                            <div>
-                                                <span class="font-bold text-slate-800 dark:text-white block text-sm">Trắc nghiệm ôn tập (Quiz)</span>
-                                                <span class="text-[10px] text-slate-400 mt-1 line-clamp-2">5 câu hỏi trắc nghiệm có lời giải chi tiết.</span>
-                                            </div>
-                                        </button>
-                                        <button onclick="selectGenType('flashcards')" id="gen-card-flashcards" class="border border-slate-200 dark:border-slate-800 hover:border-brand-500 dark:hover:border-brand-500 rounded-xl p-4 text-left transition bg-white dark:bg-slate-950 shadow-sm flex flex-col justify-between h-36">
-                                            <span class="text-2xl">🎴</span>
-                                            <div>
-                                                <span class="font-bold text-slate-800 dark:text-white block text-sm">Thẻ nhớ thông minh (Flashcards)</span>
-                                                <span class="text-[10px] text-slate-400 mt-1 line-clamp-2">Tóm tắt thuật ngữ dưới dạng Q&A.</span>
-                                            </div>
-                                        </button>
-                                        <button onclick="selectGenType('mind_map')" id="gen-card-mind_map" class="border border-slate-200 dark:border-slate-800 hover:border-brand-500 dark:hover:border-brand-500 rounded-xl p-4 text-left transition bg-white dark:bg-slate-950 shadow-sm flex flex-col justify-between h-36">
-                                            <span class="text-2xl">🌿</span>
-                                            <div>
-                                                <span class="font-bold text-slate-800 dark:text-white block text-sm">Sơ đồ tư duy (Mind Map)</span>
-                                                <span class="text-[10px] text-slate-400 mt-1 line-clamp-2">Cấu trúc hóa tri thức dạng cây liên kết.</span>
-                                            </div>
-                                        </button>
-                                        <button onclick="selectGenType('report')" id="gen-card-report" class="border border-slate-200 dark:border-slate-800 hover:border-brand-500 dark:hover:border-brand-500 rounded-xl p-4 text-left transition bg-white dark:bg-slate-950 shadow-sm flex flex-col justify-between h-36">
-                                            <span class="text-2xl">📝</span>
-                                            <div>
-                                                <span class="font-bold text-slate-800 dark:text-white block text-sm">Báo cáo tóm tắt (Report)</span>
-                                                <span class="text-[10px] text-slate-400 mt-1 line-clamp-2">Tóm lược học thuật ngắn gọn.</span>
-                                            </div>
-                                        </button>
-                                    </div>
-
-                                    <div class="flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-4 gap-4">
-                                        <span class="text-xs font-semibold text-slate-500">Đang chọn: <strong id="selected-type-label" class="text-brand-600 dark:text-brand-400">Trắc nghiệm ôn tập (Quiz)</strong></span>
-                                        <button onclick="triggerAIGeneration()" class="bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-semibold px-6 py-2.5 rounded-xl text-sm shadow transition">
-                                            Yêu cầu AI sinh tài liệu
-                                        </button>
-                                    </div>
                                 </div>
 
                                 <!-- AI Generated Content Display -->
@@ -931,7 +1077,35 @@
                 renderNotes(notebook.notes || []);
                 renderAIGenerations(notebook.generations || []);
                 
-                selectGenType('quiz');
+                // Render category sources
+                const categories = ['quiz', 'flashcards', 'mind_map', 'report'];
+                categories.forEach(cat => {
+                    const catSources = (notebook.sources || []).filter(s => s.category === cat);
+                    const catContainer = document.getElementById(`sources-list-${cat}`);
+                    if (catContainer) {
+                        if (catSources.length === 0) {
+                            catContainer.innerHTML = `<div class="text-[10px] text-slate-400 italic py-1">Chưa có tài liệu nguồn cho phần này.</div>`;
+                        } else {
+                            catContainer.innerHTML = catSources.map(src => {
+                                let badge = '';
+                                if (src.source_type === 'file') badge = '📁 File';
+                                else if (src.source_type === 'link') badge = '🔗 Link';
+                                else badge = '✏️ Text';
+                                
+                                return `
+                                <div class="flex items-center justify-between bg-white dark:bg-slate-900 border border-slate-150 dark:border-slate-800/60 p-2.5 rounded-xl text-[10px] text-slate-700 dark:text-slate-350">
+                                    <div class="flex items-center space-x-2 truncate">
+                                        <span class="font-bold text-slate-400 uppercase shrink-0">${badge}</span>
+                                        <span class="font-semibold truncate" title="${src.title}">${src.title}</span>
+                                    </div>
+                                    <button onclick="deleteSource(${src.id})" class="text-rose-500 hover:text-rose-700 font-bold shrink-0 ml-2" title="Xóa tài liệu">Xóa</button>
+                                </div>
+                                `;
+                            }).join('');
+                        }
+                    }
+                });
+
                 if (keepCurrentTab) {
                     switchTab(activeTab);
                 } else {
@@ -1207,13 +1381,14 @@
             }
         }
 
-        // POST Request: AI generate study materials
-        async function triggerAIGeneration() {
+        // POST Request: AI generate study materials for a specific category
+        async function triggerAIGeneration(type) {
+            if (!activeNotebookId) return alert("Vui lòng chọn một sổ tay trước.");
             try {
                 const res = await fetch(`${API_URL}/notebooks/${activeNotebookId}/generate/`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ generation_type: selectedGenType })
+                    body: JSON.stringify({ generation_type: type })
                 });
                 
                 if (res.ok) {
@@ -1227,117 +1402,124 @@
             }
         }
 
-        // Render AI generated documents in workspace tab
+        // Render AI generated documents in split workspace category containers
         function renderAIGenerations(generations) {
-            const container = document.getElementById('ai-generations-container');
-            if (!container) return;
+            const categories = ['quiz', 'flashcards', 'mind_map', 'report'];
+            
+            // Clear containers
+            categories.forEach(cat => {
+                const el = document.getElementById(`ai-generations-${cat}`);
+                if (el) el.innerHTML = '';
+            });
             
             if (generations.length === 0) {
-                container.innerHTML = `<div class="text-xs text-slate-400 text-center py-8">Chưa có tài nguyên sinh bởi AI. Hãy chọn một loại phía trên và bấm yêu cầu.</div>`;
+                categories.forEach(cat => {
+                    const el = document.getElementById(`ai-generations-${cat}`);
+                    if (el) el.innerHTML = `<div class="text-[10px] text-slate-400 italic text-center py-4 bg-slate-50 dark:bg-slate-950/40 border border-dashed border-slate-200 dark:border-slate-850 rounded-xl">Chưa có kết quả. Nhấp nút phía trên để sinh dữ liệu.</div>`;
+                });
                 return;
             }
             
-            container.innerHTML = generations.map(gen => {
-                const titles = {
-                    'quiz': '❓ Trắc nghiệm ôn tập (Quiz)',
-                    'flashcards': '🎴 Thẻ nhớ thông minh (Flashcards)',
-                    'mind_map': '🌿 Sơ đồ tư duy (Mind Map)',
-                    'report': '📝 Báo cáo tóm tắt (Report)',
-                    'audio_overview': '🎙️ Kịch bản Podcast (Audio)',
-                    'presentation': '📊 Dàn ý Slide (Presentation)'
-                };
+            categories.forEach(cat => {
+                const catGens = generations.filter(g => g.generation_type === cat);
+                const el = document.getElementById(`ai-generations-${cat}`);
+                if (!el) return;
                 
-                let renderedContent = '';
-                if (gen.generation_type === 'quiz' || gen.generation_type === 'flashcards') {
-                    try {
-                        let cleanContent = gen.content.trim();
-                        if (cleanContent.startsWith("```")) {
-                            cleanContent = cleanContent.replace(/^```(?:json)?/, "");
-                            cleanContent = cleanContent.replace(/```$/, "");
-                            cleanContent = cleanContent.trim();
-                        }
-                        const items = JSON.parse(cleanContent);
-                        if (gen.generation_type === 'quiz') {
-                            renderedContent = items.map((q, idx) => {
-                                const qId = `quiz-${gen.id}-${idx}`;
-                                return `
-                                <div class="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-xl p-4 space-y-3">
-                                    <div class="font-bold text-slate-800 dark:text-slate-200 text-xs">Câu ${idx + 1}: ${q.question}</div>
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2" id="${qId}-options">
-                                        ${q.options.map((opt, optIdx) => {
-                                            const letter = String.fromCharCode(65 + optIdx); // A, B, C, D
-                                            return `
-                                            <button onclick="checkQuizAnswer('${qId}', '${letter}', '${q.answer}', ${optIdx})" id="${qId}-opt-${optIdx}" class="w-full text-left bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3.5 py-2.5 rounded-xl text-[11px] text-slate-650 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition font-medium">
-                                                ${opt}
-                                            </button>
-                                            `;
-                                        }).join('')}
-                                    </div>
-                                    <div id="${qId}-result" class="hidden text-[11px] font-bold p-3 rounded-xl"></div>
-                                    <div id="${qId}-explanation" class="hidden text-[10px] text-slate-500 dark:text-slate-400 italic bg-slate-100 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
-                                        Giải thích: ${q.explanation}
-                                    </div>
-                                </div>
-                                `;
-                            }).join('');
-                        } else {
-                            renderedContent = items.map((f, idx) => `
-                                <div class="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-xl p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div class="border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-800 pb-3 md:pb-0 md:pr-4">
-                                        <div class="text-[10px] font-bold text-slate-400 uppercase">Mặt trước (Câu hỏi)</div>
-                                        <div class="text-xs font-semibold text-slate-850 dark:text-slate-200 mt-1">${f.question}</div>
-                                    </div>
-                                    <div>
-                                        <div class="text-[10px] font-bold text-brand-500 uppercase">Mặt sau (Câu trả lời)</div>
-                                        <div class="text-xs text-slate-650 dark:text-slate-400 mt-1 font-medium">${f.answer}</div>
-                                    </div>
-                                </div>
-                            `).join('');
-                        }
-                    } catch (e) {
-                        renderedContent = `<pre class="text-[11px] bg-slate-900 text-brand-400 p-4 rounded-xl overflow-auto whitespace-pre-wrap">${gen.content}</pre>`;
-                    }
-                } else {
-                    if (gen.generation_type === 'mind_map' && gen.content.includes("mindmap")) {
-                        let cleanCode = gen.content.trim();
-                        if (cleanCode.startsWith("```")) {
-                            cleanCode = cleanCode.replace(/^```(?:mermaid)?/, "");
-                            cleanCode = cleanCode.replace(/```$/, "");
-                            cleanCode = cleanCode.trim();
-                        }
-                        const uniqueId = `mermaid-${gen.id}`;
-                        renderedContent = `<div class="mermaid bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-100 dark:border-slate-800 overflow-auto flex justify-center w-full" id="${uniqueId}">${cleanCode}</div>`;
-                        
-                        setTimeout(() => {
-                            try {
-                                const targetEl = document.getElementById(uniqueId);
-                                if (targetEl) {
-                                    mermaid.init(undefined, targetEl);
-                                }
-                            } catch (err) {
-                                console.error("Mermaid error:", err);
-                            }
-                        }, 50);
-                    } else {
-                        renderedContent = `<div class="whitespace-pre-wrap text-xs text-slate-700 dark:text-slate-350 bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-100 dark:border-slate-800 font-mono leading-relaxed">${gen.content}</div>`;
-                    }
+                if (catGens.length === 0) {
+                    el.innerHTML = `<div class="text-[10px] text-slate-400 italic text-center py-4 bg-slate-50 dark:bg-slate-950/40 border border-dashed border-slate-200 dark:border-slate-850 rounded-xl">Chưa có kết quả. Nhấp nút phía trên để sinh dữ liệu.</div>`;
+                    return;
                 }
-
-                return `
-                    <div class="border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-3">
-                        <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2">
-                            <h4 class="font-bold text-slate-850 dark:text-white text-xs">${titles[gen.generation_type] || gen.generation_type}</h4>
-                            <div class="flex items-center space-x-2 shrink-0">
+                
+                el.innerHTML = catGens.map(gen => {
+                    let renderedContent = '';
+                    if (gen.generation_type === 'quiz' || gen.generation_type === 'flashcards') {
+                        try {
+                            let cleanContent = gen.content.trim();
+                            if (cleanContent.startsWith("```")) {
+                                cleanContent = cleanContent.replace(/^```(?:json)?/, "");
+                                cleanContent = cleanContent.replace(/```$/, "");
+                                cleanContent = cleanContent.trim();
+                            }
+                            const items = JSON.parse(cleanContent);
+                            if (gen.generation_type === 'quiz') {
+                                renderedContent = items.map((q, idx) => {
+                                    const qId = `quiz-${gen.id}-${idx}`;
+                                    return `
+                                    <div class="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-xl p-4 space-y-3 text-left">
+                                        <div class="font-bold text-slate-850 dark:text-slate-200 text-xs">Câu ${idx + 1}: ${q.question}</div>
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2" id="${qId}-options">
+                                            ${q.options.map((opt, optIdx) => {
+                                                const letter = String.fromCharCode(65 + optIdx); // A, B, C, D
+                                                return `
+                                                <button onclick="checkQuizAnswer('${qId}', '${letter}', '${q.answer}', ${optIdx})" id="${qId}-opt-${optIdx}" class="w-full text-left bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3.5 py-2.5 rounded-xl text-[11px] text-slate-650 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition font-medium">
+                                                    ${opt}
+                                                </button>
+                                                `;
+                                            }).join('')}
+                                        </div>
+                                        <div id="${qId}-result" class="hidden text-[11px] font-bold p-3 rounded-xl"></div>
+                                        <div id="${qId}-explanation" class="hidden text-[10px] text-slate-500 dark:text-slate-400 italic bg-slate-100 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
+                                            Giải thích: ${q.explanation}
+                                        </div>
+                                    </div>
+                                    `;
+                                }).join('');
+                            } else {
+                                renderedContent = items.map((f, idx) => `
+                                    <div class="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-xl p-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-left font-sans">
+                                        <div class="border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-800 pb-3 md:pb-0 md:pr-4">
+                                            <div class="text-[10px] font-bold text-slate-400 uppercase">Mặt trước (Câu hỏi)</div>
+                                            <div class="text-xs font-semibold text-slate-850 dark:text-slate-200 mt-1">${f.question}</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-[10px] font-bold text-brand-500 uppercase">Mặt sau (Câu trả lời)</div>
+                                            <div class="text-xs text-slate-650 dark:text-slate-400 mt-1 font-medium">${f.answer}</div>
+                                        </div>
+                                    </div>
+                                `).join('');
+                            }
+                        } catch (e) {
+                            renderedContent = `<pre class="text-[11px] bg-slate-900 text-brand-400 p-4 rounded-xl overflow-auto whitespace-pre-wrap text-left">${gen.content}</pre>`;
+                        }
+                    } else {
+                        if (gen.generation_type === 'mind_map' && gen.content.includes("mindmap")) {
+                            let cleanCode = gen.content.trim();
+                            if (cleanCode.startsWith("```")) {
+                                cleanCode = cleanCode.replace(/^```(?:mermaid)?/, "");
+                                cleanCode = cleanCode.replace(/```$/, "");
+                                cleanCode = cleanCode.trim();
+                            }
+                            const uniqueId = `mermaid-${gen.id}`;
+                            renderedContent = `<div class="mermaid bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-100 dark:border-slate-800 overflow-auto flex justify-center w-full" id="${uniqueId}">${cleanCode}</div>`;
+                            
+                            setTimeout(() => {
+                                try {
+                                    const targetEl = document.getElementById(uniqueId);
+                                    if (targetEl) {
+                                        mermaid.init(undefined, targetEl);
+                                    }
+                                } catch (err) {
+                                    console.error("Mermaid error:", err);
+                                }
+                            }, 50);
+                        } else {
+                            renderedContent = `<div class="whitespace-pre-wrap text-xs text-slate-700 dark:text-slate-350 bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-100 dark:border-slate-800 font-mono leading-relaxed text-left">${gen.content}</div>`;
+                        }
+                    }
+                    
+                    return `
+                        <div class="border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-3">
+                            <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2">
                                 <span class="text-[9px] text-slate-400 font-semibold">${new Date(gen.created_at).toLocaleString('vi-VN')}</span>
-                                <button onclick="deleteGeneration(${gen.id})" class="text-[10px] text-rose-500 hover:text-rose-700 font-bold hover:underline" title="Xóa tài nguyên AI">Xóa</button>
+                                <button onclick="deleteGeneration(${gen.id})" class="text-[10px] text-rose-500 hover:text-rose-700 font-bold hover:underline" title="Xóa kết quả">Xóa</button>
+                            </div>
+                            <div class="space-y-3">
+                                ${renderedContent}
                             </div>
                         </div>
-                        <div class="space-y-3">
-                            ${renderedContent}
-                        </div>
-                    </div>
-                `;
-            }).reverse().join('');
+                    `;
+                }).reverse().join('');
+            });
         }
 
         // Render unified view: Documents (Sources)
@@ -1771,6 +1953,86 @@
             }
             
             document.getElementById(`${qId}-explanation`).classList.remove('hidden');
+        }
+
+        // Toggle input fields for inline category-specific upload forms
+        function toggleInlineFields(cat) {
+            const type = document.getElementById(`inline-source-type-${cat}`).value;
+            const fileDiv = document.getElementById(`inline-field-file-${cat}`);
+            const textDiv = document.getElementById(`inline-field-text-${cat}`);
+            const linkDiv = document.getElementById(`inline-field-link-${cat}`);
+            
+            const fileInput = document.getElementById(`inline-file-path-${cat}`);
+            const textInput = document.getElementById(`inline-content-${cat}`);
+            const urlInput = document.getElementById(`inline-url-${cat}`);
+            
+            fileDiv.classList.add('hidden');
+            textDiv.classList.add('hidden');
+            linkDiv.classList.add('hidden');
+            
+            fileInput.required = false;
+            textInput.required = false;
+            urlInput.required = false;
+            
+            if (type === 'file') {
+                fileDiv.classList.remove('hidden');
+                fileInput.required = true;
+            } else if (type === 'text') {
+                textDiv.classList.remove('hidden');
+                textInput.required = true;
+            } else if (type === 'link') {
+                linkDiv.classList.remove('hidden');
+                urlInput.required = true;
+            }
+        }
+
+        // Handle inline document submissions for specific categories
+        async function handleInlineSourceSubmit(e, category) {
+            e.preventDefault();
+            if (!activeNotebookId) {
+                alert("Vui lòng chọn một sổ tay trước!");
+                return;
+            }
+            
+            const type = document.getElementById(`inline-source-type-${category}`).value;
+            const title = document.getElementById(`inline-source-title-${category}`).value.trim();
+            
+            const formData = new FormData();
+            formData.append('title', title);
+            formData.append('source_type', type);
+            formData.append('category', category);
+            
+            if (type === 'file') {
+                const fileInput = document.getElementById(`inline-file-path-${category}`);
+                if (fileInput.files.length > 0) {
+                    formData.append('file_path', fileInput.files[0]);
+                } else {
+                    alert("Vui lòng chọn file PDF!");
+                    return;
+                }
+            } else if (type === 'text') {
+                formData.append('content', document.getElementById(`inline-content-${category}`).value);
+            } else if (type === 'link') {
+                formData.append('url', document.getElementById(`inline-url-${category}`).value);
+            }
+            
+            try {
+                const res = await fetch(`${API_URL}/notebooks/${activeNotebookId}/sources/`, {
+                    method: 'POST',
+                    body: formData
+                });
+                if (res.ok) {
+                    document.getElementById(`inline-source-form-${category}`).reset();
+                    toggleInlineFields(category);
+                    await selectNotebook(activeNotebookId, true);
+                    await loadNotebooks();
+                } else {
+                    const err = await res.json();
+                    alert("Lỗi khi thêm tài liệu: " + JSON.stringify(err));
+                }
+            } catch (err) {
+                console.error("Lỗi:", err);
+            }
         }
     </script>
 </body>

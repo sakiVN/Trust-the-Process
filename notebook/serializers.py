@@ -59,7 +59,7 @@ class SourceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Source
-        fields = ['id', 'notebook', 'title', 'source_type', 'content', 'file_path', 'url', 'created_at']
+        fields = ['id', 'notebook', 'title', 'source_type', 'content', 'file_path', 'url', 'category', 'created_at']
         read_only_fields = ['notebook', 'created_at']
 
 class AIGenerationSerializer(serializers.ModelSerializer):

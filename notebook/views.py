@@ -100,21 +100,22 @@ class NotebookViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
             
-        # Collect all sources text
-        sources = notebook.sources.all()
+        # Collect sources specific to the requested generation type/category
+        sources = notebook.sources.filter(category=generation_type)
         if not sources.exists():
             return Response(
-                {"error": "No source materials found in this notebook. Please add sources first before generating AI content."},
+                {"error": f"Không tìm thấy tài liệu nguồn nào cho phần ôn tập này. Vui lòng tải tài liệu lên trước khi yêu cầu sinh nội dung!"},
                 status=status.HTTP_400_BAD_REQUEST
             )
             
-        # Build prompt context from all sources
+        # Build prompt context from filtered sources
         sources_text = ""
         for src in sources:
             sources_text += f"--- SOURCE TITLE: {src.title} ---\nType: {src.source_type}\nContent:\n{src.content}\n\n"
             
-        # Call AI generation service
-        ai_content = ai_service.generate_notebook_materials(sources_text, generation_type)
+        # Call AI generation service with source title for dynamic mock data
+        first_title = sources.first().title
+        ai_content = ai_service.generate_notebook_materials(sources_text, generation_type, first_title)
         
         # Save generation to DB
         gen_obj = AIGeneration.objects.create(
