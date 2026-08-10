@@ -7,21 +7,15 @@ from django.conf import settings
 # Load API Key from Django settings
 GEMINI_API_KEY = getattr(settings, "GEMINI_API_KEY", "")
 
-def call_gemini_api(prompt, system_instruction=""):
+def call_gemini_api(prompt, system_instruction="") -> str:
     """
     Call Gemini API using urllib to avoid heavy library dependencies.
     """
     if not GEMINI_API_KEY:
-        return None
+        return ""
         
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
     
-    # Structure payload for Gemini 1.5
-    contents = []
-    if system_instruction:
-        # We append system instruction as helper text or system_instruction config
-        pass
-        
     payload = {
         "contents": [{
             "parts": [{"text": prompt}]
@@ -41,9 +35,18 @@ def call_gemini_api(prompt, system_instruction=""):
             res_data = json.loads(response.read().decode('utf-8'))
             text = res_data['candidates'][0]['content']['parts'][0]['text']
             return text
+    except urllib.error.HTTPError as e:
+        try:
+            err_body = e.read().decode('utf-8')
+            err_json = json.loads(err_body)
+            err_msg = err_json.get('error', {}).get('message', str(e))
+            return f"Gemini API Error: {err_msg}"
+        except Exception:
+            return f"Gemini API Error: {str(e)}"
     except urllib.error.URLError as e:
-        print(f"Gemini API Error: {e}")
-        return None
+        return f"Gemini API Connection Error: {str(e)}"
+    except Exception as e:
+        return f"Gemini API General Error: {str(e)}"
 
 def generate_rebuttal(initial_content):
     """

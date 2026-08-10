@@ -1,12 +1,32 @@
+from typing import Optional, Any
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.request import Request
 from django.contrib.auth.models import User
 from .models import Notebook, Note, Source, AIGeneration
 from .serializers import (
-    NotebookSerializer, NoteSerializer, SourceSerializer, AIGenerationSerializer
+    NotebookSerializer, NoteSerializer, SourceSerializer, AIGenerationSerializer,
+    NoteReviseSerializer
 )
 from . import ai_service
+import pypdf
+
+def extract_text_from_pdf(file_obj) -> str:
+    """
+    Extract text content from an uploaded PDF file object using pypdf.
+    """
+    try:
+        reader = pypdf.PdfReader(file_obj)
+        text = ""
+        for page in reader.pages:
+            page_text = page.extract_text()
+            if page_text:
+                text += page_text + "\n"
+        return text.strip()
+    except Exception as e:
+        return f"Error extracting text from PDF: {str(e)}"
+
 
 class NotebookViewSet(viewsets.ModelViewSet):
     serializer_class = NotebookSerializer
@@ -34,6 +54,21 @@ class NotebookViewSet(viewsets.ModelViewSet):
         notebook = self.get_object()
         serializer = SourceSerializer(data=request.data)
         if serializer.is_valid():
+            source_type = serializer.validated_data.get('source_type')
+            
+            # If source_type is file, check if file_path exists in request.FILES
+            if source_type == 'file':
+                uploaded_file = request.FILES.get('file_path')
+                if not uploaded_file:
+                    return Response(
+                        {"error": "file_path is required when source_type is file."},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                
+                # Extract text
+                extracted_text = extract_text_from_pdf(uploaded_file)
+                serializer.validated_data['content'] = extracted_text
+                
             serializer.save(notebook=notebook)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -127,24 +162,45 @@ class NoteViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['post'])
-    def revise(self, request, pk=None):
+    def revise(self, request: Request, pk: Optional[str] = None) -> Response:
         """
         Save the student's revised thought after reviewing the AI rebuttal.
+
+        Args:
+            request (Request): The HTTP request containing 'revised_content'.
+            pk (Optional[str]): The primary key of the note.
+
+        Returns:
+            Response: The HTTP response with the serialized Note data.
+
+        Raises:
+            ValidationError: If validation fails (e.g. note is locked or content is empty).
+            Http404: If the note does not exist.
         """
         note = self.get_object()
+        serializer = NoteReviseSerializer(instance=note, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
         
-        if note.is_locked:
-            return Response(
-                {"error": "This note is locked. You must submit your initial content and unlock it first."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-            
-        revised_content = request.data.get('revised_content', '').strip()
-        if not revised_content:
-            return Response({"error": "revised_content is required."}, status=status.HTTP_400_BAD_REQUEST)
-            
-        note.revised_content = revised_content
-        note.save()
-        
-        serializer = self.get_serializer(note)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        response_serializer = self.get_serializer(note)
+        return Response(response_serializer.data, status=status.HTTP_200_OK)
+
+
+class SourceViewSet(viewsets.ModelViewSet):
+    serializer_class = SourceSerializer
+    queryset = Source.objects.all()
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            return Source.objects.filter(notebook__user=self.request.user)
+        return Source.objects.all()
+
+
+class AIGenerationViewSet(viewsets.ModelViewSet):
+    serializer_class = AIGenerationSerializer
+    queryset = AIGeneration.objects.all()
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            return AIGeneration.objects.filter(notebook__user=self.request.user)
+        return AIGeneration.objects.all()

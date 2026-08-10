@@ -1,354 +1,952 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="vi" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI学習支援プラットフォーム - ダッシュボード</title>
+    <title>EduBrain - Nền tảng Học tập Thông minh & NotebookLM</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        // Tailwind config configuration
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            200: '#c7d2fe',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            800: '#3730a3',
+                            900: '#312e81',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        body { font-family: 'Inter', 'Noto Sans JP', sans-serif; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 min-h-screen flex transition-colors duration-200">
 
-    <!-- Header -->
-    <header class="bg-gradient-to-r from-blue-900 to-teal-800 text-white shadow-md px-6 py-4 flex justify-between items-center">
-        <div>
-            <h1 class="text-xl font-bold tracking-tight">AI学習支援プラットフォーム</h1>
-            <p class="text-xs text-teal-200">AIを当たり前に使う時代の自律的学習支援アプリ</p>
+    <!-- Left Sidebar (Collapsible & Responsive) -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col transition-all duration-300 transform -translate-x-full lg:translate-x-0">
+        <!-- Sidebar Brand Logo -->
+        <div class="px-6 py-5 flex items-center justify-between border-b border-slate-100 dark:border-slate-800">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center text-white shadow-md shadow-brand-200 dark:shadow-none">
+                    <span class="font-extrabold text-lg">EB</span>
+                </div>
+                <div>
+                    <h1 class="text-base font-bold tracking-tight text-slate-900 dark:text-white">EduBrain</h1>
+                    <p class="text-[10px] text-brand-600 dark:text-brand-400 font-bold uppercase tracking-wider">NotebookLM LMS</p>
+                </div>
+            </div>
+            <!-- Collapse Button (Mobile) -->
+            <button onclick="toggleSidebar()" class="lg:hidden p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
         </div>
-        <div class="flex items-center space-x-2">
-            <span class="bg-teal-700 text-teal-100 text-xs px-2.5 py-1 rounded-full font-medium">MVPデモ版</span>
-        </div>
-    </header>
 
-    <!-- Main Content Area -->
-    <div class="flex-1 flex flex-col md:flex-row">
+        <!-- Sidebar Navigation Menu -->
+        <nav class="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
+            <button onclick="switchView('dashboard')" id="nav-dashboard" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition bg-brand-50 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                <span>Dashboard</span>
+            </button>
+            <button onclick="switchView('notebooks')" id="nav-notebooks" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                <span>Notebooks (Sổ tay)</span>
+            </button>
+            <button onclick="switchView('documents')" id="nav-documents" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                <span>Tài liệu (Sources)</span>
+            </button>
+            <button onclick="switchView('notes')" id="nav-notes" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                <span>Ghi chú & Phản biện</span>
+            </button>
+            <button onclick="switchView('progress')" id="nav-progress" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10a2 2 0 01-2 2h-2a2 2 0 01-2-2zm9 0v-8a2 2 0 00-2-2h-2a2 2 0 00-2 2v8a2 2 0 002 2h2a2 2 0 002-2z"/></svg>
+                <span>Tiến độ & Phân tích</span>
+            </button>
+            <button onclick="switchView('settings')" id="nav-settings" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/></svg>
+                <span>Cài đặt</span>
+            </button>
+        </nav>
+
+        <!-- Sidebar Quick Action CTA -->
+        <div class="p-6 border-t border-slate-100 dark:border-slate-800">
+            <button onclick="openNewNotebookModal()" class="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-semibold py-3 px-4 rounded-xl text-sm shadow-lg shadow-brand-100 dark:shadow-none transition transform hover:-translate-y-0.5">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                <span>Tạo Notebook mới</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Container -->
+    <div class="flex-1 flex flex-col lg:pl-72 min-h-screen">
         
-        <!-- Sidebar: Notebook selection -->
-        <aside class="w-full md:w-80 bg-white border-r border-slate-200 p-6 flex flex-col">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-500">マイノートブック</h2>
-                <button onclick="openNewNotebookModal()" class="text-xs bg-blue-600 hover:bg-blue-700 text-white font-medium px-2.5 py-1.5 rounded transition">
-                    + 新規作成
+        <!-- Header -->
+        <header class="h-20 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 flex items-center justify-between sticky top-0 z-40">
+            <!-- Left Side: Hamburger Menu & Mobile Search -->
+            <div class="flex items-center space-x-4 flex-1">
+                <button onclick="toggleSidebar()" class="lg:hidden p-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
                 </button>
+                <!-- Global Search -->
+                <div class="relative w-full max-w-md hidden md:block">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    </span>
+                    <input type="text" id="global-search" oninput="handleGlobalSearch()" placeholder="Tìm kiếm nhanh tài liệu, sổ tay, phản biện..." class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:focus:ring-brand-600 transition">
+                </div>
             </div>
-            
-            <!-- Notebook list -->
-            <div id="notebooks-list" class="space-y-2 flex-1 overflow-y-auto max-h-[300px] md:max-h-none">
-                <div class="text-sm text-slate-400 py-4 text-center">読み込み中...</div>
-            </div>
-        </aside>
 
-        <!-- Main Panel -->
-        <main class="flex-1 p-6 md:p-8 flex flex-col">
-            <!-- Active Notebook Title -->
-            <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm mb-6">
-                <div class="flex flex-col md:flex-row md:justify-between md:items-start">
+            <!-- Right Side: Dark Mode, Notification & User Dropdown -->
+            <div class="flex items-center space-x-3.5">
+                <!-- Theme Toggle -->
+                <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 transition" title="Đổi chế độ sáng/tối">
+                    <!-- Sun Icon -->
+                    <svg id="sun-icon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/></svg>
+                    <!-- Moon Icon -->
+                    <svg id="moon-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                </button>
+
+                <!-- Notifications -->
+                <div class="relative">
+                    <button class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 transition relative">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                        <span class="absolute top-1.5 right-1.5 bg-rose-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">3</span>
+                    </button>
+                </div>
+
+                <!-- User Profile -->
+                <div class="relative">
+                    <div class="flex items-center space-x-3 cursor-pointer pl-1 py-1 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100" class="w-9 h-9 rounded-xl object-cover ring-2 ring-brand-100 dark:ring-slate-800" alt="Avatar">
+                        <div class="hidden md:block text-left pr-2">
+                            <span class="block text-sm font-bold text-slate-800 dark:text-white leading-tight">Linh Nguyễn</span>
+                            <span class="block text-[10px] text-slate-400 font-medium">Học sinh</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content (Swappable Views) -->
+        <main class="flex-1 p-6 lg:p-8 overflow-y-auto">
+
+            <!-- 1. VIEW: DASHBOARD -->
+            <section id="view-dashboard" class="space-y-8">
+                <!-- Welcome Title -->
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <h2 id="active-notebook-name" class="text-2xl font-bold text-slate-800">ノートブックを選択するか、新規作成してください</h2>
-                        <p id="active-notebook-desc" class="text-sm text-slate-500 mt-1">サイドバーからノートブックを選択し、ソース資料を追加してAI学習を開始します。</p>
+                        <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Chào mừng bạn quay lại, Linh!</h2>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Dưới đây là tóm tắt tiến độ và các tài liệu học tập của bạn.</p>
                     </div>
-                    <div id="notebook-actions" class="mt-4 md:mt-0 space-x-2 hidden">
-                        <!-- Actions dynamically visible when notebook selected -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Content Area Dashboard (Only visible when active notebook exists) -->
-            <div id="notebook-workspace" class="hidden flex-1 flex flex-col space-y-6">
-                
-                <!-- Tab Headers -->
-                <div class="flex border-b border-slate-200 bg-white rounded-lg p-1.5 shadow-sm">
-                    <button onclick="switchTab('sources')" id="tab-btn-sources" class="flex-1 py-2.5 text-center text-sm font-medium rounded-md transition bg-blue-50 text-blue-700">
-                        📁 ソース資料 (Sources)
-                    </button>
-                    <button onclick="switchTab('notes')" id="tab-btn-notes" class="flex-1 py-2.5 text-center text-sm font-medium rounded-md transition text-slate-600 hover:text-slate-900">
-                        ✍️ 自己記述 ＆ AI反論 (Notes)
-                    </button>
-                    <button onclick="switchTab('ai-gen')" id="tab-btn-ai-gen" class="flex-1 py-2.5 text-center text-sm font-medium rounded-md transition text-slate-600 hover:text-slate-900">
-                        ✨ AI学習生成ツール
+                    <button onclick="switchView('notebooks'); openNewNotebookModal();" class="flex items-center justify-center space-x-2 bg-brand-600 hover:bg-brand-700 text-white font-semibold py-2.5 px-4 rounded-xl text-sm transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        <span>Tạo sổ tay mới</span>
                     </button>
                 </div>
 
-                <!-- Tab 1: Sources -->
-                <div id="tab-content-sources" class="space-y-6">
-                    <!-- Add Source -->
-                    <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-                        <h3 class="text-lg font-semibold text-slate-800 mb-4">+ ソース資料の追加</h3>
-                        <form id="add-source-form" onsubmit="handleAddSource(event)" class="space-y-4">
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">資料のタイトル</label>
-                                <input type="text" id="source-title" required placeholder="例：第1章 - 自律的学習の基本概念" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">ソースの種類</label>
-                                    <select id="source-type" onchange="toggleSourceInputs()" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                        <option value="text">テキスト (Plain Text)</option>
-                                        <option value="link">Webリンク (Link)</option>
-                                    </select>
-                                </div>
-                                <div id="source-url-container" class="hidden">
-                                    <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">URLリンク</label>
-                                    <input type="url" id="source-url" placeholder="https://example.com" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">資料の本文 (AIのコンテキストに使用)</label>
-                                <textarea id="source-content" required rows="5" placeholder="教科書の内容、Web記事、または研究資料などをここに貼り付けてください..." class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-                            </div>
-                            <button type="submit" class="w-full bg-teal-700 hover:bg-teal-800 text-white font-medium py-2 rounded-lg text-sm transition">
-                                ソース資料を保存
-                            </button>
-                        </form>
+                <!-- Stat Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Stat Card 1 -->
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex items-center space-x-4 hover:shadow-md hover:scale-[1.01] transition duration-200">
+                        <div class="p-3.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        <div>
+                            <span class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Thời gian học</span>
+                            <span class="block text-2xl font-extrabold text-slate-800 dark:text-white mt-0.5">145 phút</span>
+                            <span class="text-[11px] font-bold text-emerald-500 flex items-center mt-0.5">
+                                <svg class="w-3.5 h-3.5 mr-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                                +12.4% tuần này
+                            </span>
+                        </div>
                     </div>
-
-                    <!-- List Sources -->
-                    <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-                        <h3 class="text-lg font-semibold text-slate-800 mb-4">登録済みのソース資料一覧</h3>
-                        <div id="sources-list" class="space-y-3">
-                            <!-- Dynamically loaded -->
+                    <!-- Stat Card 2 -->
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex items-center space-x-4 hover:shadow-md hover:scale-[1.01] transition duration-200">
+                        <div class="p-3.5 rounded-xl bg-violet-50 dark:bg-violet-950/50 text-violet-600 dark:text-violet-400">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                        </div>
+                        <div>
+                            <span class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Số Sổ tay (Notebooks)</span>
+                            <span id="stat-notebooks-count" class="block text-2xl font-extrabold text-slate-800 dark:text-white mt-0.5">0</span>
+                            <span class="text-[11px] text-slate-400 font-medium block mt-1">Đang quản lý</span>
+                        </div>
+                    </div>
+                    <!-- Stat Card 3 -->
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex items-center space-x-4 hover:shadow-md hover:scale-[1.01] transition duration-200">
+                        <div class="p-3.5 rounded-xl bg-teal-50 dark:bg-teal-950/50 text-teal-600 dark:text-teal-400">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        </div>
+                        <div>
+                            <span class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Tài liệu tải lên</span>
+                            <span id="stat-documents-count" class="block text-2xl font-extrabold text-slate-800 dark:text-white mt-0.5">0</span>
+                            <span class="text-[11px] text-slate-400 font-medium block mt-1">PDF, Links & Text</span>
+                        </div>
+                    </div>
+                    <!-- Stat Card 4 -->
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex items-center space-x-4 hover:shadow-md hover:scale-[1.01] transition duration-200">
+                        <div class="p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        <div>
+                            <span class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Hoàn thành bài tập</span>
+                            <span class="block text-2xl font-extrabold text-slate-800 dark:text-white mt-0.5">68%</span>
+                            <div class="w-24 bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
+                                <div class="bg-amber-500 h-full" style="width: 68%"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Tab 2: Notes & Lock/Unlock AI Flow -->
-                <div id="tab-content-notes" class="hidden space-y-6">
+                <!-- Charts & Analytics Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Hours Chart -->
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm lg:col-span-2">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-slate-800 dark:text-white text-base">Thời lượng tự học hàng tuần</h3>
+                            <span class="text-xs text-slate-400">7 ngày gần nhất</span>
+                        </div>
+                        <div class="h-64 relative">
+                            <canvas id="hoursChart"></canvas>
+                        </div>
+                    </div>
+                    <!-- Type Distribution -->
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-slate-800 dark:text-white text-base">Phân bổ loại tài liệu</h3>
+                            <span class="text-xs text-slate-400">Tổng tài liệu</span>
+                        </div>
+                        <div class="h-64 relative flex items-center justify-center">
+                            <canvas id="distributionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity & Table Section -->
+                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                        <div>
+                            <h3 class="font-bold text-slate-800 dark:text-white text-base">Tài liệu & Ghi chú gần đây</h3>
+                            <p class="text-xs text-slate-400 mt-1">Danh sách tổng hợp tài nguyên của các Sổ tay</p>
+                        </div>
+                        <!-- Table Filter and search -->
+                        <div class="flex flex-wrap items-center gap-3">
+                            <input type="text" id="table-search" oninput="filterTable()" placeholder="Lọc nhanh tại bảng..." class="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand-500">
+                            <select id="table-filter-type" onchange="filterTable()" class="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs focus:outline-none text-slate-600 dark:text-slate-400">
+                                <option value="all">Tất cả loại</option>
+                                <option value="source">Tài liệu (Source)</option>
+                                <option value="note">Ghi chú (Note)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Responsive Table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-100 dark:border-slate-800 text-slate-400 text-xs font-bold uppercase tracking-wider">
+                                    <th class="py-3.5 px-4">Tên tài liệu / ghi chú</th>
+                                    <th class="py-3.5 px-4">Loại</th>
+                                    <th class="py-3.5 px-4">Thuộc Sổ tay</th>
+                                    <th class="py-3.5 px-4">Ngày tạo</th>
+                                    <th class="py-3.5 px-4">Trạng thái</th>
+                                    <th class="py-3.5 px-4 text-right">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-activity-table-body" class="divide-y divide-slate-100 dark:divide-slate-800/50">
+                                <!-- Dynamic rows / Skeleton -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Empty / Loading States -->
+                    <div id="table-empty-state" class="hidden py-12 flex flex-col items-center justify-center text-center space-y-3">
+                        <div class="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0a2 2 0 01-2 2H6a2 2 0 01-2-2m16 0V9a2 2 0 00-2-2H6a2 2 0 00-2 2v3m16 0h-3m-3 0H7"/></svg>
+                        </div>
+                        <div>
+                            <p class="font-bold text-slate-700 dark:text-slate-300 text-sm">Chưa có hoạt động nào</p>
+                            <p class="text-xs text-slate-400 mt-1">Hãy tạo một Sổ tay và thêm tài nguyên tài liệu để bắt đầu.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. VIEW: NOTEBOOKS (ORIGINAL INTERACTIVE WORKSPACE) -->
+            <section id="view-notebooks" class="hidden space-y-8">
+                <!-- Two Column Layout: Sub-sidebar Notebook List & Main Notebook Workspace -->
+                <div class="flex flex-col lg:flex-row gap-6 items-start">
                     
-                    <!-- Create Note Form -->
-                    <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-                        <h3 class="text-lg font-semibold text-slate-800 mb-4">+ 新規ノート作成</h3>
-                        <form id="create-note-form" onsubmit="handleCreateNote(event)" class="flex space-x-3">
-                            <input type="text" id="note-title" required placeholder="自己記述のテーマや問いを入力してください..." class="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg text-sm transition">
-                                ノートを作成
-                            </button>
-                        </form>
+                    <!-- Sub-sidebar: List of notebooks inside Notebooks view -->
+                    <div class="w-full lg:w-72 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4 shrink-0">
+                        <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+                            <h3 class="font-bold text-slate-800 dark:text-white text-sm">Chọn Sổ Tay của bạn</h3>
+                        </div>
+                        <!-- Scrollable notebook buttons list -->
+                        <div id="notebooks-list" class="space-y-1.5 max-h-[350px] overflow-y-auto pr-1">
+                            <!-- Loaded dynamically -->
+                        </div>
                     </div>
 
-                    <!-- Notes lists -->
-                    <div id="notes-list" class="space-y-4">
-                        <!-- Note blocks dynamic -->
+                    <!-- Main Notebook Workspace Panel -->
+                    <div class="flex-1 w-full space-y-6">
+                        <!-- Active Notebook Header -->
+                        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+                            <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
+                                <div>
+                                    <h2 id="active-notebook-name" class="text-xl font-extrabold text-slate-950 dark:text-white tracking-tight">Chọn một sổ tay từ danh sách để bắt đầu học tập</h2>
+                                    <p id="active-notebook-desc" class="text-sm text-slate-500 dark:text-slate-400 mt-1.5">Mẹo: Bạn có thể thêm các tài liệu tham khảo (PDF, trang web) rồi gửi phản biện để AI chấm điểm.</p>
+                                </div>
+                                <div id="notebook-actions" class="hidden">
+                                    <button onclick="deleteActiveNotebook()" class="bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/20 dark:hover:bg-rose-900/30 text-rose-600 dark:text-rose-400 font-semibold px-4 py-2.5 rounded-xl text-xs transition flex items-center space-x-1.5 shadow-sm border border-rose-100 dark:border-rose-900/40">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                        <span>Xóa Sổ tay này</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Notebook workspace content tabs (only visible when notebook selected) -->
+                        <div id="notebook-workspace" class="hidden space-y-6">
+                            <!-- Tab switches -->
+                            <div class="flex border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl p-1 shadow-sm">
+                                <button onclick="switchTab('sources')" id="tab-btn-sources" class="flex-1 py-2.5 text-center text-sm font-semibold rounded-lg transition bg-brand-50 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400">
+                                    📁 Tài liệu nguồn (Sources)
+                                </button>
+                                <button onclick="switchTab('notes')" id="tab-btn-notes" class="flex-1 py-2.5 text-center text-sm font-semibold rounded-lg transition text-slate-500 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white">
+                                    ✍️ Tự ghi chú & AI Phản biện
+                                </button>
+                                <button onclick="switchTab('ai-gen')" id="tab-btn-ai-gen" class="flex-1 py-2.5 text-center text-sm font-semibold rounded-lg transition text-slate-500 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white">
+                                    ✨ Công cụ tạo ra kiến thức AI
+                                </button>
+                            </div>
+
+                            <!-- Tab Content 1: Sources -->
+                            <div id="tab-content-sources" class="space-y-6">
+                                <!-- Add Source Form -->
+                                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+                                    <h3 class="text-base font-bold text-slate-800 dark:text-white mb-4">+ Thêm tài liệu học tập mới</h3>
+                                    <form id="add-source-form" onsubmit="handleAddSource(event)" class="space-y-4">
+                                        <div>
+                                            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Tên tài liệu / Chủ đề</label>
+                                            <input type="text" id="source-title" required placeholder="Ví dụ: Định luật chuyển dịch dòng vốn quốc tế" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition">
+                                        </div>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Loại tài nguyên</label>
+                                                <select id="source-type" onchange="toggleSourceInputs()" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 text-slate-700 dark:text-slate-300 transition">
+                                                    <option value="text">Văn bản (Plain Text)</option>
+                                                    <option value="link">Trang web (Link)</option>
+                                                    <option value="file">Tài liệu PDF (File PDF)</option>
+                                                </select>
+                                            </div>
+                                            <div id="source-url-container" class="hidden">
+                                                <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">URL liên kết</label>
+                                                <input type="url" id="source-url" placeholder="https://example.com/bai-viet-nghien-cuu" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition">
+                                            </div>
+                                            <div id="source-file-container" class="hidden">
+                                                <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Tải lên file PDF</label>
+                                                <input type="file" id="source-file" accept=".pdf" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 text-slate-700 dark:text-slate-300 transition">
+                                            </div>
+                                        </div>
+                                        <div id="source-content-container">
+                                            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Nội dung văn bản (Dùng làm ngữ cảnh thông minh cho AI)</label>
+                                            <textarea id="source-content" required rows="5" placeholder="Sao chép nội dung sách học, tài liệu, bài giảng hoặc nghiên cứu vào đây..." class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition"></textarea>
+                                        </div>
+                                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl text-sm shadow transition">
+                                            Lưu tài liệu nguồn
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <!-- Registered Sources List -->
+                                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+                                    <h3 class="text-base font-bold text-slate-800 dark:text-white mb-4">Các tài liệu nguồn đã tải lên</h3>
+                                    <div id="sources-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <!-- Loaded dynamically -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tab Content 2: Notes & Lock/Unlock AI Flow -->
+                            <div id="tab-content-notes" class="hidden space-y-6">
+                                <!-- Create Note Form -->
+                                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+                                    <h3 class="text-base font-bold text-slate-800 dark:text-white mb-4">+ Đặt câu hỏi phản biện mới</h3>
+                                    <form id="create-note-form" onsubmit="handleCreateNote(event)" class="flex gap-3">
+                                        <input type="text" id="note-title" required placeholder="Nhập chủ đề học tập bạn muốn tự viết ý kiến phản biện..." class="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition">
+                                        <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition shrink-0">
+                                            Khởi tạo
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <!-- Dynamic notes list -->
+                                <div id="notes-list" class="space-y-4">
+                                    <!-- Notes details -->
+                                </div>
+                            </div>
+
+                            <!-- Tab Content 3: AI study material generator -->
+                            <div id="tab-content-ai-gen" class="hidden space-y-6">
+                                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+                                    <h3 class="text-base font-bold text-slate-800 dark:text-white mb-1.5">Tạo tài liệu học tập từ tài liệu gốc bằng AI</h3>
+                                    <p class="text-xs text-slate-400 mb-6">AI sẽ phân tích toàn bộ tài liệu nguồn bạn đã lưu để thiết kế các câu hỏi trắc nghiệm, thẻ nhớ hoặc sơ đồ tư duy.</p>
+                                    
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                                        <!-- Card type selectors -->
+                                        <button onclick="selectGenType('quiz')" id="gen-card-quiz" class="border border-slate-200 dark:border-slate-800 hover:border-brand-500 dark:hover:border-brand-500 rounded-xl p-4 text-left transition bg-white dark:bg-slate-950 shadow-sm flex flex-col justify-between h-36">
+                                            <span class="text-2xl">❓</span>
+                                            <div>
+                                                <span class="font-bold text-slate-800 dark:text-white block text-sm">Trắc nghiệm ôn tập (Quiz)</span>
+                                                <span class="text-[10px] text-slate-400 mt-1 line-clamp-2">5 câu hỏi trắc nghiệm có lời giải chi tiết.</span>
+                                            </div>
+                                        </button>
+                                        <button onclick="selectGenType('flashcards')" id="gen-card-flashcards" class="border border-slate-200 dark:border-slate-800 hover:border-brand-500 dark:hover:border-brand-500 rounded-xl p-4 text-left transition bg-white dark:bg-slate-950 shadow-sm flex flex-col justify-between h-36">
+                                            <span class="text-2xl">🎴</span>
+                                            <div>
+                                                <span class="font-bold text-slate-800 dark:text-white block text-sm">Thẻ nhớ thông minh (Flashcards)</span>
+                                                <span class="text-[10px] text-slate-400 mt-1 line-clamp-2">Tóm tắt thuật ngữ dưới dạng Q&A.</span>
+                                            </div>
+                                        </button>
+                                        <button onclick="selectGenType('mind_map')" id="gen-card-mind_map" class="border border-slate-200 dark:border-slate-800 hover:border-brand-500 dark:hover:border-brand-500 rounded-xl p-4 text-left transition bg-white dark:bg-slate-950 shadow-sm flex flex-col justify-between h-36">
+                                            <span class="text-2xl">🌿</span>
+                                            <div>
+                                                <span class="font-bold text-slate-800 dark:text-white block text-sm">Sơ đồ tư duy (Mind Map)</span>
+                                                <span class="text-[10px] text-slate-400 mt-1 line-clamp-2">Cấu trúc hóa tri thức dạng cây liên kết.</span>
+                                            </div>
+                                        </button>
+                                        <button onclick="selectGenType('report')" id="gen-card-report" class="border border-slate-200 dark:border-slate-800 hover:border-brand-500 dark:hover:border-brand-500 rounded-xl p-4 text-left transition bg-white dark:bg-slate-950 shadow-sm flex flex-col justify-between h-36">
+                                            <span class="text-2xl">📝</span>
+                                            <div>
+                                                <span class="font-bold text-slate-800 dark:text-white block text-sm">Báo cáo tóm tắt (Report)</span>
+                                                <span class="text-[10px] text-slate-400 mt-1 line-clamp-2">Tóm lược học thuật ngắn gọn.</span>
+                                            </div>
+                                        </button>
+                                    </div>
+
+                                    <div class="flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-4 gap-4">
+                                        <span class="text-xs font-semibold text-slate-500">Đang chọn: <strong id="selected-type-label" class="text-brand-600 dark:text-brand-400">Trắc nghiệm ôn tập (Quiz)</strong></span>
+                                        <button onclick="triggerAIGeneration()" class="bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-semibold px-6 py-2.5 rounded-xl text-sm shadow transition">
+                                            Yêu cầu AI sinh tài liệu
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- AI Generated Content Display -->
+                                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+                                    <h3 class="text-base font-bold text-slate-800 dark:text-white mb-4">Các tài liệu AI đã tạo</h3>
+                                    <div id="ai-generations-container" class="space-y-6">
+                                        <!-- Loaded dynamically -->
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
+
+                </div>
+            </section>
+
+            <!-- 3. VIEW: DOCUMENTS (UNIFIED LIST VIEW) -->
+            <section id="view-documents" class="hidden space-y-6">
+                <div>
+                    <h2 class="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">Tất cả tài liệu của bạn</h2>
+                    <p class="text-xs text-slate-400 mt-1">Danh sách tổng hợp tài nguyên học tập nguồn từ tất cả các sổ tay của bạn.</p>
                 </div>
 
-                <!-- Tab 3: AI study material generator -->
-                <div id="tab-content-ai-gen" class="hidden space-y-6">
-                    <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-                        <h3 class="text-lg font-semibold text-slate-800 mb-2">AIによる学習教材の自動生成</h3>
-                        <p class="text-sm text-slate-500 mb-6">AIがノートブック内のすべてのソース資料を分析し、問題集、フラッシュカード、またはマインドマップを自動生成します。</p>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                            <!-- Card type selector -->
-                            <button onclick="selectGenType('quiz')" id="gen-card-quiz" class="border border-slate-200 hover:border-blue-400 rounded-xl p-4 text-left transition bg-white shadow-sm flex flex-col justify-between">
-                                <span class="text-2xl mb-2">❓</span>
-                                <span class="font-bold text-slate-800 block text-sm">テスト問題集 (Quiz)</span>
-                                <span class="text-xs text-slate-400 mt-1">解説付きの4択問題（5問）を生成します。</span>
-                            </button>
-                            <button onclick="selectGenType('flashcards')" id="gen-card-flashcards" class="border border-slate-200 hover:border-blue-400 rounded-xl p-4 text-left transition bg-white shadow-sm flex flex-col justify-between">
-                                <span class="text-2xl mb-2">🎴</span>
-                                <span class="font-bold text-slate-800 block text-sm">単語カード (Flashcards)</span>
-                                <span class="text-xs text-slate-400 mt-1">重要概念を整理するためのQ&Aカードを生成します。</span>
-                            </button>
-                            <button onclick="selectGenType('mind_map')" id="gen-card-mind_map" class="border border-slate-200 hover:border-blue-400 rounded-xl p-4 text-left transition bg-white shadow-sm flex flex-col justify-between">
-                                <span class="text-2xl mb-2">🌿</span>
-                                <span class="font-bold text-slate-800 block text-sm">マインドマップ (Mind Map)</span>
-                                <span class="text-xs text-slate-400 mt-1">知識のつながりを階層ツリー構造で視覚化します。</span>
-                            </button>
-                            <button onclick="selectGenType('report')" id="gen-card-report" class="border border-slate-200 hover:border-blue-400 rounded-xl p-4 text-left transition bg-white shadow-sm flex flex-col justify-between">
-                                <span class="text-2xl mb-2">📝</span>
-                                <span class="font-bold text-slate-800 block text-sm">要約レポート (Report)</span>
-                                <span class="text-xs text-slate-400 mt-1">資料を整理・学術的にまとめた要約文を生成します。</span>
-                            </button>
-                            <button onclick="selectGenType('audio_overview')" id="gen-card-audio_overview" class="border border-slate-200 hover:border-blue-400 rounded-xl p-4 text-left transition bg-white shadow-sm flex flex-col justify-between">
-                                <span class="text-2xl mb-2">🎙️</span>
-                                <span class="font-bold text-slate-800 block text-sm">ポッドキャスト台本 (Audio)</span>
-                                <span class="text-xs text-slate-400 mt-1">2人の対話形式で資料を解説する台本を生成します。</span>
-                            </button>
-                            <button onclick="selectGenType('presentation')" id="gen-card-presentation" class="border border-slate-200 hover:border-blue-400 rounded-xl p-4 text-left transition bg-white shadow-sm flex flex-col justify-between">
-                                <span class="text-2xl mb-2">📊</span>
-                                <span class="font-bold text-slate-800 block text-sm">スライド構成案 (Presentation)</span>
-                                <span class="text-xs text-slate-400 mt-1">発表用のスライド構成（目次と詳細）を生成します。</span>
-                            </button>
-                        </div>
+                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+                    <div id="all-documents-list" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </div>
+            </section>
 
-                        <div class="flex items-center justify-between border-t border-slate-100 pt-4">
-                            <span class="text-sm font-medium text-slate-600">選択中の生成タイプ: <strong id="selected-type-label" class="text-blue-600">テスト問題集 (Quiz)</strong></span>
-                            <button onclick="triggerAIGeneration()" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold px-6 py-2.5 rounded-lg text-sm shadow transition">
-                                AI生成を実行
-                            </button>
+            <!-- 4. VIEW: NOTES (UNIFIED LIST VIEW) -->
+            <section id="view-notes" class="hidden space-y-6">
+                <div>
+                    <h2 class="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">Ghi chú & Phản biện AI</h2>
+                    <p class="text-xs text-slate-400 mt-1">Danh sách các bài viết cá nhân của bạn đi kèm với phản biện Logic từ AI.</p>
+                </div>
+
+                <div id="all-notes-list" class="space-y-6">
+                    <!-- Loaded dynamically -->
+                </div>
+            </section>
+
+            <!-- 5. VIEW: PROGRESS & ANALYTICS -->
+            <section id="view-progress" class="hidden space-y-6">
+                <div>
+                    <h2 class="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">Thống kê tiến độ tự học</h2>
+                    <p class="text-xs text-slate-400 mt-1">Biểu đồ phân tích chi tiết tiến trình học của bạn thông qua việc tạo sổ tay và viết bài phản biện.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-bold text-slate-800 dark:text-white text-sm mb-4">Các chỉ số hoạt động tiêu biểu</h3>
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs text-slate-500">Mức độ tương tác AI:</span>
+                                    <span class="text-xs font-bold text-brand-600 dark:text-brand-400">Rất Cao (92/100)</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs text-slate-500">Lượt viết phản biện:</span>
+                                    <span id="progress-notes-written" class="text-xs font-bold">0 bài viết</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs text-slate-500">Tổng tài liệu tham chiếu:</span>
+                                    <span id="progress-sources-count" class="text-xs font-bold">0 tài liệu</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs text-slate-500">Số tài liệu AI đã tạo ra:</span>
+                                    <span id="progress-ai-gen-count" class="text-xs font-bold">0 tài liệu</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="border-t border-slate-100 dark:border-slate-800 pt-4 mt-6">
+                            <span class="text-[11px] text-slate-400">Cập nhật tự động dựa trên toàn bộ dữ liệu lưu trên tài khoản.</span>
                         </div>
                     </div>
-
-                    <!-- AI Outputs -->
-                    <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-                        <h3 class="text-lg font-semibold text-slate-800 mb-4">AI生成結果の表示</h3>
-                        <div id="ai-generations-container" class="space-y-6">
-                            <!-- Dynamic generations list -->
+                    
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+                        <h3 class="font-bold text-slate-800 dark:text-white text-sm mb-4">Đánh giá kỹ năng học sâu</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span>Tự luận logic</span>
+                                    <span class="font-semibold">75%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                                    <div class="bg-indigo-500 h-full" style="width: 75%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span>Tổng hợp tài liệu nguồn</span>
+                                    <span class="font-semibold">88%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                                    <div class="bg-teal-500 h-full" style="width: 88%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs mb-1">
+                                    <span>Tốc độ tiếp thu & Nhớ bài</span>
+                                    <span class="font-semibold">60%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                                    <div class="bg-amber-500 h-full" style="width: 60%"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+            </section>
 
-            </div>
+            <!-- 6. VIEW: SETTINGS -->
+            <section id="view-settings" class="hidden space-y-6">
+                <div>
+                    <h2 class="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">Cài đặt hệ thống</h2>
+                    <p class="text-xs text-slate-400 mt-1">Quản lý hồ sơ cá nhân và cấu hình ứng dụng.</p>
+                </div>
+
+                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm max-w-2xl">
+                    <form onsubmit="event.preventDefault(); alert('Đã lưu thông tin cài đặt!');" class="space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Tên hiển thị</label>
+                                <input type="text" value="Linh Nguyễn" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Email</label>
+                                <input type="email" value="linh.nguyen@example.com" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-500">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Quyền hạn tài khoản</label>
+                            <input type="text" disabled value="Student (Học sinh) - Free Account" class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm cursor-not-allowed">
+                        </div>
+                        <div class="flex justify-end pt-4">
+                            <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-6 py-2.5 rounded-xl text-sm transition">
+                                Lưu thay đổi
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
         </main>
-
     </div>
 
-    <!-- Create Notebook Modal (simple prompts) -->
-    <div id="new-notebook-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4">
-            <h3 class="text-lg font-bold text-slate-800">新規ノートブックの作成</h3>
+    <!-- Create Notebook Modal (dialog popups) -->
+    <div id="new-notebook-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4 transform scale-95 transition-transform duration-300">
+            <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+                <h3 class="font-extrabold text-slate-900 dark:text-white text-base">Khởi tạo Sổ tay tự học mới</h3>
+                <button onclick="closeNewNotebookModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
             <div class="space-y-3">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">ノートブック名</label>
-                    <input type="text" id="new-notebook-name" placeholder="例：歴史の学習ノート" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Tên sổ tay học tập</label>
+                    <input type="text" id="new-notebook-name" placeholder="Ví dụ: Lịch sử kinh tế Đông Á" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">学習の目標・説明</label>
-                    <textarea id="new-notebook-desc" rows="3" placeholder="学習のテーマやメモ..." class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Mục tiêu học tập / Mô tả</label>
+                    <textarea id="new-notebook-desc" rows="3" placeholder="Ví dụ: Tự tổng hợp thông tin, thảo luận phản biện cùng trợ lý AI..." class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"></textarea>
                 </div>
             </div>
             <div class="flex justify-end space-x-3 pt-2">
-                <button onclick="closeNewNotebookModal()" class="px-4 py-2 border border-slate-200 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition">キャンセル</button>
-                <button onclick="handleCreateNotebook()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition">作成する</button>
+                <button onclick="closeNewNotebookModal()" class="px-4 py-2 border border-slate-200 dark:border-slate-800 rounded-xl text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition">Hủy bỏ</button>
+                <button onclick="handleCreateNotebook()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-sm font-semibold transition">Xác nhận tạo</button>
             </div>
         </div>
     </div>
 
-    <!-- Logic Script Javascript -->
+    <!-- Frontend logic & dynamic integration -->
     <script>
         const API_URL = '/api';
         let notebooks = [];
         let activeNotebookId = null;
         let activeTab = 'sources';
         let selectedGenType = 'quiz';
+        let activeView = 'dashboard';
+        
+        let hoursChartObj = null;
+        let distChartObj = null;
 
-        // Initial Load
+        // On Load
         window.addEventListener('DOMContentLoaded', () => {
             loadNotebooks();
+            initTheme();
         });
 
-        // Tab Switching
+        // Toggle Sidebar for mobile
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('-translate-x-full');
+        }
+
+        // Switching Dashboard View Mode
+        function switchView(viewName) {
+            activeView = viewName;
+            
+            // Toggle view visibility
+            ['dashboard', 'notebooks', 'documents', 'notes', 'progress', 'settings'].forEach(v => {
+                const el = document.getElementById(`view-${v}`);
+                if (el) {
+                    el.classList.toggle('hidden', v !== viewName);
+                }
+                
+                // Toggle active styles on navbar links
+                const navBtn = document.getElementById(`nav-${v}`);
+                if (navBtn) {
+                    if (v === viewName) {
+                        navBtn.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition bg-brand-50 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400 shadow-sm";
+                    } else {
+                        navBtn.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white";
+                    }
+                }
+            });
+
+            // Re-render specific view resources
+            if (viewName === 'dashboard') {
+                updateDashboardStats();
+                renderRecentActivityTable();
+                setTimeout(renderCharts, 100);
+            } else if (viewName === 'documents') {
+                renderAllDocumentsView();
+            } else if (viewName === 'notes') {
+                renderAllNotesView();
+            } else if (viewName === 'progress') {
+                updateProgressViewStats();
+            }
+            
+            // Auto close mobile sidebar
+            const sidebar = document.getElementById('sidebar');
+            if (!sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.add('-translate-x-full');
+            }
+        }
+
+        // Theme / Dark Mode toggle
+        function initTheme() {
+            if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                document.getElementById('sun-icon').classList.remove('hidden');
+                document.getElementById('moon-icon').classList.add('hidden');
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.getElementById('sun-icon').classList.add('hidden');
+                document.getElementById('moon-icon').classList.remove('hidden');
+            }
+        }
+
+        function toggleDarkMode() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+                document.getElementById('sun-icon').classList.add('hidden');
+                document.getElementById('moon-icon').classList.remove('hidden');
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                document.getElementById('sun-icon').classList.remove('hidden');
+                document.getElementById('moon-icon').classList.add('hidden');
+            }
+            // Re-render charts to match dark mode context
+            if (activeView === 'dashboard') {
+                setTimeout(renderCharts, 150);
+            }
+        }
+
+        // Tab switches inside Notebook workspace
         function switchTab(tab) {
             activeTab = tab;
             
             // Toggle classes on buttons
-            document.getElementById('tab-btn-sources').className = `flex-1 py-2.5 text-center text-sm font-medium rounded-md transition ${tab === 'sources' ? 'bg-blue-50 text-blue-700' : 'text-slate-600 hover:text-slate-900'}`;
-            document.getElementById('tab-btn-notes').className = `flex-1 py-2.5 text-center text-sm font-medium rounded-md transition ${tab === 'notes' ? 'bg-blue-50 text-blue-700' : 'text-slate-600 hover:text-slate-900'}`;
-            document.getElementById('tab-btn-ai-gen').className = `flex-1 py-2.5 text-center text-sm font-medium rounded-md transition ${tab === 'ai-gen' ? 'bg-blue-50 text-blue-700' : 'text-slate-600 hover:text-slate-900'}`;
-
-            // Show/Hide sections
-            document.getElementById('tab-content-sources').classList.toggle('hidden', tab !== 'sources');
-            document.getElementById('tab-content-notes').classList.toggle('hidden', tab !== 'notes');
-            document.getElementById('tab-content-ai-gen').classList.toggle('hidden', tab !== 'ai-gen');
+            ['sources', 'notes', 'ai-gen'].forEach(t => {
+                const btn = document.getElementById(`tab-btn-${t}`);
+                if (btn) {
+                    if (t === tab) {
+                        btn.className = "flex-1 py-2.5 text-center text-sm font-semibold rounded-lg transition bg-brand-50 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400";
+                    } else {
+                        btn.className = "flex-1 py-2.5 text-center text-sm font-semibold rounded-lg transition text-slate-500 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white";
+                    }
+                }
+                const content = document.getElementById(`tab-content-${t}`);
+                if (content) {
+                    content.classList.toggle('hidden', t !== tab);
+                }
+            });
         }
 
         // Toggle Source fields
         function toggleSourceInputs() {
             const type = document.getElementById('source-type').value;
-            document.getElementById('source-url-container').classList.toggle('hidden', type !== 'link');
+            const urlContainer = document.getElementById('source-url-container');
+            const fileContainer = document.getElementById('source-file-container');
+            const contentContainer = document.getElementById('source-content-container');
+            const contentTextarea = document.getElementById('source-content');
+            
+            urlContainer.classList.toggle('hidden', type !== 'link');
+            fileContainer.classList.toggle('hidden', type !== 'file');
+            contentContainer.classList.toggle('hidden', type === 'file');
+            
+            // Toggle required attributes dynamically
+            if (type === 'file') {
+                contentTextarea.removeAttribute('required');
+                document.getElementById('source-file').setAttribute('required', 'required');
+            } else {
+                contentTextarea.setAttribute('required', 'required');
+                document.getElementById('source-file').removeAttribute('required');
+            }
         }
 
         // AI generator select type
         function selectGenType(type) {
             selectedGenType = type;
             const labels = {
-                'quiz': 'テスト問題集 (Quiz)',
-                'flashcards': '単語カード (Flashcards)',
-                'mind_map': 'マインドマップ (Mind Map)',
-                'report': '要約レポート (Report)',
-                'audio_overview': 'ポッドキャスト台本 (Audio)',
-                'presentation': 'スライド構成案 (Presentation)'
+                'quiz': 'Trắc nghiệm ôn tập (Quiz)',
+                'flashcards': 'Thẻ nhớ thông minh (Flashcards)',
+                'mind_map': 'Sơ đồ tư duy (Mind Map)',
+                'report': 'Báo cáo tóm tắt (Report)',
+                'audio_overview': 'Kịch bản Podcast (Audio)',
+                'presentation': 'Dàn ý Slide (Presentation)'
             };
             document.getElementById('selected-type-label').innerText = labels[type];
             
-            // Visual highlight active selection
             ['quiz', 'flashcards', 'mind_map', 'report', 'audio_overview', 'presentation'].forEach(t => {
                 const card = document.getElementById(`gen-card-${t}`);
                 if (card) {
                     if (t === type) {
-                        card.classList.add('border-blue-500', 'ring-2', 'ring-blue-100');
-                        card.classList.remove('border-slate-200');
+                        card.classList.add('border-brand-500', 'ring-2', 'ring-brand-100', 'dark:ring-slate-800');
+                        card.classList.remove('border-slate-200', 'dark:border-slate-800');
                     } else {
-                        card.classList.remove('border-blue-500', 'ring-2', 'ring-blue-100');
-                        card.classList.add('border-slate-200');
+                        card.classList.remove('border-brand-500', 'ring-2', 'ring-brand-100', 'dark:ring-slate-800');
+                        card.classList.add('border-slate-200', 'dark:border-slate-800');
                     }
                 }
             });
         }
 
-        // API Requests: Notebooks list
+        // API Request: Load all notebooks
         async function loadNotebooks() {
+            // Render table skeletons while loading
+            renderTableSkeleton();
+            
             try {
                 const res = await fetch(`${API_URL}/notebooks/`);
                 notebooks = await res.json();
+                
+                // Update stats and lists
+                updateDashboardStats();
                 renderNotebooksList();
+                renderRecentActivityTable();
+                
+                // Auto render charts
+                setTimeout(renderCharts, 100);
             } catch (err) {
-                console.error("ノートブック読み込みエラー:", err);
+                console.error("Lỗi khi tải dữ liệu Sổ tay:", err);
             }
         }
 
+        // Render loading skeletons
+        function renderTableSkeleton() {
+            const tbody = document.getElementById('recent-activity-table-body');
+            if (tbody) {
+                tbody.innerHTML = Array(3).fill(0).map(() => `
+                    <tr class="animate-pulse">
+                        <td class="py-4 px-4"><div class="h-4 bg-slate-200 dark:bg-slate-800 rounded w-48"></div></td>
+                        <td class="py-4 px-4"><div class="h-4 bg-slate-200 dark:bg-slate-800 rounded w-16"></div></td>
+                        <td class="py-4 px-4"><div class="h-4 bg-slate-200 dark:bg-slate-800 rounded w-32"></div></td>
+                        <td class="py-4 px-4"><div class="h-4 bg-slate-200 dark:bg-slate-800 rounded w-24"></div></td>
+                        <td class="py-4 px-4"><div class="h-4 bg-slate-200 dark:bg-slate-800 rounded w-20"></div></td>
+                        <td class="py-4 px-4 text-right"><div class="h-4 bg-slate-200 dark:bg-slate-800 rounded w-12 ml-auto"></div></td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        // Render Sổ tay list on sidebars
         function renderNotebooksList() {
             const container = document.getElementById('notebooks-list');
+            if (!container) return;
+            
             if (notebooks.length === 0) {
-                container.innerHTML = `<div class="text-xs text-slate-400 py-6 text-center">ノートブックがありません。「+ 新規作成」をクリックしてください。</div>`;
+                container.innerHTML = `<div class="text-xs text-slate-400 py-6 text-center">Không có sổ tay nào. Hãy tạo mới.</div>`;
                 return;
             }
             container.innerHTML = notebooks.map(nb => `
-                <button onclick="selectNotebook(${nb.id})" class="w-full text-left px-4 py-3 rounded-xl transition text-sm flex flex-col space-y-1 ${nb.id === activeNotebookId ? 'bg-blue-600 text-white font-medium shadow-md shadow-blue-100' : 'hover:bg-slate-100 text-slate-700' }">
+                <button onclick="selectNotebook(${nb.id})" class="w-full text-left px-4 py-3 rounded-xl transition text-sm flex flex-col space-y-1 ${nb.id === activeNotebookId ? 'bg-brand-600 text-white font-medium shadow-md shadow-brand-100 dark:shadow-none' : 'hover:bg-slate-100 dark:hover:bg-slate-850 text-slate-700 dark:text-slate-300' }">
                     <span class="truncate block font-semibold">${nb.name}</span>
-                    <span class="truncate text-xs ${nb.id === activeNotebookId ? 'text-blue-100' : 'text-slate-400'}">${nb.description || '説明なし'}</span>
+                    <span class="truncate text-[10px] ${nb.id === activeNotebookId ? 'text-brand-100' : 'text-slate-400'}">${nb.description || 'Không mô tả'}</span>
                 </button>
             `).join('');
         }
 
-        async function selectNotebook(id) {
+        // Update main dashboard metrics
+        function updateDashboardStats() {
+            const notebooksCount = notebooks.length;
+            let sourcesCount = 0;
+            notebooks.forEach(nb => {
+                sourcesCount += (nb.sources || []).length;
+            });
+
+            document.getElementById('stat-notebooks-count').innerText = notebooksCount;
+            document.getElementById('stat-documents-count').innerText = sourcesCount;
+        }
+
+        // Update stats on Progress View
+        function updateProgressViewStats() {
+            let sourcesCount = 0;
+            let notesCount = 0;
+            let genCount = 0;
+            
+            notebooks.forEach(nb => {
+                sourcesCount += (nb.sources || []).length;
+                notesCount += (nb.notes || []).length;
+                genCount += (nb.generations || []).length;
+            });
+
+            document.getElementById('progress-notes-written').innerText = `${notesCount} bài viết`;
+            document.getElementById('progress-sources-count').innerText = `${sourcesCount} tài liệu`;
+            document.getElementById('progress-ai-gen-count').innerText = `${genCount} tài liệu`;
+        }
+
+        // Select a notebook to show details and workspace
+        async function selectNotebook(id, keepCurrentTab = false) {
             activeNotebookId = id;
             renderNotebooksList();
             
-            // Load notebook details
             try {
                 const res = await fetch(`${API_URL}/notebooks/${id}/`);
                 const notebook = await res.json();
                 
                 document.getElementById('active-notebook-name').innerText = notebook.name;
-                document.getElementById('active-notebook-desc').innerText = notebook.description || '学習目標の説明はありません。';
+                document.getElementById('active-notebook-desc').innerText = notebook.description || 'Không có mục tiêu học tập.';
                 
                 document.getElementById('notebook-workspace').classList.remove('hidden');
                 document.getElementById('notebook-actions').classList.remove('hidden');
                 
-                // Load details of sources and notes
+                // Render tabs content
                 renderSources(notebook.sources || []);
                 renderNotes(notebook.notes || []);
                 renderAIGenerations(notebook.generations || []);
                 
-                // Select default generator card
                 selectGenType('quiz');
+                if (keepCurrentTab) {
+                    switchTab(activeTab);
+                } else {
+                    switchTab('sources');
+                }
             } catch (err) {
-                console.error("ノートブック詳細の読み込みエラー:", err);
+                console.error("Lỗi khi tải chi tiết Sổ tay:", err);
             }
         }
 
-        // Modal Controls
+        // Modal triggers
         function openNewNotebookModal() {
-            document.getElementById('new-notebook-modal').classList.remove('hidden');
-            document.getElementById('new-notebook-modal').classList.add('flex');
+            const modal = document.getElementById('new-notebook-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
         }
 
         function closeNewNotebookModal() {
-            document.getElementById('new-notebook-modal').classList.add('hidden');
-            document.getElementById('new-notebook-modal').classList.remove('flex');
+            const modal = document.getElementById('new-notebook-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
             document.getElementById('new-notebook-name').value = '';
             document.getElementById('new-notebook-desc').value = '';
         }
 
+        // POST Request: Create new Notebook
         async function handleCreateNotebook() {
             const name = document.getElementById('new-notebook-name').value.trim();
             const desc = document.getElementById('new-notebook-desc').value.trim();
-            if (!name) return alert("ノートブック名を入力してください。");
+            if (!name) return alert("Vui lòng nhập tên Sổ tay.");
             
             try {
                 const res = await fetch(`${API_URL}/notebooks/`, {
@@ -359,62 +957,101 @@
                 const newNb = await res.json();
                 closeNewNotebookModal();
                 await loadNotebooks();
+                
+                // Go to notebooks view and select the newly created one
+                switchView('notebooks');
                 selectNotebook(newNb.id);
             } catch (err) {
-                console.error("ノートブック作成エラー:", err);
+                console.error("Lỗi tạo Sổ tay:", err);
             }
         }
 
-        // Add Sources
+        // POST Request: Add new Source
         async function handleAddSource(e) {
             e.preventDefault();
             const title = document.getElementById('source-title').value.trim();
             const type = document.getElementById('source-type').value;
-            const content = document.getElementById('source-content').value.trim();
-            const url = document.getElementById('source-url').value.trim();
+            
+            const formData = new FormData();
+            formData.append('title', title);
+            formData.append('source_type', type);
+            
+            if (type === 'file') {
+                const fileInput = document.getElementById('source-file');
+                if (fileInput.files.length > 0) {
+                    formData.append('file_path', fileInput.files[0]);
+                } else {
+                    return alert("Vui lòng chọn file PDF.");
+                }
+            } else if (type === 'link') {
+                const url = document.getElementById('source-url').value.trim();
+                formData.append('url', url);
+                const content = document.getElementById('source-content').value.trim();
+                formData.append('content', content);
+            } else {
+                const content = document.getElementById('source-content').value.trim();
+                formData.append('content', content);
+            }
             
             try {
                 const res = await fetch(`${API_URL}/notebooks/${activeNotebookId}/sources/`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ title, source_type: type, content, url: type === 'link' ? url : null })
+                    body: formData // Browser automatically generates boundary headers
                 });
                 
                 if (res.ok) {
-                    // Reset form
                     document.getElementById('source-title').value = '';
                     document.getElementById('source-content').value = '';
                     document.getElementById('source-url').value = '';
-                    // Reload
-                    selectNotebook(activeNotebookId);
+                    const fileInput = document.getElementById('source-file');
+                    if (fileInput) fileInput.value = '';
+                    
+                    // Reset form select value
+                    document.getElementById('source-type').value = 'text';
+                    toggleSourceInputs();
+                    
+                    // Reload workspace and refresh lists
+                    await selectNotebook(activeNotebookId, true);
+                    await loadNotebooks();
                 } else {
                     const data = await res.json();
-                    alert("エラー: " + JSON.stringify(data));
+                    alert("Lỗi: " + JSON.stringify(data));
                 }
             } catch (err) {
-                console.error("ソース資料登録エラー:", err);
+                console.error("Lỗi khi thêm tài liệu nguồn:", err);
             }
         }
 
+        // Render sources in workspace tab
         function renderSources(sources) {
             const container = document.getElementById('sources-list');
+            if (!container) return;
+            
             if (sources.length === 0) {
-                container.innerHTML = `<div class="text-xs text-slate-400 text-center py-6">登録済みのソース資料はありません。</div>`;
+                container.innerHTML = `<div class="col-span-full text-xs text-slate-400 text-center py-8">Chưa tải tài liệu nguồn nào lên.</div>`;
                 return;
             }
             container.innerHTML = sources.map(src => `
-                <div class="border border-slate-100 bg-slate-50/50 rounded-xl p-4 flex flex-col justify-between space-y-2">
+                <div class="border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 rounded-xl p-4 flex flex-col justify-between space-y-2">
                     <div class="flex justify-between items-start">
-                        <span class="font-bold text-slate-800 text-sm">${src.title}</span>
-                        <span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${src.source_type === 'link' ? 'bg-indigo-50 text-indigo-700' : 'bg-teal-50 text-teal-700'}">${src.source_type === 'link' ? 'Webリンク' : 'テキスト'}</span>
+                        <span class="font-bold text-slate-800 dark:text-slate-200 text-xs">${src.title}</span>
+                        <div class="flex items-center space-x-1.5 shrink-0">
+                            <span class="text-[9px] uppercase font-bold px-2 py-0.5 rounded-full ${src.source_type === 'file' ? 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' : (src.source_type === 'link' ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300')}">
+                                ${src.source_type === 'file' ? 'File PDF' : (src.source_type === 'link' ? 'Link' : 'Văn bản')}
+                            </span>
+                            <button onclick="deleteSource(${src.id})" class="p-1 rounded hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-500 transition" title="Xóa tài liệu">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            </button>
+                        </div>
                     </div>
-                    ${src.url ? `<a href="${src.url}" target="_blank" class="text-xs text-blue-500 truncate block">${src.url}</a>` : ''}
-                    <p class="text-xs text-slate-500 line-clamp-3 bg-white p-2.5 rounded border border-slate-100">${src.content}</p>
+                    ${src.url ? `<a href="${src.url}" target="_blank" class="text-[10px] text-brand-500 hover:underline truncate block">${src.url}</a>` : ''}
+                    ${src.file_path ? `<a href="${src.file_path}" target="_blank" class="text-[10px] text-brand-500 hover:underline truncate block flex items-center space-x-1"><span>📄 Tải xuống file PDF</span></a>` : ''}
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-3 bg-white dark:bg-slate-950 p-2.5 rounded-lg border border-slate-100 dark:border-slate-800">${src.content}</p>
                 </div>
             `).join('');
         }
 
-        // Add Notes
+        // POST Request: Create Note
         async function handleCreateNote(e) {
             e.preventDefault();
             const title = document.getElementById('note-title').value.trim();
@@ -429,73 +1066,72 @@
                 
                 if (res.ok) {
                     document.getElementById('note-title').value = '';
-                    selectNotebook(activeNotebookId);
+                    await selectNotebook(activeNotebookId, true);
+                    await loadNotebooks();
                 } else {
                     const data = await res.json();
-                    alert("エラー: " + JSON.stringify(data));
+                    alert("Lỗi tạo ghi chú: " + JSON.stringify(data));
                 }
             } catch (err) {
-                console.error("ノート作成エラー:", err);
+                console.error("Lỗi kết nối tạo ghi chú:", err);
             }
         }
 
+        // Render notes list in workspace tab
         function renderNotes(notes) {
             const container = document.getElementById('notes-list');
+            if (!container) return;
+            
             if (notes.length === 0) {
-                container.innerHTML = `<div class="text-xs text-slate-400 text-center py-6">ノートはまだありません。自己記述を行うためのノートを新規作成してください。</div>`;
+                container.innerHTML = `<div class="text-xs text-slate-400 text-center py-8">Chưa có chủ đề thảo luận nào. Hãy bắt đầu khởi tạo phía trên.</div>`;
                 return;
             }
             
             container.innerHTML = notes.map(note => {
                 if (note.is_locked) {
-                    // Locked View
                     return `
-                        <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-4">
-                            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
-                                <h4 class="font-bold text-slate-800 text-base">テーマ: ${note.title}</h4>
-                                <span class="bg-rose-50 text-rose-700 text-xs font-bold px-2.5 py-1 rounded-full flex items-center">🔒 AIの反論（ロック中）</span>
+                        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+                            <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+                                <h4 class="font-bold text-slate-800 dark:text-white text-sm">Chủ đề: ${note.title}</h4>
+                                <span class="bg-rose-50 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300 text-[10px] font-extrabold px-2.5 py-1 rounded-full flex items-center">🔒 ĐANG KHÓA (Gửi ý kiến để mở khóa AI)</span>
                             </div>
-                            <div class="space-y-2">
-                                <label class="block text-xs font-semibold text-slate-500 uppercase">自分の考えを入力してください（AI反論をアンロックするには20文字以上入力が必要）</label>
-                                <textarea id="initial-input-${note.id}" rows="4" placeholder="このテーマについて、今あなたが考えていることを記述してください。まず自分の頭で考え、記述したあとにAIの対話・反論機能が利用可能になります..." class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                            <div class="space-y-1.5">
+                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">Viết suy nghĩ của bạn (Yêu cầu ít nhất 20 ký tự để AI đưa ra lập luận phản biện)</label>
+                                <textarea id="initial-input-${note.id}" rows="4" placeholder="Nhập ý kiến cá nhân của bạn về chủ đề này..." class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition"></textarea>
                             </div>
                             <div class="flex justify-end">
-                                <button onclick="unlockNote(${note.id})" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg text-sm transition">
-                                    考えを送信してAI反論をアンロック
+                                <button onclick="unlockNote(${note.id})" class="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-4 py-2 rounded-xl text-xs transition">
+                                    Gửi ý kiến & Mở khóa Phản biện AI
                                 </button>
                             </div>
                         </div>
                     `;
                 } else {
-                    // Unlocked View
                     return `
-                        <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm space-y-6">
-                            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
-                                <h4 class="font-bold text-slate-800 text-base">テーマ: ${note.title}</h4>
-                                <span class="bg-emerald-50 text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-full">🔓 AIアンロック済み</span>
+                        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-5">
+                            <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+                                <h4 class="font-bold text-slate-800 dark:text-white text-sm">Chủ đề: ${note.title}</h4>
+                                <span class="bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 text-[10px] font-extrabold px-2.5 py-1 rounded-full">🔓 ĐÃ MỞ KHÓA PHẢN BIỆN AI</span>
                             </div>
                             
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <!-- Student Thought -->
-                                <div class="bg-slate-50 rounded-xl p-4 border border-slate-100">
-                                    <h5 class="text-xs font-bold text-slate-500 uppercase mb-2">あなたの初期の意見</h5>
-                                    <p class="text-sm text-slate-800 whitespace-pre-wrap">${note.initial_content}</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div class="bg-slate-50 dark:bg-slate-950 rounded-xl p-4 border border-slate-100 dark:border-slate-800">
+                                    <h5 class="text-[10px] font-bold text-slate-400 uppercase mb-2">Ý kiến ban đầu của bạn</h5>
+                                    <p class="text-xs text-slate-800 dark:text-slate-200 whitespace-pre-wrap">${note.initial_content}</p>
                                 </div>
-                                <!-- AI Rebuttal -->
-                                <div class="bg-teal-50/50 rounded-xl p-4 border border-teal-100">
-                                    <h5 class="text-xs font-bold text-teal-600 uppercase mb-2">AIによる論理的反論</h5>
-                                    <p class="text-sm text-slate-800 whitespace-pre-wrap font-medium">${note.ai_rebuttal}</p>
+                                <div class="bg-indigo-50/50 dark:bg-indigo-950/20 rounded-xl p-4 border border-indigo-100/50 dark:border-indigo-900/30">
+                                    <h5 class="text-[10px] font-bold text-brand-600 dark:text-brand-400 uppercase mb-2">Luận điểm phản biện của AI</h5>
+                                    <p class="text-xs text-slate-800 dark:text-slate-300 whitespace-pre-wrap font-medium">${note.ai_rebuttal}</p>
                                 </div>
                             </div>
                             
-                            <!-- Student Revision -->
-                            <div class="border-t border-slate-100 pt-4 space-y-3">
-                                <h5 class="text-sm font-semibold text-slate-700">✍️ 自分の考えをブラッシュアップする</h5>
-                                <p class="text-xs text-slate-400">上のAIの論理的反論をよく読み、自分の考えを再検討し、さらに深めたり反論に対する意見を下に記述してください。</p>
-                                <textarea id="revise-input-${note.id}" rows="3" placeholder="AIの意見を受けて、私は...と考えます。または、次の理由により当初の主張を維持します..." class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">${note.revised_content || ''}</textarea>
+                            <div class="border-t border-slate-100 dark:border-slate-800 pt-4 space-y-3">
+                                <h5 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Cải tiến bài thảo luận (Ghi chú sửa đổi)</h5>
+                                <p class="text-[10px] text-slate-400">Hãy tổng hợp lại kiến thức sau khi đọc phản biện AI và bổ sung ý kiến cuối cùng của bạn tại đây.</p>
+                                <textarea id="revise-input-${note.id}" rows="3" placeholder="Đưa ra lập luận sửa đổi của bạn..." class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition">${note.revised_content || ''}</textarea>
                                 <div class="flex justify-end">
-                                    <button onclick="saveRevision(${note.id})" class="bg-teal-700 hover:bg-teal-800 text-white font-medium px-4 py-2 rounded-lg text-sm transition">
-                                        修正した考えを保存
+                                    <button onclick="saveRevision(${note.id})" class="bg-teal-600 hover:bg-teal-700 text-white font-medium px-4 py-2 rounded-xl text-xs transition">
+                                        Lưu ý kiến cải tiến
                                     </button>
                                 </div>
                             </div>
@@ -505,11 +1141,11 @@
             }).join('');
         }
 
-        // Unlock and submit initial content to unlock AI rebuttal
+        // POST Request: Submit initial thought to unlock AI
         async function unlockNote(noteId) {
             const content = document.getElementById(`initial-input-${noteId}`).value.trim();
             if (content.length < 20) {
-                return alert("自己記述を引き出すため、20文字以上入力してください。");
+                return alert("Vui lòng ghi suy nghĩ dài ít nhất 20 ký tự để AI bắt đầu phản biện.");
             }
             
             try {
@@ -520,20 +1156,21 @@
                 });
                 
                 if (res.ok) {
-                    selectNotebook(activeNotebookId);
+                    await selectNotebook(activeNotebookId, true);
+                    await loadNotebooks();
                 } else {
                     const data = await res.json();
-                    alert("エラー: " + (data.error || JSON.stringify(data)));
+                    alert("Lỗi mở khóa: " + (data.error || JSON.stringify(data)));
                 }
             } catch (err) {
-                console.error("アンロック処理エラー:", err);
+                console.error("Lỗi khi mở khóa phản biện:", err);
             }
         }
 
-        // Submit revised content
+        // POST Request: Submit revised thought
         async function saveRevision(noteId) {
             const content = document.getElementById(`revise-input-${noteId}`).value.trim();
-            if (!content) return alert("内容を入力してください。");
+            if (!content) return alert("Vui lòng nhập nội dung trước khi lưu.");
             
             try {
                 const res = await fetch(`${API_URL}/notes/${noteId}/revise/`, {
@@ -543,18 +1180,19 @@
                 });
                 
                 if (res.ok) {
-                    alert("修正した考えを保存しました！");
-                    selectNotebook(activeNotebookId);
+                    alert("Đã lưu ý kiến cải tiến thành công!");
+                    await selectNotebook(activeNotebookId, true);
+                    await loadNotebooks();
                 } else {
                     const data = await res.json();
-                    alert("エラー: " + JSON.stringify(data));
+                    alert("Lỗi khi lưu sửa đổi: " + JSON.stringify(data));
                 }
             } catch (err) {
-                console.error("修正保存エラー:", err);
+                console.error("Lỗi khi kết nối lưu ý kiến cải tiến:", err);
             }
         }
 
-        // Trigger AI Generation based on all sources
+        // POST Request: AI generate study materials
         async function triggerAIGeneration() {
             try {
                 const res = await fetch(`${API_URL}/notebooks/${activeNotebookId}/generate/`, {
@@ -564,74 +1202,98 @@
                 });
                 
                 if (res.ok) {
-                    selectNotebook(activeNotebookId);
+                    await selectNotebook(activeNotebookId, true);
                 } else {
                     const data = await res.json();
-                    alert("エラー: " + (data.error || JSON.stringify(data)));
+                    alert("Lỗi AI sinh nội dung: " + (data.error || JSON.stringify(data)));
                 }
             } catch (err) {
-                console.error("AI生成処理エラー:", err);
+                console.error("Lỗi kết nối AI Generation:", err);
             }
         }
 
+        // Render AI generated documents in workspace tab
         function renderAIGenerations(generations) {
             const container = document.getElementById('ai-generations-container');
+            if (!container) return;
+            
             if (generations.length === 0) {
-                container.innerHTML = `<div class="text-xs text-slate-400 text-center py-6">AIによって生成された教材はありません。</div>`;
+                container.innerHTML = `<div class="text-xs text-slate-400 text-center py-8">Chưa có tài nguyên sinh bởi AI. Hãy chọn một loại phía trên và bấm yêu cầu.</div>`;
                 return;
             }
             
             container.innerHTML = generations.map(gen => {
                 const titles = {
-                    'quiz': '❓ テスト問題集 (Quiz)',
-                    'flashcards': '🎴 単語カード (Flashcards)',
-                    'mind_map': '🌿 マインドマップ (Mind Map)',
-                    'report': '📝 要約レポート (Report)',
-                    'audio_overview': '🎙️ ポッドキャスト台本 (Audio)',
-                    'presentation': '📊 スライド構成案 (Presentation)'
+                    'quiz': '❓ Trắc nghiệm ôn tập (Quiz)',
+                    'flashcards': '🎴 Thẻ nhớ thông minh (Flashcards)',
+                    'mind_map': '🌿 Sơ đồ tư duy (Mind Map)',
+                    'report': '📝 Báo cáo tóm tắt (Report)',
+                    'audio_overview': '🎙️ Kịch bản Podcast (Audio)',
+                    'presentation': '📊 Dàn ý Slide (Presentation)'
                 };
                 
                 let renderedContent = '';
                 if (gen.generation_type === 'quiz' || gen.generation_type === 'flashcards') {
                     try {
-                        const items = JSON.parse(gen.content);
+                        let cleanContent = gen.content.trim();
+                        if (cleanContent.startsWith("```")) {
+                            cleanContent = cleanContent.replace(/^```(?:json)?/, "");
+                            cleanContent = cleanContent.replace(/```$/, "");
+                            cleanContent = cleanContent.trim();
+                        }
+                        const items = JSON.parse(cleanContent);
                         if (gen.generation_type === 'quiz') {
-                            renderedContent = items.map((q, idx) => `
-                                <div class="bg-slate-50 border border-slate-100 rounded-lg p-4 space-y-2">
-                                    <div class="font-bold text-slate-800 text-sm">問 ${idx + 1}: ${q.question}</div>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
-                                        ${q.options.map(opt => `<div class="bg-white border border-slate-200 px-3 py-2 rounded text-xs text-slate-600">${opt}</div>`).join('')}
+                            renderedContent = items.map((q, idx) => {
+                                const qId = `quiz-${gen.id}-${idx}`;
+                                return `
+                                <div class="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-xl p-4 space-y-3">
+                                    <div class="font-bold text-slate-800 dark:text-slate-200 text-xs">Câu ${idx + 1}: ${q.question}</div>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2" id="${qId}-options">
+                                        ${q.options.map((opt, optIdx) => {
+                                            const letter = String.fromCharCode(65 + optIdx); // A, B, C, D
+                                            return `
+                                            <button onclick="checkQuizAnswer('${qId}', '${letter}', '${q.answer}', ${optIdx})" id="${qId}-opt-${optIdx}" class="w-full text-left bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3.5 py-2.5 rounded-xl text-[11px] text-slate-650 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition font-medium">
+                                                ${opt}
+                                            </button>
+                                            `;
+                                        }).join('')}
                                     </div>
-                                    <div class="text-xs text-teal-700 font-semibold mt-2">正解: ${q.answer}</div>
-                                    <div class="text-xs text-slate-400 italic">解説: ${q.explanation}</div>
+                                    <div id="${qId}-result" class="hidden text-[11px] font-bold p-3 rounded-xl"></div>
+                                    <div id="${qId}-explanation" class="hidden text-[10px] text-slate-500 dark:text-slate-400 italic bg-slate-100 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
+                                        Giải thích: ${q.explanation}
+                                    </div>
                                 </div>
-                            `).join('');
+                                `;
+                            }).join('');
                         } else {
                             renderedContent = items.map((f, idx) => `
-                                <div class="bg-slate-50 border border-slate-100 rounded-lg p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div class="border-b md:border-b-0 md:border-r border-slate-200 pb-3 md:pb-0 md:pr-4">
-                                        <div class="text-xs font-bold text-slate-400 uppercase">カード表面 (問題/用語)</div>
-                                        <div class="text-sm font-semibold text-slate-800 mt-1">${f.question}</div>
+                                <div class="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-xl p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-800 pb-3 md:pb-0 md:pr-4">
+                                        <div class="text-[10px] font-bold text-slate-400 uppercase">Mặt trước (Câu hỏi)</div>
+                                        <div class="text-xs font-semibold text-slate-850 dark:text-slate-200 mt-1">${f.question}</div>
                                     </div>
                                     <div>
-                                        <div class="text-xs font-bold text-teal-500 uppercase">カード裏面 (解答/説明)</div>
-                                        <div class="text-sm text-slate-700 mt-1 font-medium">${f.answer}</div>
+                                        <div class="text-[10px] font-bold text-brand-500 uppercase">Mặt sau (Câu trả lời)</div>
+                                        <div class="text-xs text-slate-650 dark:text-slate-400 mt-1 font-medium">${f.answer}</div>
                                     </div>
                                 </div>
                             `).join('');
                         }
                     } catch (e) {
-                        renderedContent = `<pre class="text-xs bg-slate-900 text-teal-400 p-4 rounded overflow-auto whitespace-pre-wrap">${gen.content}</pre>`;
+                        renderedContent = `<pre class="text-[11px] bg-slate-900 text-brand-400 p-4 rounded-xl overflow-auto whitespace-pre-wrap">${gen.content}</pre>`;
                     }
                 } else {
-                    renderedContent = `<div class="whitespace-pre-wrap text-sm text-slate-700 bg-slate-50 p-4 rounded-xl border border-slate-100 font-mono leading-relaxed">${gen.content}</div>`;
+                    renderedContent = `<div class="whitespace-pre-wrap text-xs text-slate-700 dark:text-slate-350 bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-100 dark:border-slate-800 font-mono leading-relaxed">${gen.content}</div>`;
                 }
 
                 return `
-                    <div class="border border-slate-200 rounded-xl p-5 shadow-sm space-y-3">
-                        <div class="flex justify-between items-center border-b border-slate-100 pb-2">
-                            <h4 class="font-bold text-slate-800 text-sm">${titles[gen.generation_type] || gen.generation_type}</h4>
-                            <span class="text-[10px] text-slate-400 font-semibold">${new Date(gen.created_at).toLocaleString('ja-JP')}</span>
+                    <div class="border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-3">
+                        <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2">
+                            <h4 class="font-bold text-slate-850 dark:text-white text-xs">${titles[gen.generation_type] || gen.generation_type}</h4>
+                            <div class="flex items-center space-x-2 shrink-0">
+                                <span class="text-[9px] text-slate-400 font-semibold">${new Date(gen.created_at).toLocaleString('vi-VN')}</span>
+                                <button onclick="deleteGeneration(${gen.id})" class="text-[10px] text-rose-500 hover:text-rose-700 font-bold hover:underline" title="Xóa tài nguyên AI">Xóa</button>
+                            </div>
                         </div>
                         <div class="space-y-3">
                             ${renderedContent}
@@ -639,6 +1301,439 @@
                     </div>
                 `;
             }).reverse().join('');
+        }
+
+        // Render unified view: Documents (Sources)
+        function renderAllDocumentsView() {
+            const container = document.getElementById('all-documents-list');
+            if (!container) return;
+            
+            let allSources = [];
+            notebooks.forEach(nb => {
+                const sources = nb.sources || [];
+                sources.forEach(src => {
+                    allSources.push({ ...src, notebookName: nb.name, notebookId: nb.id });
+                });
+            });
+
+            if (allSources.length === 0) {
+                container.innerHTML = `<div class="col-span-full text-xs text-slate-400 text-center py-12">Không có tài liệu nào.</div>`;
+                return;
+            }
+
+            container.innerHTML = allSources.map(src => `
+                <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-3 hover:scale-[1.01] hover:shadow-md transition">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-[9px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full ${src.source_type === 'file' ? 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' : (src.source_type === 'link' ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300')}">
+                                ${src.source_type === 'file' ? 'File PDF' : (src.source_type === 'link' ? 'Link' : 'Văn bản')}
+                            </span>
+                            <h4 class="font-bold text-slate-850 dark:text-white text-sm mt-2">${src.title}</h4>
+                        </div>
+                        <div class="flex items-center space-x-2 shrink-0">
+                            <button onclick="switchView('notebooks'); selectNotebook(${src.notebookId});" class="text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-slate-600 dark:text-slate-350 hover:bg-slate-100 font-semibold">Xem Sổ tay</button>
+                            <button onclick="deleteSource(${src.id})" class="p-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-500 transition" title="Xóa tài liệu">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    ${src.file_path ? `<a href="${src.file_path}" target="_blank" class="text-[10px] text-brand-500 hover:underline truncate block mt-1">📄 Tải xuống file PDF</a>` : ''}
+                    <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-3 bg-slate-50 dark:bg-slate-900/40 p-3 rounded-xl border border-slate-100 dark:border-slate-800">${src.content}</p>
+                    <div class="flex justify-between items-center text-[10px] text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-800">
+                        <span>Sổ tay: <strong>${src.notebookName}</strong></span>
+                        <span>${new Date(src.created_at || Date.now()).toLocaleDateString('vi-VN')}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render unified view: Notes (Thoughts)
+        function renderAllNotesView() {
+            const container = document.getElementById('all-notes-list');
+            if (!container) return;
+            
+            let allNotes = [];
+            notebooks.forEach(nb => {
+                const notes = nb.notes || [];
+                notes.forEach(note => {
+                    allNotes.push({ ...note, notebookName: nb.name, notebookId: nb.id });
+                });
+            });
+
+            if (allNotes.length === 0) {
+                container.innerHTML = `<div class="text-xs text-slate-400 text-center py-12">Không có ghi chú nào.</div>`;
+                return;
+            }
+
+            container.innerHTML = allNotes.map(note => `
+                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4 hover:scale-[1.005] hover:shadow-md transition">
+                    <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+                        <div>
+                            <h4 class="font-bold text-slate-850 dark:text-white text-sm">${note.title}</h4>
+                            <span class="text-[10px] text-slate-400 mt-1 block">Trong sổ tay: <strong>${note.notebookName}</strong></span>
+                        </div>
+                        <button onclick="switchView('notebooks'); selectNotebook(${note.notebookId});" class="text-[10px] bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1 text-slate-600 dark:text-slate-300 font-semibold hover:bg-slate-100 dark:hover:bg-slate-700">Xem chi tiết</button>
+                    </div>
+                    ${note.is_locked ? `
+                        <div class="bg-rose-50/50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-350 p-4 rounded-xl text-xs flex items-center space-x-2">
+                            <span>🔒</span>
+                            <span>Bài viết phản biện đang ở trạng thái Khóa. Hãy truy cập Sổ tay để mở khóa cùng AI.</span>
+                        </div>
+                    ` : `
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-slate-50 dark:bg-slate-950 p-3.5 rounded-xl border border-slate-150/40 dark:border-slate-800 text-xs">
+                                <span class="text-[9px] text-slate-400 uppercase font-bold block mb-1">Ý kiến của bạn</span>
+                                <p class="text-slate-750 dark:text-slate-300 line-clamp-4">${note.initial_content}</p>
+                            </div>
+                            <div class="bg-indigo-50/30 dark:bg-indigo-950/10 p-3.5 rounded-xl border border-indigo-100/50 dark:border-indigo-900/30 text-xs">
+                                <span class="text-[9px] text-indigo-500 uppercase font-bold block mb-1">Phản biện AI</span>
+                                <p class="text-slate-750 dark:text-slate-350 line-clamp-4">${note.ai_rebuttal}</p>
+                            </div>
+                        </div>
+                    `}
+                </div>
+            `).join('');
+        }
+
+        // Render Recent Activity Table on Dashboard
+        function renderRecentActivityTable() {
+            const tbody = document.getElementById('recent-activity-table-body');
+            const emptyState = document.getElementById('table-empty-state');
+            if (!tbody) return;
+
+            let activities = [];
+            notebooks.forEach(nb => {
+                const sources = nb.sources || [];
+                sources.forEach(src => {
+                    activities.push({
+                        id: src.id,
+                        name: src.title,
+                        type: 'Tài liệu (Source)',
+                        notebookName: nb.name,
+                        notebookId: nb.id,
+                        date: new Date(src.created_at || Date.now()),
+                        status: 'Đã hoàn thành',
+                        isSource: true
+                    });
+                });
+
+                const notes = nb.notes || [];
+                notes.forEach(note => {
+                    activities.push({
+                        id: note.id,
+                        name: note.title,
+                        type: 'Ghi chú (Note)',
+                        notebookName: nb.name,
+                        notebookId: nb.id,
+                        date: new Date(note.created_at || Date.now()),
+                        status: note.is_locked ? 'Đang soạn thảo' : 'Phản biện xong',
+                        isSource: false
+                    });
+                });
+            });
+
+            // Sort by date desc
+            activities.sort((a, b) => b.date - a.date);
+
+            if (activities.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            emptyState.classList.add('hidden');
+
+            tbody.innerHTML = activities.map(act => `
+                <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-900/20 transition duration-150 text-xs">
+                    <td class="py-3 px-4 font-bold text-slate-800 dark:text-slate-200">${act.name}</td>
+                    <td class="py-3 px-4">
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${act.isSource ? 'bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300' : 'bg-violet-50 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300'}">
+                            ${act.type}
+                        </span>
+                    </td>
+                    <td class="py-3 px-4 text-slate-500 dark:text-slate-400">${act.notebookName}</td>
+                    <td class="py-3 px-4 text-slate-400">${act.date.toLocaleDateString('vi-VN')}</td>
+                    <td class="py-3 px-4">
+                        <span class="inline-flex items-center">
+                            <span class="w-1.5 h-1.5 rounded-full mr-1.5 ${act.status === 'Đang soạn thảo' ? 'bg-rose-500' : 'bg-emerald-500'}"></span>
+                            <span class="text-slate-650 dark:text-slate-400 font-medium">${act.status}</span>
+                        </span>
+                    </td>
+                    <td class="py-3 px-4 text-right">
+                        <button onclick="switchView('notebooks'); selectNotebook(${act.notebookId}); switchTab('${act.isSource ? 'sources' : 'notes'}')" class="text-brand-600 dark:text-brand-400 font-bold hover:underline">
+                            Xem chi tiết
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Table local filtering
+        function filterTable() {
+            const query = document.getElementById('table-search').value.toLowerCase();
+            const typeFilter = document.getElementById('table-filter-type').value;
+            const rows = document.querySelectorAll('#recent-activity-table-body tr');
+
+            rows.forEach(row => {
+                const cells = row.getElementsByTagName('td');
+                if (cells.length < 5) return;
+                
+                const name = cells[0].innerText.toLowerCase();
+                const type = cells[1].innerText;
+                const notebook = cells[2].innerText.toLowerCase();
+                
+                const matchesSearch = name.includes(query) || notebook.includes(query);
+                
+                let matchesType = true;
+                if (typeFilter === 'source') {
+                    matchesType = type.includes('Tài liệu');
+                } else if (typeFilter === 'note') {
+                    matchesType = type.includes('Ghi chú');
+                }
+
+                row.style.display = (matchesSearch && matchesType) ? '' : 'none';
+            });
+        }
+
+        // Global search in header
+        function handleGlobalSearch() {
+            const query = document.getElementById('global-search').value.toLowerCase().trim();
+            if (!query) {
+                // If dashboard is active, reset filters
+                if (activeView === 'dashboard') {
+                    document.getElementById('table-search').value = '';
+                    filterTable();
+                }
+                return;
+            }
+
+            // Route search to table filter if Dashboard is active
+            if (activeView === 'dashboard') {
+                document.getElementById('table-search').value = query;
+                filterTable();
+            } else if (activeView === 'documents') {
+                const docs = document.querySelectorAll('#all-documents-list > div');
+                docs.forEach(doc => {
+                    const title = doc.querySelector('h4').innerText.toLowerCase();
+                    const content = doc.querySelector('p').innerText.toLowerCase();
+                    doc.style.display = (title.includes(query) || content.includes(query)) ? '' : 'none';
+                });
+            } else if (activeView === 'notes') {
+                const notes = document.querySelectorAll('#all-notes-list > div');
+                notes.forEach(note => {
+                    const title = note.querySelector('h4').innerText.toLowerCase();
+                    const text = note.innerText.toLowerCase();
+                    note.style.display = (title.includes(query) || text.includes(query)) ? '' : 'none';
+                });
+            }
+        }
+
+        // Render Chart.js
+        function renderCharts() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const gridColor = isDark ? '#334155' : '#e2e8f0';
+            const labelColor = isDark ? '#94a3b8' : '#64748b';
+
+            // Gather distribution of source types
+            let textCount = 0;
+            let linkCount = 0;
+            notebooks.forEach(nb => {
+                (nb.sources || []).forEach(src => {
+                    if (src.source_type === 'link') linkCount++;
+                    else textCount++;
+                });
+            });
+
+            // 1. Weekly hours Chart
+            const hoursCtx = document.getElementById('hoursChart');
+            if (hoursCtx) {
+                if (hoursChartObj) hoursChartObj.destroy();
+                hoursChartObj = new Chart(hoursCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ nhật'],
+                        datasets: [{
+                            label: 'Số phút tự học',
+                            data: [20, 15, 45, 10, 30, 25, 0],
+                            backgroundColor: '#4f46e5',
+                            borderRadius: 6,
+                            borderSkipped: false,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            x: {
+                                grid: { display: false },
+                                ticks: { color: labelColor }
+                            },
+                            y: {
+                                border: { dash: [4, 4] },
+                                grid: { color: gridColor },
+                                ticks: { color: labelColor }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 2. Type distribution Chart
+            const distCtx = document.getElementById('distributionChart');
+            if (distCtx) {
+                if (distChartObj) distChartObj.destroy();
+                distChartObj = new Chart(distCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Văn bản nguồn', 'Web Link'],
+                        datasets: [{
+                            data: [textCount || 1, linkCount],
+                            backgroundColor: ['#6366f1', '#14b8a6'],
+                            borderWidth: isDark ? 3 : 1,
+                            borderColor: isDark ? '#0f172a' : '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { color: labelColor, boxWidth: 12, padding: 15 }
+                            }
+                        },
+                        cutout: '70%'
+                    }
+                });
+            }
+        }
+
+        // DELETE Request: Remove a Source
+        async function deleteSource(id) {
+            if (!confirm("Bạn có chắc chắn muốn xóa tài liệu này? Hành động này không thể hoàn tác.")) return;
+            
+            try {
+                const res = await fetch(`${API_URL}/sources/${id}/`, {
+                    method: 'DELETE'
+                });
+                if (res.ok) {
+                    alert("Đã xóa tài liệu nguồn thành công!");
+                    // Refresh data
+                    await loadNotebooks();
+                    if (activeNotebookId) {
+                        await selectNotebook(activeNotebookId, true);
+                    }
+                    if (activeView === 'documents') {
+                        renderAllDocumentsView();
+                    }
+                } else {
+                    alert("Không thể xóa tài liệu. Vui lòng thử lại.");
+                }
+            } catch (err) {
+                console.error("Lỗi khi xóa tài liệu:", err);
+            }
+        }
+
+        // DELETE Request: Remove an AI Generation
+        async function deleteGeneration(id) {
+            if (!confirm("Bạn có chắc chắn muốn xóa tài nguyên AI này?")) return;
+            
+            try {
+                const res = await fetch(`${API_URL}/generations/${id}/`, {
+                    method: 'DELETE'
+                });
+                if (res.ok) {
+                    alert("Đã xóa tài nguyên AI thành công!");
+                    // Refresh data
+                    await loadNotebooks();
+                    if (activeNotebookId) {
+                        await selectNotebook(activeNotebookId, true);
+                    }
+                } else {
+                    alert("Không thể xóa tài nguyên. Vui lòng thử lại.");
+                }
+            } catch (err) {
+                console.error("Lỗi khi xóa tài nguyên AI:", err);
+            }
+        }
+
+        // DELETE Request: Remove the active Notebook
+        async function deleteActiveNotebook() {
+            if (!activeNotebookId) return;
+            if (!confirm("Bạn có chắc chắn muốn xóa SỔ TAY này? Toàn bộ tài liệu, ghi chú và các câu hỏi AI đi kèm sẽ bị xóa vĩnh viễn và không thể khôi phục.")) return;
+            
+            try {
+                const res = await fetch(`${API_URL}/notebooks/${activeNotebookId}/`, {
+                    method: 'DELETE'
+                });
+                if (res.ok) {
+                    alert("Đã xóa Sổ tay thành công!");
+                    activeNotebookId = null;
+                    
+                    // Hide workspace
+                    document.getElementById('notebook-workspace').classList.add('hidden');
+                    document.getElementById('notebook-actions').classList.add('hidden');
+                    document.getElementById('active-notebook-name').innerText = "Chọn một sổ tay từ danh sách để bắt đầu học tập";
+                    document.getElementById('active-notebook-desc').innerText = "Mẹo: Bạn có thể thêm các tài liệu tham khảo (PDF, trang web) rồi gửi phản biện để AI chấm điểm.";
+                    
+                    // Refresh
+                    await loadNotebooks();
+                    switchView('dashboard');
+                } else {
+                    alert("Không thể xóa Sổ tay. Vui lòng thử lại.");
+                }
+            } catch (err) {
+                console.error("Lỗi khi xóa Sổ tay:", err);
+            }
+        }
+
+        // Interactive quiz correctness checker
+        function checkQuizAnswer(qId, selectedLetter, correctAnswer, selectedIdx) {
+            const optionsContainer = document.getElementById(`${qId}-options`);
+            const buttons = optionsContainer.getElementsByTagName('button');
+            
+            // Disable all buttons to prevent multiple clicks
+            for (let btn of buttons) {
+                btn.disabled = true;
+                btn.classList.add('opacity-70', 'cursor-not-allowed');
+            }
+            
+            const selectedBtn = document.getElementById(`${qId}-opt-${selectedIdx}`);
+            const isCorrect = selectedLetter.toUpperCase() === correctAnswer.toUpperCase();
+            
+            // Highlight selected button
+            if (isCorrect) {
+                selectedBtn.classList.remove('bg-white', 'dark:bg-slate-900', 'border-slate-200', 'dark:border-slate-800');
+                selectedBtn.classList.add('bg-emerald-500/10', 'dark:bg-emerald-500/20', 'border-emerald-500', 'text-emerald-700', 'dark:text-emerald-400');
+            } else {
+                selectedBtn.classList.remove('bg-white', 'dark:bg-slate-900', 'border-slate-200', 'dark:border-slate-800');
+                selectedBtn.classList.add('bg-rose-500/10', 'dark:bg-rose-500/20', 'border-rose-500', 'text-rose-700', 'dark:text-rose-400');
+                
+                // Find and highlight correct button in green
+                for (let i = 0; i < buttons.length; i++) {
+                    const letter = String.fromCharCode(65 + i);
+                    if (letter.toUpperCase() === correctAnswer.toUpperCase()) {
+                        const correctBtn = document.getElementById(`${qId}-opt-${i}`);
+                        correctBtn.classList.remove('bg-white', 'dark:bg-slate-900', 'border-slate-200', 'dark:border-slate-800');
+                        correctBtn.classList.add('bg-emerald-500/10', 'dark:bg-emerald-500/20', 'border-emerald-500', 'text-emerald-700', 'dark:text-emerald-400');
+                    }
+                }
+            }
+            
+            // Show result text and explanation
+            const resultDiv = document.getElementById(`${qId}-result`);
+            resultDiv.classList.remove('hidden');
+            if (isCorrect) {
+                resultDiv.innerText = "✓ Chính xác!";
+                resultDiv.className = "text-[11px] font-bold p-3 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20";
+            } else {
+                resultDiv.innerText = `✗ Chưa chính xác. Đáp án đúng là ${correctAnswer}.`;
+                resultDiv.className = "text-[11px] font-bold p-3 rounded-xl bg-rose-500/10 dark:bg-rose-500/20 text-rose-700 dark:text-rose-400 border border-rose-500/20";
+            }
+            
+            document.getElementById(`${qId}-explanation`).classList.remove('hidden');
         }
     </script>
 </body>
