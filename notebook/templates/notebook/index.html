@@ -8,6 +8,21 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Mermaid.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>
+        // Initialize Mermaid
+        document.addEventListener('DOMContentLoaded', () => {
+            mermaid.initialize({
+                startOnLoad: false,
+                theme: document.documentElement.classList.contains('dark') ? 'dark' : 'default',
+                securityLevel: 'loose',
+                themeVariables: {
+                    background: 'transparent'
+                }
+            });
+        });
+    </script>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
@@ -1283,7 +1298,29 @@
                         renderedContent = `<pre class="text-[11px] bg-slate-900 text-brand-400 p-4 rounded-xl overflow-auto whitespace-pre-wrap">${gen.content}</pre>`;
                     }
                 } else {
-                    renderedContent = `<div class="whitespace-pre-wrap text-xs text-slate-700 dark:text-slate-350 bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-100 dark:border-slate-800 font-mono leading-relaxed">${gen.content}</div>`;
+                    if (gen.generation_type === 'mind_map' && gen.content.includes("mindmap")) {
+                        let cleanCode = gen.content.trim();
+                        if (cleanCode.startsWith("```")) {
+                            cleanCode = cleanCode.replace(/^```(?:mermaid)?/, "");
+                            cleanCode = cleanCode.replace(/```$/, "");
+                            cleanCode = cleanCode.trim();
+                        }
+                        const uniqueId = `mermaid-${gen.id}`;
+                        renderedContent = `<div class="mermaid bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-100 dark:border-slate-800 overflow-auto flex justify-center w-full" id="${uniqueId}">${cleanCode}</div>`;
+                        
+                        setTimeout(() => {
+                            try {
+                                const targetEl = document.getElementById(uniqueId);
+                                if (targetEl) {
+                                    mermaid.init(undefined, targetEl);
+                                }
+                            } catch (err) {
+                                console.error("Mermaid error:", err);
+                            }
+                        }, 50);
+                    } else {
+                        renderedContent = `<div class="whitespace-pre-wrap text-xs text-slate-700 dark:text-slate-350 bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-100 dark:border-slate-800 font-mono leading-relaxed">${gen.content}</div>`;
+                    }
                 }
 
                 return `
