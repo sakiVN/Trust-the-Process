@@ -1,0 +1,44 @@
+<script>
+function getMindmapMockHTML(title) {
+    const uniqueId = `jsmind-tool-${Date.now()}`;
+    const mockMermaid = generateMockMermaidMindmap(title);
+    
+    return {
+        id: uniqueId,
+        mermaid: mockMermaid,
+        html: `
+        <div class="space-y-4 font-sans text-left w-full">
+            <p class="text-xs font-semibold text-slate-500">🏷️ Sơ đồ chủ đề: ${title}</p>
+            <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-100/60 dark:bg-slate-900/40 p-3 rounded-2xl border border-slate-200 dark:border-slate-800/80">
+                <div class="flex items-center space-x-2">
+                    <button onclick="addJsMindChildNode('modal')" class="bg-brand-500 hover:bg-brand-600 text-white font-bold py-1.5 px-3.5 rounded-lg text-[10px] transition shadow flex items-center space-x-1">
+                        <span>➕</span> <span>Thêm nhánh con</span>
+                    </button>
+                    <button onclick="editJsMindNodeName('modal')" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-1.5 px-3.5 rounded-lg text-[10px] transition shadow flex items-center space-x-1">
+                        <span>✏️</span> <span>Sửa tên</span>
+                    </button>
+                    <button onclick="removeJsMindNode('modal')" class="bg-rose-500 hover:bg-rose-600 text-white font-bold py-1.5 px-3.5 rounded-lg text-[10px] transition shadow flex items-center space-x-1">
+                        <span>🗑️</span> <span>Xóa nhánh</span>
+                    </button>
+                </div>
+                <div class="flex items-center space-x-2 border-l border-slate-250 dark:border-slate-800 pl-3">
+                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Màu nút:</span>
+                    <div class="flex items-center space-x-1.5">
+                        <button onclick="changeJsMindNodeColor('modal', '#6366f1')" class="w-4 h-4 rounded-full bg-[#6366f1] ring-1 ring-white/50 hover:scale-110 transition" title="Indigo"></button>
+                        <button onclick="changeJsMindNodeColor('modal', '#10b981')" class="w-4 h-4 rounded-full bg-[#10b981] ring-1 ring-white/50 hover:scale-110 transition" title="Green"></button>
+                        <button onclick="changeJsMindNodeColor('modal', '#f43f5e')" class="w-4 h-4 rounded-full bg-[#f43f5e] ring-1 ring-white/50 hover:scale-110 transition" title="Rose"></button>
+                        <button onclick="changeJsMindNodeColor('modal', '#f59e0b')" class="w-4 h-4 rounded-full bg-[#f59e0b] ring-1 ring-white/50 hover:scale-110 transition" title="Amber"></button>
+                        <button onclick="changeJsMindNodeColor('modal', '#1e293b')" class="w-4 h-4 rounded-full bg-[#1e293b] ring-1 ring-white/50 hover:scale-110 transition" title="Slate"></button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="relative w-full border border-slate-200 dark:border-slate-800 rounded-3xl overflow-hidden bg-slate-50 dark:bg-slate-950 shadow-inner">
+                <div class="absolute top-3 left-3 text-[9px] font-bold text-slate-400 uppercase tracking-wider z-10 select-none">Đúp chuột để sửa chữ, kéo rê để di chuyển</div>
+                <div id="${uniqueId}" class="jsmind-container w-full h-[400px]"></div>
+            </div>
+        </div>
+        `
+    };
+}
+</script>
