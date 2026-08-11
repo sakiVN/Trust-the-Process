@@ -16,15 +16,23 @@ function generateSummary(text, maxSentences = 5) {
     if (!text || text.trim() === "") return [];
 
     // 1. Tiền xử lý: Cắt văn bản thành các câu dựa vào dấu chấm, hỏi, than
-    // Bỏ qua các câu rỗng
-    let sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+    let sentences = text.split(/[.!?。！？\n]+/);
     sentences = sentences.map(s => s.trim()).filter(s => s.length > 0);
 
     // 2. Tính tần suất từ khóa
     const wordFrequencies = {};
     for (let sentence of sentences) {
-        // Tách từ (đơn giản bằng khoảng trắng, chuyển chữ thường, bỏ dấu câu)
-        let words = sentence.toLowerCase().replace(/[.,!?()[\]{}"':;]/g, '').split(/\s+/);
+        let tokens = sentence.toLowerCase().replace(/[.,!?()[\]{}"':;。！？、]/g, ' ').split(/\s+/);
+        let words = [];
+        for (let token of tokens) {
+            if (/[\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff]/.test(token) && token.length > 1) {
+                for (let j = 0; j < token.length - 1; j++) {
+                    words.push(token.substring(j, j + 2));
+                }
+            } else if (token.length > 0) {
+                words.push(token);
+            }
+        }
         for (let word of words) {
             if (word.length > 1 && !STOP_WORDS.has(word)) {
                 wordFrequencies[word] = (wordFrequencies[word] || 0) + 1;
@@ -48,7 +56,17 @@ function generateSummary(text, maxSentences = 5) {
     const sentenceScores = [];
     for (let i = 0; i < sentences.length; i++) {
         let sentence = sentences[i];
-        let words = sentence.toLowerCase().replace(/[.,!?()[\]{}"':;]/g, '').split(/\s+/);
+        let tokens = sentence.toLowerCase().replace(/[.,!?()[\]{}"':;。！？、]/g, ' ').split(/\s+/);
+        let words = [];
+        for (let token of tokens) {
+            if (/[\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff]/.test(token) && token.length > 1) {
+                for (let j = 0; j < token.length - 1; j++) {
+                    words.push(token.substring(j, j + 2));
+                }
+            } else if (token.length > 0) {
+                words.push(token);
+            }
+        }
         let score = 0;
         let validWordCount = 0;
         
@@ -88,10 +106,20 @@ function generateSummary(text, maxSentences = 5) {
 function getTopKeywords(text) {
     if (!text || text.trim() === "") return [];
     
-    let words = text.toLowerCase().replace(/[.,!?()[\]{}"':;\n\r]/g, ' ').split(/\s+/);
+    let tokens = text.toLowerCase().replace(/[.,!?()[\]{}"':;\n\r。！？、]/g, ' ').split(/\s+/);
+    let words = [];
+    for (let token of tokens) {
+        if (/[\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff]/.test(token) && token.length > 1) {
+            for (let i = 0; i < token.length - 1; i++) {
+                words.push(token.substring(i, i + 2));
+            }
+        } else if (token.length > 0) {
+            words.push(token);
+        }
+    }
     const wordFrequencies = {};
     for (let word of words) {
-        if (word.length > 2 && !STOP_WORDS.has(word)) {
+        if (word.length > 1 && !STOP_WORDS.has(word)) {
             wordFrequencies[word] = (wordFrequencies[word] || 0) + 1;
         }
     }
