@@ -1,0 +1,145 @@
+<script>
+function getQuizMockHTML(title) {
+    const quizData = [
+        {
+            "question": `Đâu là đặc trưng cơ bản nhất khi thiết kế ${title}?`,
+            "options": [
+                "A. Chạy online hoàn toàn trên đám mây",
+                "B. Chạy offline và xử lý nội dung cực kỳ nhanh",
+                "C. Yêu cầu nhập Gemini API Key liên tục",
+                "D. Đòi hỏi cấu hình rất cao"
+            ],
+            "correct_index": 1,
+            "explanation": "Hệ thống đã được chuyển sang chế độ hoạt động offline, giúp nâng cao hiệu năng và độ ổn định bảo mật."
+        }
+    ];
+    window.currentQuizJSON = JSON.stringify(quizData);
+    
+    return `
+        <div class="space-y-4 font-sans text-left">
+            <p class="text-xs font-semibold text-slate-500 mb-1">🏷️ Chủ đề: ${title}</p>
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 space-y-2">
+                <span class="text-xs font-bold text-slate-855 dark:text-slate-200">Câu 1: ${quizData[0].question}</span>
+                <div class="grid grid-cols-1 gap-2 mt-2">
+                    <button class="text-left bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3 py-2 rounded-lg text-xs hover:bg-slate-100 transition">${quizData[0].options[0]}</button>
+                    <button class="text-left bg-emerald-500/10 border border-emerald-500 text-emerald-700 dark:text-emerald-400 px-3 py-2 rounded-lg text-xs">${quizData[0].options[1]} (Đáp án đúng)</button>
+                    <button class="text-left bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3 py-2 rounded-lg text-xs hover:bg-slate-100 transition">${quizData[0].options[2]}</button>
+                    <button class="text-left bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3 py-2 rounded-lg text-xs hover:bg-slate-100 transition">${quizData[0].options[3]}</button>
+                </div>
+                <div class="text-[10px] text-slate-400 italic mt-2 bg-slate-100 dark:bg-slate-900/50 p-2.5 rounded-lg">
+                    Giải thích: ${quizData[0].explanation}
+                </div>
+            </div>
+        </div>
+    `;
+}
+</script>
+
+<script>
+
+// Method 2: Text Parser for Quiz
+function parseQuizText(rawText) {
+    if (!rawText || rawText.trim() === '') return getQuizMockHTML('Bản nháp rỗng');
+    
+    const blocks = rawText.split('\nQ:');
+    let questions = [];
+    
+    for (let i = 0; i < blocks.length; i++) {
+        let block = blocks[i].trim();
+        if (!block) continue;
+        
+        // If the first block didn't have Q: prefix but we split by \\nQ:, it might just be the first Q:
+        // Or if the string started with Q:, the first block is empty and skipped.
+        
+        // Extract Question
+        const qMatch = block.match(/^(.*?)\nA:/s);
+        if (!qMatch) {
+            // Handle case where Q: was stripped and it's just the rest of the block
+            // or there's no A:
+            continue;
+        }
+        const questionText = qMatch[1].trim();
+        
+        // Extract Options
+        const aMatch = block.match(/\nA:\s*(.*?)\nB:/s);
+        const bMatch = block.match(/\nB:\s*(.*?)\nC:/s);
+        const cMatch = block.match(/\nC:\s*(.*?)\nD:/s);
+        const dMatch = block.match(/\nD:\s*(.*?)(?:\nEXP:|$)/s);
+        
+        if (!aMatch || !bMatch || !cMatch || !dMatch) continue;
+        
+        let options = [aMatch[1].trim(), bMatch[1].trim(), cMatch[1].trim(), dMatch[1].trim()];
+        let correctIndex = 0;
+        let cleanOptions = [];
+        
+        for (let j = 0; j < options.length; j++) {
+            let opt = options[j];
+            if (opt.includes('(*)')) {
+                correctIndex = j;
+                opt = opt.replace('(*)', '').trim();
+            }
+            const letter = String.fromCharCode(65 + j);
+            cleanOptions.push(`${letter}. ${opt}`);
+        }
+        
+        // Extract EXP
+        const expMatch = block.match(/\nEXP:\s*(.*)/s);
+        const explanation = expMatch ? expMatch[1].trim() : "Không có giải thích.";
+        
+        questions.push({
+            question: questionText,
+            options: cleanOptions,
+            answer: String.fromCharCode(65 + correctIndex),
+            explanation: explanation
+        });
+    }
+    
+    if (questions.length === 0) {
+        return getQuizMockHTML('Lỗi: Cú pháp không hợp lệ. Vui lòng nhập đúng định dạng Q: A: B: C: D: EXP:');
+    }
+    
+    // Now render these questions into HTML
+    let html = `<div class="text-left font-sans space-y-4 w-full max-w-2xl mx-auto">
+        <p class="text-xs font-semibold text-slate-500">🏷️ Bài thi trắc nghiệm (Tự tạo)</p>`;
+    
+    questions.forEach((q, index) => {
+        const qId = `quiz-q-${index}-${Date.now()}`;
+        
+        let optionsHtml = '';
+        q.options.forEach((opt, optIdx) => {
+            const letter = String.fromCharCode(65 + optIdx);
+            optionsHtml += `
+                <button id="${qId}-opt-${optIdx}" onclick="checkQuizAnswer('${qId}', '${letter}', '${q.answer}', ${optIdx})" 
+                class="text-left bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3 py-2.5 rounded-lg text-xs hover:bg-slate-100 dark:hover:bg-slate-800 transition shadow-sm w-full">
+                    ${opt}
+                </button>
+            `;
+        });
+        
+        html += `
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 space-y-3 shadow-sm hover:border-brand-300 transition-colors group">
+                <span class="text-xs font-bold text-slate-800 dark:text-slate-100">Câu ${index + 1}: ${q.question}</span>
+                <div class="grid grid-cols-1 gap-2 mt-2" id="${qId}-options">
+                    ${optionsHtml}
+                </div>
+                <div id="${qId}-result" class="hidden mt-3 p-3 rounded-lg text-xs">
+                    <p class="font-bold mb-1 status-text"></p>
+                    <p class="text-slate-600 dark:text-slate-300 italic opacity-90">${q.explanation}</p>
+                </div>
+            </div>
+        `;
+    });
+    
+    html += '</div>';
+    
+    // Convert to JSON array to save in textarea
+    let jsonStr = JSON.stringify(questions);
+    // Escape quotes to put in HTML
+    jsonStr = jsonStr.replace(/'/g, "&#39;").replace(/"/g, "&quot;");
+    
+    html += `<textarea id="quiz-hidden-data" class="hidden">${jsonStr}</textarea>`;
+    
+    return html;
+}
+
+</script>

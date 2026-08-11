@@ -1,0 +1,18 @@
+<script>
+function getReportMockHTML(title) {
+    window.currentReportText = `BÁO CÁO TÓM TẮT HỌC THUẬT: ${title.toUpperCase()}\n\n1. Tổng quan: Đây là bản tóm lược của tài liệu về chủ đề ${title}. Nội dung chính xoay quanh các khái niệm cốt lõi, phương pháp luận và các kết quả nghiên cứu tiêu biểu.\n\n2. Điểm mấu chốt: Phân hệ xử lý dữ liệu thông minh, tích hợp các cấu trúc mô hình offline để sinh thông tin mà không cần kết nối mạng bên ngoài.\n\n3. Đề xuất hành động: Triển khai tích hợp sâu các thuật toán tìm kiếm ngữ nghĩa cục bộ để cải thiện độ chính xác.`;
+    return `
+        <div class="text-left font-sans space-y-3">
+            <p class="text-xs font-semibold text-slate-500">🏷️ Chủ đề: ${title}</p>
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 space-y-3">
+                <h4 class="text-sm font-bold text-slate-855 dark:text-white border-b pb-2">BÁO CÁO TÓM TẮT HỌC THUẬT: ${title.toUpperCase()}</h4>
+                <div class="text-xs text-slate-655 dark:text-slate-350 space-y-2 leading-relaxed font-normal">
+                    <p><strong>1. Tổng quan:</strong> Đây là bản tóm lược của tài liệu về chủ đề ${title}. Nội dung chính xoay quanh các khái niệm cốt lõi, phương pháp luận và các kết quả nghiên cứu tiêu biểu.</p>
+                    <p><strong>2. Điểm mấu chốt:</strong> Phân hệ xử lý dữ liệu thông minh, tích hợp các cấu trúc mô hình offline để sinh thông tin mà không cần kết nối mạng bên ngoài.</p>
+                    <p><strong>3. Đề xuất hành động:</strong> Triển khai tích hợp sâu các thuật toán tìm kiếm ngữ nghĩa cục bộ để cải thiện độ chính xác.</p>
+                </div>
+            </div>
+        </div>
+    `;
+}
+</script>
