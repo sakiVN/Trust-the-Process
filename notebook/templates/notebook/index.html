@@ -3231,9 +3231,14 @@
             // Configure modal details based on selected tool
             const titleInput = document.getElementById('tool-input-title');
             const textInput = document.getElementById('tool-input-text');
-            if (type === 'quiz') {
+            if (type === 'quiz' || type === 'report') {
                 titleInput.classList.add('hidden');
                 textInput.classList.remove('hidden');
+                if (type === 'quiz') {
+                    textInput.placeholder = "Dán văn bản có cấu trúc:\nQ: Câu hỏi?\nA: Đáp án 1\nB: Đáp án 2 (*)\nC: Đáp án 3\nD: Đáp án 4\nEXP: Giải thích chi tiết";
+                } else {
+                    textInput.placeholder = "Dán nội dung tài liệu dài vào đây để hệ thống tự động tóm tắt...";
+                }
                 textInput.value = ''; // Reset
                 titleInput.required = false;
                 textInput.required = true;
@@ -3358,7 +3363,8 @@
                     const rawText = document.getElementById('tool-input-text').value;
                     mockResult = parseQuizText(rawText);
                 } else if (activeToolType === 'report') {
-                    mockResult = getReportMockHTML(title);
+                    const rawText = document.getElementById('tool-input-text').value;
+                    mockResult = generateReportHTML(rawText, title);
                 } else if (activeToolType === 'mindmap') {
                     const mindmapData = getMindmapMockHTML(title);
                     mockResult = mindmapData.html;
@@ -3403,7 +3409,8 @@
                 const hiddenData = document.getElementById('quiz-hidden-data');
                 content = hiddenData ? hiddenData.value : '';
             } else if (activeToolType === 'report') {
-                content = window.currentReportText || '';
+                const hiddenData = document.getElementById('report-hidden-data');
+                content = hiddenData ? hiddenData.value : '';
             } else {
                 const container = document.getElementById('tool-output-content');
                 content = container ? container.innerText.trim() : '';
