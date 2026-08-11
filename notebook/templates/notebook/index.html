@@ -3304,61 +3304,7 @@
                 let mockResult = '';
                 
                 if (activeToolType === 'flashcards') {
-<<<<<<< HEAD
                     mockResult = getFlashcardMockHTML(title);
-=======
-                    const cards = [
-                        {
-                            question: `${title} là gì?`,
-                            answer: `Đây là câu trả lời mẫu cho ${title}`
-                        },
-                        {
-                            question: `${title} là gì?`,
-                            answer: `Đây là câu trả lời mẫu cho ${title}`
-                        },
-                        {
-                            question: `${title} là gì?`,
-                            answer: `Đây là câu trả lời mẫu cho ${title}`
-                        }
-                    ];
-
-                    mockResult = `
-                        <div class="space-y-4 font-sans text-center">
-                            <p class="text-xs font-semibold text-slate-500">
-                                🏷️ Chủ đề: ${title}
-                            </p>
-                            ${cards.map((card, index) => `
-                            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6">
-                                <div id="tool-front-${index}">
-                                    <div class="text-[10px] font-bold text-slate-400 uppercase mb-3">
-                                        Question
-                                    </div>
-                                    <div class="text-sm font-bold text-slate-800 dark:text-slate-200">
-                                        ${card.question}
-                                    </div>
-                                </div>
-                            <div id="tool-back-${index}" class="hidden">
-                                <div class="text-[10px] font-bold text-brand-500 uppercase mb-3">
-                                    Answer
-                                </div>
-                                <div class="text-sm text-slate-700 dark:text-slate-300">
-                                    ${card.answer}
-                                </div>
-                            </div>
-
-                            <button 
-                                id="tool-btn-${index}"
-                                onclick="flipToolCard(${index})"
-                                class="mt-4 bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-xl text-xs font-bold"
-                            >
-                                Check the answer
-                            </button>
-                        </div>
-                    `).join('')}
-
-                    </div>
-                    `;
->>>>>>> origin/feature-backend-day2
                 } else if (activeToolType === 'quiz') {
                     const rawText = document.getElementById('tool-input-text').value;
                     mockResult = parseQuizText(rawText);
