@@ -122,9 +122,9 @@ function parseQuizText(rawText) {
                 <div class="grid grid-cols-1 gap-2 mt-2" id="${qId}-options">
                     ${optionsHtml}
                 </div>
-                <div id="${qId}-result" class="hidden mt-3 p-3 rounded-lg text-xs">
-                    <p class="font-bold mb-1 status-text"></p>
-                    <p class="text-slate-600 dark:text-slate-300 italic opacity-90">${q.explanation}</p>
+                <div id="${qId}-result" class="hidden mt-3 p-3 rounded-lg text-xs"></div>
+                <div id="${qId}-explanation" class="hidden text-[11px] text-slate-600 dark:text-slate-300 italic mt-2 bg-slate-100 dark:bg-slate-900/50 p-2.5 rounded-lg">
+                    Giải thích: ${q.explanation}
                 </div>
             </div>
         `;
