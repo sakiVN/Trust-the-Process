@@ -2121,9 +2121,18 @@
         function flipToolCard(id){
             const front = document.getElementById(`tool-front-${id}`);
             const back = document.getElementById(`tool-back-${id}`);
+            const btn = document.getElementById(`tool-btn-${id}`);
+
+            const showingQuestion = !front.classList.contains('hidden');
 
             front.classList.toggle('hidden');
             back.classList.toggle('hidden');
+
+            if (showingQuestion){
+                btn.textContent = 'Back to the question';
+            }else{
+                btn.textContent = 'Check the answer';
+            }
         }
 
         // Toggle input fields for inline category-specific upload forms
@@ -2651,37 +2660,57 @@
                 let mockResult = '';
                 
                 if (activeToolType === 'flashcards') {
+                    const cards = [
+                        {
+                            question: `${title} là gì?`,
+                            answer: `Đây là câu trả lời mẫu cho ${title}`
+                        },
+                        {
+                            question: `${title} là gì?`,
+                            answer: `Đây là câu trả lời mẫu cho ${title}`
+                        },
+                        {
+                            question: `${title} là gì?`,
+                            answer: `Đây là câu trả lời mẫu cho ${title}`
+                        }
+                    ];
+
                     mockResult = `
-                    <div class="space-y-4 font-sans text-center">
-                        <p class="text-xs font-semibold text-slate-500">
-                            🏷️ Chủ đề: ${title}
-                        </p>
-                        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6">
-                            <div id="tool-front-1">
-                                <div class="text-[10px] font-bold text-slate-400 uppercase mb-3">
-                                    Question
+                        <div class="space-y-4 font-sans text-center">
+                            <p class="text-xs font-semibold text-slate-500">
+                                🏷️ Chủ đề: ${title}
+                            </p>
+                            ${cards.map((card, index) => `
+                            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6">
+                                <div id="tool-front-${index}">
+                                    <div class="text-[10px] font-bold text-slate-400 uppercase mb-3">
+                                        Question
+                                    </div>
+                                    <div class="text-sm font-bold text-slate-800 dark:text-slate-200">
+                                        ${card.question}
+                                    </div>
                                 </div>
-                                <div class="text-sm font-bold text-slate-800 dark:text-slate-200">
-                                    ${title} là gì?
-                                </div>
-                            </div>
-                            <div id="tool-back-1" class="hidden">
+                            <div id="tool-back-${index}" class="hidden">
                                 <div class="text-[10px] font-bold text-brand-500 uppercase mb-3">
                                     Answer
                                 </div>
-                            <div class="text-sm text-slate-700 dark:text-slate-300">
-                                Đây là câu trả lời mẫu cho ${title}
+                                <div class="text-sm text-slate-700 dark:text-slate-300">
+                                    ${card.answer}
+                                </div>
                             </div>
+
+                            <button 
+                                id="tool-btn-${index}"
+                                onclick="flipToolCard(${index})"
+                                class="mt-4 bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-xl text-xs font-bold"
+                            >
+                                Check the answer
+                            </button>
                         </div>
-                        <button
-                        onclick="flipToolCard(1)"
-                        class="mt-4 bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-xl text-xs font-bold"
-                        >
-                            flip
-                        </button>
+                    `).join('')}
+
                     </div>
-                </div>
-                `;
+                    `;
                 } else if (activeToolType === 'quiz') {
                     mockResult = `
                         <div class="space-y-4 font-sans text-left">
