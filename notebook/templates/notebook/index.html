@@ -153,10 +153,6 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                 <span>Tài nguyên học tập (Study Materials)</span>
             </button>
-            <button onclick="switchView('notes')" id="nav-notes" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                <span>Ghi chú & Phản biện</span>
-            </button>
             <button onclick="switchView('progress')" id="nav-progress" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10a2 2 0 01-2 2h-2a2 2 0 01-2-2zm9 0v-8a2 2 0 00-2-2h-2a2 2 0 00-2 2v8a2 2 0 002 2h2a2 2 0 002-2z"/></svg>
                 <span>Tiến độ & Phân tích</span>
@@ -432,11 +428,8 @@
                                 <button onclick="switchTab('sources')" id="tab-btn-sources" class="flex-1 py-2.5 text-center text-sm font-semibold rounded-lg transition bg-brand-50 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400">
                                     📁 Tài liệu liên quan
                                 </button>
-                                <button onclick="switchTab('notes')" id="tab-btn-notes" class="flex-1 py-2.5 text-center text-sm font-semibold rounded-lg transition text-slate-500 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white">
-                                    ✍️ Tự ghi chú & AI Phản biện
-                                </button>
                                 <button onclick="switchTab('ai-gen')" id="tab-btn-ai-gen" class="flex-1 py-2.5 text-center text-sm font-semibold rounded-lg transition text-slate-500 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white">
-                                    ✨ Công cụ tạo ra kiến thức AI
+                                    ✨ Tài nguyên học tập
                                 </button>
                             </div>
 
@@ -495,22 +488,7 @@
                                 </div>
                             </div>
 
-                            <!-- Tab Content 2: Notes & Lock/Unlock AI Flow -->
-                            <div id="tab-content-notes" class="hidden space-y-6">
-                                <!-- Create Note Form -->
-                                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
-                                    <h3 class="text-base font-bold text-slate-800 dark:text-white mb-4">+ Đặt câu hỏi phản biện mới</h3>
-                                    <form id="create-note-form" onsubmit="handleCreateNote(event)" class="flex gap-3">
-                                        <input type="text" id="note-title" required placeholder="Nhập chủ đề học tập bạn muốn tự viết ý kiến phản biện..." class="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition">
-                                        <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition shrink-0">
-                                            Khởi tạo
-                                        </button>
-                                    </form>
-                                </div>
-
-                                <!-- Dynamic notes list -->
-                                <div id="notes-list" class="space-y-4">
-                                <!-- Tab Content 3: AI study material generator -->
+                            <!-- Tab Content 3: AI study material generator -->
                             <div id="tab-content-ai-gen" class="hidden space-y-6">
                                 <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
                                     
@@ -525,40 +503,10 @@
                                                 </div>
                                             </div>
                                             
-                                            <div class="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl space-y-3 border border-slate-100 dark:border-slate-850/50">
-                                                <div class="text-[9px] font-bold text-slate-450 uppercase tracking-wider">Tài liệu cho phần Trắc nghiệm</div>
-                                                <div id="sources-list-quiz" class="space-y-2 max-h-36 overflow-y-auto"></div>
-                                                
-                                                <form id="inline-source-form-quiz" onsubmit="handleInlineSourceSubmit(event, 'quiz')" class="space-y-2 pt-2 border-t border-slate-200/50 dark:border-slate-800">
-                                                    <div class="flex gap-2">
-                                                        <select id="inline-source-type-quiz" onchange="toggleInlineFields('quiz')" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-600 dark:text-slate-400 font-semibold focus:outline-none w-1/3">
-                                                            <option value="file">📁 File PDF</option>
-                                                            <option value="text">✏️ Văn bản</option>
-                                                            <option value="link">🔗 Link</option>
-                                                        </select>
-                                                        <input type="text" id="inline-source-title-quiz" placeholder="Tiêu đề..." required class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-700 dark:text-slate-300 placeholder-slate-400 focus:outline-none w-2/3">
-                                                    </div>
-                                                    <div id="inline-field-file-quiz" class="w-full">
-                                                        <input type="file" id="inline-file-path-quiz" accept=".pdf" required class="block w-full text-[9px] text-slate-505 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[9px] file:font-semibold file:bg-brand-50 file:text-brand-700 dark:file:bg-slate-800 dark:file:text-slate-350">
-                                                    </div>
-                                                    <div id="inline-field-text-quiz" class="hidden w-full">
-                                                        <textarea id="inline-content-quiz" rows="2" placeholder="Nhập nội dung..." class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-755 dark:text-slate-300 focus:outline-none font-mono"></textarea>
-                                                    </div>
-                                                    <div id="inline-field-link-quiz" class="hidden w-full">
-                                                        <input type="url" id="inline-url-quiz" placeholder="https://..." class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-755 dark:text-slate-300 focus:outline-none">
-                                                    </div>
-                                                    <button type="submit" class="w-full bg-brand-500 hover:bg-brand-600 text-white font-bold py-1.5 rounded-lg text-[9px] transition">
-                                                        + Thêm tài liệu trắc nghiệm
-                                                    </button>
-                                                </form>
-                                            </div>
                                         </div>
                                         <div class="space-y-4 pt-2">
-                                            <button onclick="triggerAIGeneration('quiz')" class="w-full bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold py-2 rounded-xl text-[11px] shadow transition">
-                                                Yêu cầu hệ thống sinh Trắc nghiệm
-                                            </button>
-                                            <button onclick="openQuizBuilderModal()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2 rounded-xl text-[11px] shadow transition">
-                                                Tạo bộ câu hỏi thủ công
+                                            <button onclick="openCreateModal('quiz')" class="w-full bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold py-2 rounded-xl text-[11px] shadow transition">
+                                                + Tạo bộ câu hỏi Trắc nghiệm
                                             </button>
                                             <div id="quiz-sets-container" class="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-800"></div>
                                             <div id="ai-generations-quiz" class="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-800 max-h-96 overflow-y-auto"></div>
@@ -575,39 +523,13 @@
                                                     <p class="text-[10px] text-slate-400">Tóm tắt thuật ngữ dưới dạng hỏi và trả lời nhanh</p>
                                                 </div>
                                             </div>
-                                            
-                                            <div class="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl space-y-3 border border-slate-100 dark:border-slate-850/50">
-                                                <div class="text-[9px] font-bold text-slate-450 uppercase tracking-wider">Tài liệu cho phần Thẻ nhớ</div>
-                                                <div id="sources-list-flashcards" class="space-y-2 max-h-36 overflow-y-auto"></div>
-                                                
-                                                <form id="inline-source-form-flashcards" onsubmit="handleInlineSourceSubmit(event, 'flashcards')" class="space-y-2 pt-2 border-t border-slate-200/50 dark:border-slate-800">
-                                                    <div class="flex gap-2">
-                                                        <select id="inline-source-type-flashcards" onchange="toggleInlineFields('flashcards')" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-600 dark:text-slate-400 font-semibold focus:outline-none w-1/3">
-                                                            <option value="file">📁 File PDF</option>
-                                                            <option value="text">✏️ Văn bản</option>
-                                                            <option value="link">🔗 Link</option>
-                                                        </select>
-                                                        <input type="text" id="inline-source-title-flashcards" placeholder="Tiêu đề..." required class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-700 dark:text-slate-300 placeholder-slate-400 focus:outline-none w-2/3">
-                                                    </div>
-                                                    <div id="inline-field-file-flashcards" class="w-full">
-                                                        <input type="file" id="inline-file-path-flashcards" accept=".pdf" required class="block w-full text-[9px] text-slate-505 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[9px] file:font-semibold file:bg-brand-50 file:text-brand-700 dark:file:bg-slate-800 dark:file:text-slate-350">
-                                                    </div>
-                                                    <div id="inline-field-text-flashcards" class="hidden w-full">
-                                                        <textarea id="inline-content-flashcards" rows="2" placeholder="Nhập nội dung..." class="w-full bg-white dark:bg-slate-900 border border-slate-200 border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-755 dark:text-slate-300 focus:outline-none font-mono"></textarea>
-                                                    </div>
-                                                    <div id="inline-field-link-flashcards" class="hidden w-full">
-                                                        <input type="url" id="inline-url-flashcards" placeholder="https://..." class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-755 dark:text-slate-300 focus:outline-none">
-                                                    </div>
-                                                    <button type="submit" class="w-full bg-brand-500 hover:bg-brand-600 text-white font-bold py-1.5 rounded-lg text-[9px] transition">
-                                                        + Thêm tài liệu thẻ nhớ
-                                                    </button>
-                                                </form>
-                                            </div>
                                         </div>
                                         <div class="space-y-4 pt-2">
-                                            <button onclick="triggerAIGeneration('flashcards')" class="w-full bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold py-2 rounded-xl text-[11px] shadow transition">
-                                                Yêu cầu hệ thống sinh Thẻ nhớ
+                                            <button onclick="openCreateModal('flashcards')" class="w-full bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold py-2 rounded-xl text-[11px] shadow transition">
+                                                + Tạo Thẻ nhớ thông minh
                                             </button>
+                                        </div>
+                                        <div class="space-y-4 pt-2">
                                             <div id="ai-generations-flashcards" class="space-y-3 pt-1 border-t border-slate-100 dark:border-slate-800 max-h-96 overflow-y-auto"></div>
                                         </div>
                                     </div>
@@ -623,37 +545,10 @@
                                                 </div>
                                             </div>
                                             
-                                            <div class="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl space-y-3 border border-slate-100 dark:border-slate-850/50">
-                                                <div class="text-[9px] font-bold text-slate-450 uppercase tracking-wider">Tài liệu cho phần Sơ đồ tư duy</div>
-                                                <div id="sources-list-mind_map" class="space-y-2 max-h-36 overflow-y-auto"></div>
-                                                
-                                                <form id="inline-source-form-mind_map" onsubmit="handleInlineSourceSubmit(event, 'mind_map')" class="space-y-2 pt-2 border-t border-slate-200/50 dark:border-slate-800">
-                                                    <div class="flex gap-2">
-                                                        <select id="inline-source-type-mind_map" onchange="toggleInlineFields('mind_map')" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-600 dark:text-slate-400 font-semibold focus:outline-none w-1/3">
-                                                            <option value="file">📁 File PDF</option>
-                                                            <option value="text">✏️ Văn bản</option>
-                                                            <option value="link">🔗 Link</option>
-                                                        </select>
-                                                        <input type="text" id="inline-source-title-mind_map" placeholder="Tiêu đề..." required class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-700 dark:text-slate-300 placeholder-slate-400 focus:outline-none w-2/3">
-                                                    </div>
-                                                    <div id="inline-field-file-mind_map" class="w-full">
-                                                        <input type="file" id="inline-file-path-mind_map" accept=".pdf" required class="block w-full text-[9px] text-slate-505 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[9px] file:font-semibold file:bg-brand-50 file:text-brand-700 dark:file:bg-slate-800 dark:file:text-slate-350">
-                                                    </div>
-                                                    <div id="inline-field-text-mind_map" class="hidden w-full">
-                                                        <textarea id="inline-content-mind_map" rows="2" placeholder="Nhập nội dung..." class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-755 dark:text-slate-300 focus:outline-none font-mono"></textarea>
-                                                    </div>
-                                                    <div id="inline-field-link-mind_map" class="hidden w-full">
-                                                        <input type="url" id="inline-url-mind_map" placeholder="https://..." class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-755 dark:text-slate-300 focus:outline-none">
-                                                    </div>
-                                                    <button type="submit" class="w-full bg-brand-500 hover:bg-brand-600 text-white font-bold py-1.5 rounded-lg text-[9px] transition">
-                                                        + Thêm tài liệu sơ đồ tư duy
-                                                    </button>
-                                                </form>
-                                            </div>
                                         </div>
                                         <div class="space-y-4 pt-2">
-                                            <button onclick="triggerAIGeneration('mind_map')" class="w-full bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold py-2 rounded-xl text-[11px] shadow transition">
-                                                Yêu cầu hệ thống sinh Sơ đồ tư duy
+                                            <button onclick="openCreateModal('mindmap')" class="w-full bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold py-2 rounded-xl text-[11px] shadow transition">
+                                                + Tạo Sơ đồ tư duy
                                             </button>
                                             <div id="ai-generations-mind_map" class="space-y-3 pt-1 border-t border-slate-100 dark:border-slate-800 max-h-96 overflow-y-auto flex flex-col justify-center"></div>
                                         </div>
@@ -670,37 +565,10 @@
                                                 </div>
                                             </div>
                                             
-                                            <div class="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl space-y-3 border border-slate-100 dark:border-slate-850/50">
-                                                <div class="text-[9px] font-bold text-slate-450 uppercase tracking-wider">Tài liệu cho phần Báo cáo</div>
-                                                <div id="sources-list-report" class="space-y-2 max-h-36 overflow-y-auto"></div>
-                                                
-                                                <form id="inline-source-form-report" onsubmit="handleInlineSourceSubmit(event, 'report')" class="space-y-2 pt-2 border-t border-slate-200/50 dark:border-slate-800">
-                                                    <div class="flex gap-2">
-                                                        <select id="inline-source-type-report" onchange="toggleInlineFields('report')" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-600 dark:text-slate-400 font-semibold focus:outline-none w-1/3">
-                                                            <option value="file">📁 File PDF</option>
-                                                            <option value="text">✏️ Văn bản</option>
-                                                            <option value="link">🔗 Link</option>
-                                                        </select>
-                                                        <input type="text" id="inline-source-title-report" placeholder="Tiêu đề..." required class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-700 dark:text-slate-300 placeholder-slate-400 focus:outline-none w-2/3">
-                                                    </div>
-                                                    <div id="inline-field-file-report" class="w-full">
-                                                        <input type="file" id="inline-file-path-report" accept=".pdf" required class="block w-full text-[9px] text-slate-550 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[9px] file:font-semibold file:bg-brand-50 file:text-brand-700 dark:file:bg-slate-800 dark:file:text-slate-350">
-                                                    </div>
-                                                    <div id="inline-field-text-report" class="hidden w-full">
-                                                        <textarea id="inline-content-report" rows="2" placeholder="Nhập nội dung..." class="w-full bg-white dark:bg-slate-900 border border-slate-200 border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-755 dark:text-slate-300 focus:outline-none font-mono"></textarea>
-                                                    </div>
-                                                    <div id="inline-field-link-report" class="hidden w-full">
-                                                        <input type="url" id="inline-url-report" placeholder="https://..." class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-755 dark:text-slate-300 focus:outline-none">
-                                                    </div>
-                                                    <button type="submit" class="w-full bg-brand-500 hover:bg-brand-600 text-white font-bold py-1.5 rounded-lg text-[9px] transition">
-                                                        + Thêm tài liệu báo cáo
-                                                    </button>
-                                                </form>
-                                            </div>
                                         </div>
                                         <div class="space-y-4 pt-2">
-                                            <button onclick="triggerAIGeneration('report')" class="w-full bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold py-2 rounded-xl text-[11px] shadow transition">
-                                                Yêu cầu hệ thống sinh Báo cáo
+                                            <button onclick="openCreateModal('report')" class="w-full bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold py-2 rounded-xl text-[11px] shadow transition">
+                                                + Tạo Báo cáo tóm tắt
                                             </button>
                                             <div id="ai-generations-report" class="space-y-3 pt-1 border-t border-slate-100 dark:border-slate-800 max-h-96 overflow-y-auto"></div>
                                         </div>
@@ -708,12 +576,8 @@
                                     
                                 </div>
                             </div>
-                                </div>
-                            </div>
-
                         </div>
                     </div>
-
                 </div>
             </section>
 
@@ -759,29 +623,29 @@
             <section id="view-progress" class="hidden space-y-6">
                 <div>
                     <h2 class="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">Thống kê tiến độ tự học</h2>
-                    <p class="text-xs text-slate-400 mt-1">Biểu đồ phân tích chi tiết tiến trình học của bạn thông qua việc tạo sổ tay và viết bài phản biện.</p>
+                    <p class="text-xs text-slate-400 mt-1">Theo dõi tiến trình hoàn thiện tài nguyên học tập của bạn.</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
                         <div>
-                            <h3 class="font-bold text-slate-800 dark:text-white text-sm mb-4">Các chỉ số hoạt động tiêu biểu</h3>
+                            <h3 class="font-bold text-slate-800 dark:text-white text-sm mb-4">Các chỉ số nỗ lực học tập</h3>
                             <div class="space-y-4">
                                 <div class="flex justify-between items-center">
-                                    <span class="text-xs text-slate-500">Mức độ tương tác AI:</span>
+                                    <span class="text-xs text-slate-500">Điểm chuyên cần:</span>
                                     <span class="text-xs font-bold text-brand-600 dark:text-brand-400">Rất Cao (92/100)</span>
                                 </div>
                                 <div class="flex justify-between items-center">
-                                    <span class="text-xs text-slate-500">Lượt viết phản biện:</span>
-                                    <span id="progress-notes-written" class="text-xs font-bold">0 bài viết</span>
+                                    <span class="text-xs text-slate-500">Tổng bộ Flashcard / Quiz đã tạo:</span>
+                                    <span id="progress-quiz-flashcard-count" class="text-xs font-bold">0 bộ</span>
                                 </div>
                                 <div class="flex justify-between items-center">
                                     <span class="text-xs text-slate-500">Tổng tài liệu tham chiếu:</span>
                                     <span id="progress-sources-count" class="text-xs font-bold">0 tài liệu</span>
                                 </div>
                                 <div class="flex justify-between items-center">
-                                    <span class="text-xs text-slate-500">Số tài liệu học tập đã tạo ra:</span>
-                                    <span id="progress-ai-gen-count" class="text-xs font-bold">0 tài liệu</span>
+                                    <span class="text-xs text-slate-500">Tổng Sơ đồ tư duy & Report:</span>
+                                    <span id="progress-mindmap-report-count" class="text-xs font-bold">0 tài liệu</span>
                                 </div>
                             </div>
                         </div>
@@ -791,11 +655,11 @@
                     </div>
                     
                     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
-                        <h3 class="font-bold text-slate-800 dark:text-white text-sm mb-4">Đánh giá kỹ năng học sâu</h3>
+                        <h3 class="font-bold text-slate-800 dark:text-white text-sm mb-4">Tiến độ xây dựng Tài nguyên</h3>
                         <div class="space-y-4">
                             <div>
                                 <div class="flex justify-between text-xs mb-1">
-                                    <span>Tự luận logic</span>
+                                    <span>Hoàn thiện Tài liệu đọc</span>
                                     <span class="font-semibold">75%</span>
                                 </div>
                                 <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
@@ -804,7 +668,7 @@
                             </div>
                             <div>
                                 <div class="flex justify-between text-xs mb-1">
-                                    <span>Tổng hợp tài liệu liên quan</span>
+                                    <span>Hoàn thiện Bộ câu hỏi ôn tập</span>
                                     <span class="font-semibold">88%</span>
                                 </div>
                                 <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
@@ -813,7 +677,7 @@
                             </div>
                             <div>
                                 <div class="flex justify-between text-xs mb-1">
-                                    <span>Tốc độ tiếp thu & Nhớ bài</span>
+                                    <span>Hoàn thiện Sơ đồ tổng kết</span>
                                     <span class="font-semibold">60%</span>
                                 </div>
                                 <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
@@ -3094,11 +2958,11 @@
                                 ` : ``}
                                 ${!isQuiz && item.generation_type === 'flashcards' ? `
                                     <button onclick="openFlashcardReviewModal(${item.id})" class="text-xs bg-brand-600 hover:bg-brand-700 text-white px-2.5 py-1.5 rounded-xl font-semibold transition">Xem lại</button>
-                                    <button onclick="openFlashcardEditorModal(${item.id})" class="text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-slate-600 dark:text-slate-350 hover:bg-slate-100 font-semibold">Sửa</button>
+                                    <button onclick="openFlashcardEditorModal(${item.id})" class="text-xs bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1.5 rounded-xl font-semibold transition">Sửa</button>
                                 ` : ``}
                                 ${!isQuiz && item.generation_type === 'quiz' ? `
                                     <button onclick="openQuizReviewModal(${item.id})" class="text-xs bg-brand-600 hover:bg-brand-700 text-white px-2.5 py-1.5 rounded-xl font-semibold transition">Xem lại</button>
-                                    <button onclick="openQuizGenerationEditorModal(${item.id})" class="text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-slate-600 dark:text-slate-350 hover:bg-slate-100 font-semibold">Sửa</button>
+                                    <button onclick="openQuizGenerationEditorModal(${item.id})" class="text-xs bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1.5 rounded-xl font-semibold transition">Sửa</button>
                                 ` : ``}
                                 ${item.notebookId ? `<button onclick="switchView('notebooks'); selectNotebook(${item.notebookId});" class="text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-slate-600 dark:text-slate-350 hover:bg-slate-100 font-semibold">Xem Sổ tay</button>` : ''}
                             </div>
@@ -3464,7 +3328,7 @@
                     
                     // Refresh
                     await loadNotebooks();
-                    switchView('dashboard');
+                    switchView('notebooks');
                 } else {
                     alert("Không thể xóa Sổ tay. Vui lòng thử lại.");
                 }
