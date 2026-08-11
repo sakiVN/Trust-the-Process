@@ -246,6 +246,42 @@ class NotebookAPITests(APITestCase):
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_create_generation_without_notebook_allowed(self):
+        """API: Study material can be created without linking to a notebook."""
+        url = reverse('generation-list')
+        data = {
+            'generation_type': 'quiz',
+            'content': '[]',
+            'notebook': ''
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertIsNone(response.data['notebook'])
+        self.assertEqual(AIGeneration.objects.count(), 1)
+
+    def test_create_quiz_with_more_than_50_questions_fails(self):
+        """API: Quiz sets cannot exceed 50 questions."""
+        url = reverse('quizset-list')
+        questions = []
+        for i in range(51):
+            questions.append({
+                'question_text': f'Câu hỏi {i + 1}',
+                'options': ['A', 'B', 'C', 'D'],
+                'correct_option': 'A',
+                'explanation': 'Giải thích mẫu'
+            })
+
+        response = self.client.post(url, {
+            'name': 'Chủ đề test quá 50 câu',
+            'description': 'Chủ đề mẫu',
+            'tag': 'Bài tập trắc nghiệm',
+            'notebook': None,
+            'questions': questions
+        }, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('questions', response.data)
+
     def test_delete_source_api(self):
         """API: Successfully delete a source document."""
         source = Source.objects.create(
