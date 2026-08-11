@@ -91,7 +91,7 @@ class AIGeneration(models.Model):
         ('infographics', 'Infographics'),
         ('data_table', 'Data Table'),
     ]
-    notebook = models.ForeignKey(Notebook, on_delete=models.CASCADE, related_name='generations')
+    notebook = models.ForeignKey(Notebook, on_delete=models.CASCADE, related_name='generations', blank=True, null=True)
     generation_type = models.CharField(max_length=50, choices=GENERATION_TYPES)
     content = models.TextField(help_text="Stores the AI-generated output (can be text, markdown, or JSON).")
     created_at = models.DateTimeField(auto_now_add=True)

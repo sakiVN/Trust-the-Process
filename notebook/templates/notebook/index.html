@@ -147,7 +147,11 @@
             </button>
             <button onclick="switchView('documents')" id="nav-documents" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                <span>Tài liệu (Sources)</span>
+                <span>Tài liệu liên quan</span>
+            </button>
+            <button onclick="switchView('study-materials')" id="nav-study-materials" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                <span>Tài nguyên học tập (Study Materials)</span>
             </button>
             <button onclick="switchView('notes')" id="nav-notes" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
@@ -349,7 +353,7 @@
                             <input type="text" id="table-search" oninput="filterTable()" placeholder="Lọc nhanh tại bảng..." class="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand-500">
                             <select id="table-filter-type" onchange="filterTable()" class="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs focus:outline-none text-slate-600 dark:text-slate-400">
                                 <option value="all">Tất cả loại</option>
-                                <option value="source">Tài liệu (Source)</option>
+                                <option value="source">Tài liệu liên quan</option>
                                 <option value="note">Ghi chú (Note)</option>
                             </select>
                         </div>
@@ -426,7 +430,7 @@
                             <!-- Tab switches -->
                             <div class="flex border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl p-1 shadow-sm">
                                 <button onclick="switchTab('sources')" id="tab-btn-sources" class="flex-1 py-2.5 text-center text-sm font-semibold rounded-lg transition bg-brand-50 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400">
-                                    📁 Tài liệu nguồn (Sources)
+                                    📁 Tài liệu liên quan
                                 </button>
                                 <button onclick="switchTab('notes')" id="tab-btn-notes" class="flex-1 py-2.5 text-center text-sm font-semibold rounded-lg transition text-slate-500 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white">
                                     ✍️ Tự ghi chú & AI Phản biện
@@ -440,7 +444,7 @@
                             <div id="tab-content-sources" class="space-y-6">
                                 <!-- Add Source Form -->
                                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
-                                    <h3 class="text-base font-bold text-slate-800 dark:text-white mb-4">+ Thêm tài liệu học tập mới</h3>
+                                    <h3 class="text-base font-bold text-slate-800 dark:text-white mb-4">+ Thêm tài liệu liên quan mới</h3>
                                     <form id="add-source-form" onsubmit="handleAddSource(event)" class="space-y-4">
                                         <div>
                                             <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Tên tài liệu / Chủ đề</label>
@@ -469,15 +473,23 @@
                                             <textarea id="source-content" required rows="5" placeholder="Sao chép nội dung sách học, tài liệu, bài giảng hoặc nghiên cứu vào đây..." class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition"></textarea>
                                         </div>
                                         <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl text-sm shadow transition">
-                                            Lưu tài liệu nguồn
+                                            Lưu tài liệu liên quan
                                         </button>
                                     </form>
                                 </div>
 
                                 <!-- Registered Sources List -->
                                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
-                                    <h3 class="text-base font-bold text-slate-800 dark:text-white mb-4">Các tài liệu nguồn đã tải lên</h3>
+                                    <h3 class="text-base font-bold text-slate-800 dark:text-white mb-4">Các tài liệu liên quan đã tải lên</h3>
                                     <div id="sources-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <!-- Loaded dynamically -->
+                                    </div>
+                                </div>
+
+                                <!-- AI Generated Content Display -->
+                                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+                                    <h3 class="text-base font-bold text-slate-800 dark:text-white mb-4">Các tài liệu học tập đã tạo</h3>
+                                    <div id="ai-generations-container" class="space-y-6">
                                         <!-- Loaded dynamically -->
                                     </div>
                                 </div>
@@ -697,14 +709,6 @@
                                 </div>
                             </div>
                                 </div>
-
-                                <!-- AI Generated Content Display -->
-                                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
-                                    <h3 class="text-base font-bold text-slate-800 dark:text-white mb-4">Các tài liệu AI đã tạo</h3>
-                                    <div id="ai-generations-container" class="space-y-6">
-                                        <!-- Loaded dynamically -->
-                                    </div>
-                                </div>
                             </div>
 
                         </div>
@@ -727,7 +731,19 @@
                 </div>
             </section>
 
-            <!-- 4. VIEW: NOTES (UNIFIED LIST VIEW) -->
+            <!-- 4. VIEW: STUDY MATERIALS -->
+            <section id="view-study-materials" class="hidden space-y-6">
+                <div>
+                    <h2 class="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">Tài nguyên học tập</h2>
+                    <p class="text-xs text-slate-400 mt-1">Tổng hợp tất cả quiz, flashcard và các tài liệu học tập đã tạo để bạn xem, làm bài và quản lý nhanh.</p>
+                </div>
+
+                <div id="all-study-materials-list" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Loaded dynamically -->
+                </div>
+            </section>
+
+            <!-- 5. VIEW: NOTES (UNIFIED LIST VIEW) -->
             <section id="view-notes" class="hidden space-y-6">
                 <div>
                     <h2 class="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">Ghi chú & Phản biện AI</h2>
@@ -739,7 +755,7 @@
                 </div>
             </section>
 
-            <!-- 5. VIEW: PROGRESS & ANALYTICS -->
+            <!-- 6. VIEW: PROGRESS & ANALYTICS -->
             <section id="view-progress" class="hidden space-y-6">
                 <div>
                     <h2 class="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">Thống kê tiến độ tự học</h2>
@@ -764,7 +780,7 @@
                                     <span id="progress-sources-count" class="text-xs font-bold">0 tài liệu</span>
                                 </div>
                                 <div class="flex justify-between items-center">
-                                    <span class="text-xs text-slate-500">Số tài liệu AI đã tạo ra:</span>
+                                    <span class="text-xs text-slate-500">Số tài liệu học tập đã tạo ra:</span>
                                     <span id="progress-ai-gen-count" class="text-xs font-bold">0 tài liệu</span>
                                 </div>
                             </div>
@@ -788,7 +804,7 @@
                             </div>
                             <div>
                                 <div class="flex justify-between text-xs mb-1">
-                                    <span>Tổng hợp tài liệu nguồn</span>
+                                    <span>Tổng hợp tài liệu liên quan</span>
                                     <span class="font-semibold">88%</span>
                                 </div>
                                 <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
@@ -1056,7 +1072,7 @@
             activeView = viewName;
             
             // Toggle view visibility
-            ['dashboard', 'notebooks', 'documents', 'notes', 'progress', 'settings'].forEach(v => {
+            ['dashboard', 'notebooks', 'documents', 'study-materials', 'notes', 'progress', 'settings'].forEach(v => {
                 const el = document.getElementById(`view-${v}`);
                 if (el) {
                     el.classList.toggle('hidden', v !== viewName);
@@ -1080,6 +1096,8 @@
                 setTimeout(renderCharts, 100);
             } else if (viewName === 'documents') {
                 renderAllDocumentsView();
+            } else if (viewName === 'study-materials') {
+                renderStudyMaterialsView();
             } else if (viewName === 'notes') {
                 renderAllNotesView();
             } else if (viewName === 'progress') {
@@ -1327,7 +1345,7 @@
                 // Render tabs content
                 renderSources(notebook.sources || []);
                 renderNotes(notebook.notes || []);
-                renderAIGenerations(notebook.generations || []);
+                renderAIGenerations(notebook.generations || [], notebook.quizzes || []);
                 renderQuizSets(notebook.quizzes || []);
                 populateNotebookSelectors();
                 
@@ -1338,7 +1356,7 @@
                     const catContainer = document.getElementById(`sources-list-${cat}`);
                     if (catContainer) {
                         if (catSources.length === 0) {
-                            catContainer.innerHTML = `<div class="text-[10px] text-slate-400 italic py-1">Chưa có tài liệu nguồn cho phần này.</div>`;
+                            catContainer.innerHTML = `<div class="text-[10px] text-slate-400 italic py-1">Chưa có tài liệu liên quan cho phần này.</div>`;
                         } else {
                             catContainer.innerHTML = catSources.map(src => {
                                 let badge = '';
@@ -1470,7 +1488,7 @@
                     alert("Lỗi: " + JSON.stringify(data));
                 }
             } catch (err) {
-                console.error("Lỗi khi thêm tài liệu nguồn:", err);
+                console.error("Lỗi khi thêm tài liệu liên quan:", err);
             }
         }
 
@@ -1480,7 +1498,7 @@
             if (!container) return;
             
             if (sources.length === 0) {
-                container.innerHTML = `<div class="col-span-full text-xs text-slate-400 text-center py-8">Chưa tải tài liệu nguồn nào lên.</div>`;
+                container.innerHTML = `<div class="col-span-full text-xs text-slate-400 text-center py-8">Chưa có tài liệu liên quan nào được lưu.</div>`;
                 return;
             }
             container.innerHTML = sources.map(src => `
@@ -1990,31 +2008,81 @@
             }
         }
 
-        // Render AI generated documents in split workspace category containers
-        function renderAIGenerations(generations) {
+        // Render AI generated documents / study materials in split workspace category containers
+        function renderAIGenerations(generations, quizzes = []) {
             const categories = ['quiz', 'flashcards', 'mind_map', 'report'];
+            const allStudyMaterials = [...(generations || []), ...(quizzes || []).map(q => ({
+                ...q,
+                generation_type: 'quiz',
+                isQuizSet: true,
+                created_at: q.created_at || new Date().toISOString()
+            }))];
+            const genericContainer = document.getElementById('ai-generations-container');
             
             // Clear containers
             categories.forEach(cat => {
                 const el = document.getElementById(`ai-generations-${cat}`);
                 if (el) el.innerHTML = '';
             });
+            if (genericContainer) genericContainer.innerHTML = '';
             
-            if (generations.length === 0) {
+            if (allStudyMaterials.length === 0) {
                 categories.forEach(cat => {
                     const el = document.getElementById(`ai-generations-${cat}`);
-                    if (el) el.innerHTML = `<div class="text-[10px] text-slate-400 italic text-center py-4 bg-slate-50 dark:bg-slate-950/40 border border-dashed border-slate-200 dark:border-slate-850 rounded-xl">Chưa có kết quả. Nhấp nút phía trên để sinh dữ liệu.</div>`;
+                    if (el) el.innerHTML = `<div class="text-[10px] text-slate-400 italic text-center py-4 bg-slate-50 dark:bg-slate-950/40 border border-dashed border-slate-200 dark:border-slate-850 rounded-xl">Chưa có Study Materials nào trong notebook này. Hãy tạo quiz hoặc tài liệu học tập mới.</div>`;
                 });
+                if (genericContainer) {
+                    genericContainer.innerHTML = `<div class="text-[10px] text-slate-400 italic text-center py-4 bg-slate-50 dark:bg-slate-950/40 border border-dashed border-slate-200 dark:border-slate-850 rounded-xl">Chưa có tài liệu học tập nào được tạo trong notebook này.</div>`;
+                }
                 return;
+            }
+
+            if (genericContainer) {
+                const labelMap = {
+                    quiz: 'Bài tập trắc nghiệm',
+                    flashcards: 'Flashcards',
+                    mind_map: 'Mind Map',
+                    report: 'Báo cáo',
+                    audio_overview: 'Audio Overview',
+                    presentation: 'Presentation',
+                    video_overview: 'Video Overview',
+                    infographics: 'Infographics',
+                    data_table: 'Data Table'
+                };
+
+                genericContainer.innerHTML = allStudyMaterials.slice().reverse().map(gen => {
+                    const label = labelMap[gen.generation_type] || 'Tài liệu học tập';
+                    let preview = 'Tài liệu học tập đã lưu.';
+                    try {
+                        const raw = String(gen.content || '').trim();
+                        if (raw) {
+                            const contentPreview = raw.replace(/```/g, '').replace(/<[^>]*>/g, '').trim();
+                            preview = contentPreview.length > 120 ? `${contentPreview.slice(0, 120)}...` : contentPreview;
+                        }
+                    } catch (err) {
+                        preview = 'Tài liệu học tập đã lưu.';
+                    }
+
+                    return `
+                        <div class="border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm space-y-3">
+                            <div class="flex justify-between items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-2">
+                                <span class="text-[9px] uppercase tracking-wider font-bold text-slate-500">${label}</span>
+                                <button onclick="deleteGeneration(${gen.id})" class="text-[10px] text-rose-500 hover:text-rose-700 font-bold hover:underline" title="Xóa kết quả">Xóa</button>
+                            </div>
+                            <p class="text-xs text-slate-700 dark:text-slate-300 line-clamp-4">${preview}</p>
+                            <div class="text-[10px] text-slate-400">${new Date(gen.created_at).toLocaleString('vi-VN')}</div>
+                        </div>
+                    `;
+                }).join('');
             }
             
             categories.forEach(cat => {
-                const catGens = generations.filter(g => g.generation_type === cat);
+                const catGens = allStudyMaterials.filter(g => g.generation_type === cat || (cat === 'quiz' && g.isQuizSet));
                 const el = document.getElementById(`ai-generations-${cat}`);
                 if (!el) return;
                 
                 if (catGens.length === 0) {
-                    el.innerHTML = `<div class="text-[10px] text-slate-400 italic text-center py-4 bg-slate-50 dark:bg-slate-950/40 border border-dashed border-slate-200 dark:border-slate-850 rounded-xl">Chưa có kết quả. Nhấp nút phía trên để sinh dữ liệu.</div>`;
+                    el.innerHTML = `<div class="text-[10px] text-slate-400 italic text-center py-4 bg-slate-50 dark:bg-slate-950/40 border border-dashed border-slate-200 dark:border-slate-850 rounded-xl">Chưa có Study Materials nào trong notebook này. Hãy tạo quiz hoặc tài liệu học tập mới.</div>`;
                     return;
                 }
                 
@@ -2194,6 +2262,73 @@
             `).join('');
         }
 
+        function renderStudyMaterialsView() {
+            const container = document.getElementById('all-study-materials-list');
+            if (!container) return;
+
+            let allMaterials = [];
+            notebooks.forEach(nb => {
+                (nb.quizzes || []).forEach(quiz => {
+                    allMaterials.push({ ...quiz, notebookName: nb.name, notebookId: nb.id, materialType: 'quiz' });
+                });
+                (nb.generations || []).forEach(gen => {
+                    allMaterials.push({ ...gen, notebookName: nb.name, notebookId: nb.id, materialType: 'generation' });
+                });
+            });
+
+            if (allMaterials.length === 0) {
+                container.innerHTML = `<div class="col-span-full text-xs text-slate-400 text-center py-12">Chưa có tài nguyên học tập nào. Hãy tạo quiz, flashcards hoặc nội dung AI từ sổ tay của bạn.</div>`;
+                return;
+            }
+
+            const generationLabel = {
+                quiz: 'Bài tập trắc nghiệm',
+                flashcards: 'Flashcards',
+                mind_map: 'Mind Map',
+                report: 'Báo cáo',
+                audio_overview: 'Audio Overview',
+                presentation: 'Presentation',
+                video_overview: 'Video Overview',
+                infographics: 'Infographics',
+                data_table: 'Data Table'
+            };
+
+            container.innerHTML = allMaterials.map(item => {
+                const isQuiz = item.materialType === 'quiz';
+                const label = isQuiz ? 'Bài tập trắc nghiệm' : (generationLabel[item.generation_type] || 'Tài liệu học tập');
+                const title = isQuiz ? item.name : `${item.generation_type ? (generationLabel[item.generation_type] || item.generation_type) : 'Tài liệu học tập'}`;
+                const summary = isQuiz
+                    ? (item.description || 'Bộ câu hỏi trắc nghiệm đã lưu.')
+                    : (item.content ? String(item.content).replace(/<[^>]*>/g, '').slice(0, 180) : 'Không có mô tả nội dung.');
+
+                return `
+                    <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm hover:scale-[1.01] hover:shadow-md transition">
+                        <div class="flex justify-between items-start gap-3">
+                            <div class="min-w-0">
+                                <span class="text-[9px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full ${isQuiz ? 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' : 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300'}">
+                                    ${label}
+                                </span>
+                                <h4 class="font-bold text-slate-850 dark:text-white text-sm mt-2 truncate">${title}</h4>
+                            </div>
+                            <div class="flex items-center gap-2 shrink-0">
+                                ${isQuiz ? `<button onclick="openQuizPlayModal(${item.id})" class="text-xs bg-brand-600 hover:bg-brand-700 text-white px-2.5 py-1.5 rounded-xl font-semibold transition">Làm bài</button>` : ``}
+                                ${item.notebookId ? `<button onclick="switchView('notebooks'); selectNotebook(${item.notebookId});" class="text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-slate-600 dark:text-slate-350 hover:bg-slate-100 font-semibold">Xem Sổ tay</button>` : ''}
+                            </div>
+                        </div>
+
+                        <p class="text-[10px] text-slate-500 dark:text-slate-400 line-clamp-4 bg-slate-50 dark:bg-slate-900/40 p-3 rounded-xl border border-slate-100 dark:border-slate-800 mt-3">
+                            ${summary}
+                        </p>
+
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center text-[10px] text-slate-400 pt-3 border-t border-slate-100 dark:border-slate-800 mt-3 gap-2">
+                            <span>Sổ tay: <strong>${item.notebookName || 'Không liên kết'}</strong></span>
+                            <span>${new Date(item.created_at || Date.now()).toLocaleDateString('vi-VN')}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
         // Render unified view: Notes (Thoughts)
         function renderAllNotesView() {
             const container = document.getElementById('all-notes-list');
@@ -2255,7 +2390,7 @@
                     activities.push({
                         id: src.id,
                         name: src.title,
-                        type: 'Tài liệu (Source)',
+                        type: 'Tài liệu liên quan',
                         notebookName: nb.name,
                         notebookId: nb.id,
                         date: new Date(src.created_at || Date.now()),
@@ -2480,7 +2615,7 @@
                     method: 'DELETE'
                 });
                 if (res.ok) {
-                    alert("Đã xóa tài liệu nguồn thành công!");
+                    alert("Đã xóa tài liệu liên quan thành công!");
                     // Refresh data
                     await loadNotebooks();
                     if (activeNotebookId) {

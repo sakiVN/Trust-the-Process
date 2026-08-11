@@ -104,7 +104,7 @@ class NotebookViewSet(viewsets.ModelViewSet):
         sources = notebook.sources.filter(category=generation_type)
         if not sources.exists():
             return Response(
-                {"error": f"Không tìm thấy tài liệu nguồn nào cho phần ôn tập này. Vui lòng tải tài liệu lên trước khi yêu cầu sinh nội dung!"},
+                {"error": f"Không tìm thấy tài liệu liên quan nào cho phần ôn tập này. Vui lòng tải tài liệu lên trước khi yêu cầu sinh nội dung!"},
                 status=status.HTTP_400_BAD_REQUEST
             )
             

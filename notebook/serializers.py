@@ -63,10 +63,17 @@ class SourceSerializer(serializers.ModelSerializer):
         read_only_fields = ['notebook', 'created_at']
 
 class AIGenerationSerializer(serializers.ModelSerializer):
+    notebook = serializers.PrimaryKeyRelatedField(queryset=Notebook.objects.all(), required=False, allow_null=True)
+
     class Meta:
         model = AIGeneration
         fields = ['id', 'notebook', 'generation_type', 'content', 'created_at']
         read_only_fields = ['created_at']
+
+    def validate_notebook(self, value):
+        if value == '':
+            return None
+        return value
 
 class QuizQuestionSerializer(serializers.ModelSerializer):
     class Meta:
@@ -75,13 +82,24 @@ class QuizQuestionSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'order']
 
 class QuizSetSerializer(serializers.ModelSerializer):
-    questions = QuizQuestionSerializer(many=True)
+    questions = QuizQuestionSerializer(many=True, required=False)
     attempts_count = serializers.IntegerField(source='attempts.count', read_only=True)
 
     class Meta:
         model = QuizSet
         fields = ['id', 'user', 'notebook', 'name', 'description', 'tag', 'questions', 'attempts_count', 'created_at', 'updated_at']
         read_only_fields = ['id', 'created_at', 'updated_at', 'user', 'attempts_count']
+
+    def validate(self, attrs):
+        questions_data = attrs.get('questions', [])
+        if questions_data is not None and len(questions_data) > 50:
+            raise serializers.ValidationError({
+                'questions': 'Bộ câu hỏi không được vượt quá 50 câu hỏi.'
+            })
+        notebook = attrs.get('notebook')
+        if notebook == '':
+            attrs['notebook'] = None
+        return attrs
 
     def create(self, validated_data):
         questions_data = validated_data.pop('questions', [])
