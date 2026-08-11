@@ -545,7 +545,11 @@
                                             <button onclick="triggerAIGeneration('quiz')" class="w-full bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold py-2 rounded-xl text-[11px] shadow transition">
                                                 Yêu cầu hệ thống sinh Trắc nghiệm
                                             </button>
-                                            <div id="ai-generations-quiz" class="space-y-3 pt-1 border-t border-slate-100 dark:border-slate-800 max-h-96 overflow-y-auto"></div>
+                                            <button onclick="openQuizBuilderModal()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2 rounded-xl text-[11px] shadow transition">
+                                                Tạo bộ câu hỏi thủ công
+                                            </button>
+                                            <div id="quiz-sets-container" class="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-800"></div>
+                                            <div id="ai-generations-quiz" class="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-800 max-h-96 overflow-y-auto"></div>
                                         </div>
                                     </div>
                                     
@@ -889,6 +893,12 @@
                         <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 pl-1">Chủ đề học tập</label>
                         <input type="text" id="tool-input-title" required placeholder="Nhập tiêu đề hoặc tên chủ đề..." class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 transition text-slate-700 dark:text-slate-300 font-medium">
                     </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 pl-1">Lưu vào Sổ tay (tùy chọn)</label>
+                        <select id="tool-notebook-select" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 transition text-slate-700 dark:text-slate-300">
+                            <option value="">Không liên kết</option>
+                        </select>
+                    </div>
                     
                     <div class="flex justify-end pt-2">
                         <button type="submit" id="tool-submit-btn" class="bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold py-2.5 px-6 rounded-xl text-xs transition shadow-md shadow-brand-100 dark:shadow-none flex items-center space-x-2">
@@ -925,6 +935,66 @@
         </div>
     </div>
 
+    <!-- Quiz Builder Modal -->
+    <div id="quiz-builder-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-5xl p-6 shadow-2xl space-y-4 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+                <div>
+                    <h3 class="font-extrabold text-slate-900 dark:text-white text-base">Tạo bộ câu hỏi trắc nghiệm</h3>
+                    <p class="text-[10px] text-slate-400">Nhập câu hỏi, đáp án, và đáp án đúng để lưu bài tập dưới dạng tài liệu.</p>
+                </div>
+                <button onclick="closeQuizBuilderModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Tên bộ câu hỏi</label>
+                        <input id="quiz-builder-name" type="text" placeholder="Ví dụ: Kiểm tra Sinh học chương 1" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 transition text-slate-700 dark:text-slate-300">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Chọn sổ tay</label>
+                        <select id="quiz-builder-notebook" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 transition text-slate-700 dark:text-slate-300">
+                            <option value="">Không liên kết</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Mô tả ngắn</label>
+                    <textarea id="quiz-builder-desc" rows="2" placeholder="Mô tả nội dung bài tập hoặc chủ đề ôn luyện" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 transition text-slate-700 dark:text-slate-300"></textarea>
+                </div>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Danh sách câu hỏi</span>
+                        <button onclick="addQuizQuestionRow()" class="text-[10px] bg-brand-600 hover:bg-brand-700 text-white font-semibold px-3 py-2 rounded-xl transition">+ Thêm câu hỏi</button>
+                    </div>
+                    <div id="quiz-questions-container" class="space-y-4"></div>
+                </div>
+                <div class="flex justify-end gap-3 pt-2">
+                    <button onclick="closeQuizBuilderModal()" class="px-4 py-2 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition">Hủy</button>
+                    <button onclick="saveQuizBuilder()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-semibold transition">Lưu bộ câu hỏi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Play Modal -->
+    <div id="quiz-play-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-4xl p-6 shadow-2xl space-y-4 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+                <div>
+                    <h3 id="quiz-play-title" class="font-extrabold text-slate-900 dark:text-white text-base">Làm bài trắc nghiệm</h3>
+                    <p id="quiz-play-subtitle" class="text-[10px] text-slate-400">Trả lời từng câu, hệ thống sẽ thông báo ngay kết quả mỗi câu.</p>
+                </div>
+                <button onclick="closeQuizPlayModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div id="quiz-play-content" class="space-y-6"></div>
+        </div>
+    </div>
+
     <!-- Frontend logic & dynamic integration -->
     <script>
         const API_URL = '/api';
@@ -936,6 +1006,38 @@
         
         let hoursChartObj = null;
         let distChartObj = null;
+        let currentQuizPlaying = null;
+        let currentQuizAnswers = {};
+
+        // CSRF Token helper function
+        function getCsrfToken() {
+            const name = 'csrftoken';
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Wrapper function for fetch to automatically add CSRF token
+        async function fetchWithCsrf(url, options = {}) {
+            const method = options.method || 'GET';
+            const headers = options.headers || {};
+            
+            // Add CSRF token for POST, PUT, PATCH, DELETE requests
+            if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method.toUpperCase())) {
+                headers['X-CSRFToken'] = getCsrfToken();
+            }
+            
+            return fetch(url, { ...options, headers });
+        }
 
         // On Load
         window.addEventListener('DOMContentLoaded', () => {
@@ -1104,6 +1206,7 @@
                 // Update stats and lists
                 updateDashboardStats();
                 renderNotebooksList();
+                populateNotebookSelectors();
                 renderRecentActivityTable();
                 
                 // Auto render charts
@@ -1147,16 +1250,44 @@
             `).join('');
         }
 
+        function populateNotebookSelectors() {
+            const selects = ['tool-notebook-select', 'quiz-builder-notebook'];
+            selects.forEach(selectId => {
+                const select = document.getElementById(selectId);
+                if (!select) return;
+                const currentValue = select.value;
+                select.innerHTML = '<option value="">Không liên kết</option>' + notebooks.map(nb => `
+                    <option value="${nb.id}" ${String(nb.id) === String(currentValue) ? 'selected' : ''}>${nb.name}</option>
+                `).join('');
+                if (activeNotebookId && selectId === 'quiz-builder-notebook') {
+                    select.value = String(activeNotebookId);
+                }
+            });
+        }
+
         // Update main dashboard metrics
         function updateDashboardStats() {
             const notebooksCount = notebooks.length;
             let sourcesCount = 0;
+            let quizCount = 0;
+            let quizCompletedCount = 0;
             notebooks.forEach(nb => {
                 sourcesCount += (nb.sources || []).length;
+                quizCount += (nb.quizzes || []).length;
+                quizCompletedCount += (nb.quizzes || []).filter(q => q.attempts_count > 0).length;
             });
 
+            const completionPct = quizCount ? Math.round((quizCompletedCount / quizCount) * 100) : 0;
             document.getElementById('stat-notebooks-count').innerText = notebooksCount;
             document.getElementById('stat-documents-count').innerText = sourcesCount;
+            const completionCard = document.querySelector('#view-dashboard .bg-amber-50')?.parentElement?.querySelector('div > span.block.text-2xl');
+            if (completionCard) {
+                completionCard.innerText = `${completionPct}%`;
+            }
+            const completionBar = document.querySelector('#view-dashboard .bg-amber-500.h-full');
+            if (completionBar) {
+                completionBar.style.width = `${completionPct}%`;
+            }
         }
 
         // Update stats on Progress View
@@ -1164,16 +1295,18 @@
             let sourcesCount = 0;
             let notesCount = 0;
             let genCount = 0;
+            let quizCount = 0;
             
             notebooks.forEach(nb => {
                 sourcesCount += (nb.sources || []).length;
                 notesCount += (nb.notes || []).length;
                 genCount += (nb.generations || []).length;
+                quizCount += (nb.quizzes || []).length;
             });
 
             document.getElementById('progress-notes-written').innerText = `${notesCount} bài viết`;
             document.getElementById('progress-sources-count').innerText = `${sourcesCount} tài liệu`;
-            document.getElementById('progress-ai-gen-count').innerText = `${genCount} tài liệu`;
+            document.getElementById('progress-ai-gen-count').innerText = `${genCount + quizCount} tài liệu`;
         }
 
         // Select a notebook to show details and workspace
@@ -1195,6 +1328,8 @@
                 renderSources(notebook.sources || []);
                 renderNotes(notebook.notes || []);
                 renderAIGenerations(notebook.generations || []);
+                renderQuizSets(notebook.quizzes || []);
+                populateNotebookSelectors();
                 
                 // Render category sources
                 const categories = ['quiz', 'flashcards', 'mind_map', 'report'];
@@ -1257,11 +1392,19 @@
             if (!name) return alert("Vui lòng nhập tên Sổ tay.");
             
             try {
-                const res = await fetch(`${API_URL}/notebooks/`, {
+                const res = await fetchWithCsrf(`${API_URL}/notebooks/`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name, description: desc })
                 });
+                
+                if (!res.ok) {
+                    const errorData = await res.json();
+                    console.error("Lỗi từ server:", errorData);
+                    alert(`Lỗi tạo Sổ tay: ${errorData.detail || 'Vui lòng thử lại'}`);
+                    return;
+                }
+                
                 const newNb = await res.json();
                 closeNewNotebookModal();
                 await loadNotebooks();
@@ -1271,6 +1414,7 @@
                 selectNotebook(newNb.id);
             } catch (err) {
                 console.error("Lỗi tạo Sổ tay:", err);
+                alert("Có lỗi xảy ra khi tạo sổ tay. Vui lòng thử lại.");
             }
         }
 
@@ -1302,7 +1446,7 @@
             }
             
             try {
-                const res = await fetch(`${API_URL}/notebooks/${activeNotebookId}/sources/`, {
+                const res = await fetchWithCsrf(`${API_URL}/notebooks/${activeNotebookId}/sources/`, {
                     method: 'POST',
                     body: formData // Browser automatically generates boundary headers
                 });
@@ -1359,29 +1503,354 @@
             `).join('');
         }
 
-        // POST Request: Create Note
-        async function handleCreateNote(e) {
-            e.preventDefault();
-            const title = document.getElementById('note-title').value.trim();
-            if (!title) return;
-            
+        // Render saved quizzes list for active notebook
+        function renderQuizSets(quizzes) {
+            const container = document.getElementById('quiz-sets-container');
+            if (!container) return;
+
+            if (!quizzes || quizzes.length === 0) {
+                container.innerHTML = `
+                    <div class="text-[10px] text-slate-400 italic text-center py-4 bg-slate-50 dark:bg-slate-950/40 border border-dashed border-slate-200 dark:border-slate-850 rounded-xl">
+                        Chưa có bộ câu hỏi nào. Bạn có thể tạo bộ câu hỏi thủ công hoặc sinh Quiz mới.
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = quizzes.map(quiz => `
+                <div class="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl p-4 text-xs text-slate-700 dark:text-slate-300">
+                    <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                        <div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-[10px] uppercase font-bold tracking-wide text-slate-400">Bài tập trắc nghiệm</span>
+                                <span class="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">${quiz.attempts_count || 0} lượt</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 dark:text-white text-sm">${quiz.name}</h4>
+                            <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">${quiz.description || 'Không có mô tả'}</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="openQuizPlayModal(${quiz.id})" class="bg-brand-600 hover:bg-brand-700 text-white px-3 py-2 rounded-xl text-[10px] font-semibold transition">Làm bài</button>
+                            <button onclick="selectQuizSet(${quiz.id})" class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-3 py-2 rounded-xl text-[10px] font-semibold transition hover:bg-slate-200 dark:hover:bg-slate-700">Xem chi tiết</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function selectQuizSet(quizId) {
+            if (!quizId) return;
+            openQuizPlayModal(quizId);
+        }
+
+        function openQuizBuilderModal() {
+            const modal = document.getElementById('quiz-builder-modal');
+            const container = document.getElementById('quiz-questions-container');
+            document.getElementById('quiz-builder-name').value = '';
+            document.getElementById('quiz-builder-desc').value = '';
+            container.innerHTML = '';
+            currentQuizAnswers = {};
+            populateNotebookSelectors();
+            addQuizQuestionRow();
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeQuizBuilderModal() {
+            const modal = document.getElementById('quiz-builder-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.getElementById('quiz-questions-container').innerHTML = '';
+        }
+
+        function addQuizQuestionRow() {
+            const container = document.getElementById('quiz-questions-container');
+            if (!container) return;
+            const index = container.children.length;
+            const row = document.createElement('div');
+            row.className = 'bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-3xl p-4 space-y-3';
+            row.innerHTML = `
+                <div class="flex items-start justify-between gap-3">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Câu hỏi ${index + 1}</span>
+                    <button type="button" onclick="this.closest('div[data-question-row]').remove()" class="text-[10px] text-rose-500 hover:text-rose-700 font-semibold">Xóa</button>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">Nội dung câu hỏi</label>
+                    <textarea data-question-input rows="2" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500"></textarea>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">Đáp án A</label>
+                        <input data-option-input="A" type="text" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">Đáp án B</label>
+                        <input data-option-input="B" type="text" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">Đáp án C</label>
+                        <input data-option-input="C" type="text" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">Đáp án D</label>
+                        <input data-option-input="D" type="text" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
+                    <div>
+                        <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">Đáp án đúng</label>
+                        <select data-correct-option class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">Giải thích</label>
+                        <textarea data-explanation-input rows="2" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500"></textarea>
+                    </div>
+                </div>
+            `;
+            row.setAttribute('data-question-row', index);
+            container.appendChild(row);
+        }
+
+        async function saveQuizBuilder() {
+            const name = document.getElementById('quiz-builder-name').value.trim();
+            const description = document.getElementById('quiz-builder-desc').value.trim();
+            const notebookId = document.getElementById('quiz-builder-notebook').value || null;
+            const questionRows = Array.from(document.querySelectorAll('#quiz-questions-container [data-question-row]'));
+
+            if (!name) {
+                return alert('Vui lòng nhập tên bộ câu hỏi.');
+            }
+            if (!questionRows.length) {
+                return alert('Vui lòng thêm ít nhất một câu hỏi.');
+            }
+
+            const questions = [];
+            for (const row of questionRows) {
+                const questionText = row.querySelector('[data-question-input]').value.trim();
+                const optionA = row.querySelector('[data-option-input="A"]').value.trim();
+                const optionB = row.querySelector('[data-option-input="B"]').value.trim();
+                const optionC = row.querySelector('[data-option-input="C"]').value.trim();
+                const optionD = row.querySelector('[data-option-input="D"]').value.trim();
+                const correct_option = row.querySelector('[data-correct-option]').value;
+                const explanation = row.querySelector('[data-explanation-input]').value.trim();
+
+                if (!questionText || !optionA || !optionB || !optionC || !optionD) {
+                    return alert('Vui lòng điền đầy đủ câu hỏi và 4 đáp án cho mỗi mục.');
+                }
+
+                questions.push({
+                    question_text: questionText,
+                    options: [optionA, optionB, optionC, optionD],
+                    correct_option,
+                    explanation
+                });
+            }
+
             try {
-                const res = await fetch(`${API_URL}/notebooks/${activeNotebookId}/notes/`, {
+                const res = await fetchWithCsrf(`${API_URL}/quizzes/`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ title, initial_content: '' })
+                    body: JSON.stringify({
+                        name,
+                        description,
+                        notebook: notebookId,
+                        tag: 'Bài tập trắc nghiệm',
+                        questions
+                    })
                 });
-                
-                if (res.ok) {
-                    document.getElementById('note-title').value = '';
+                if (!res.ok) {
+                    const err = await res.json();
+                    return alert('Lỗi khi lưu bộ câu hỏi: ' + JSON.stringify(err));
+                }
+                const quiz = await res.json();
+                closeQuizBuilderModal();
+                await loadNotebooks();
+                if (notebookId) {
+                    selectNotebook(parseInt(notebookId, 10), true);
+                }
+                alert('Đã lưu bộ câu hỏi trắc nghiệm thành công!');
+            } catch (err) {
+                console.error('Lỗi lưu quiz:', err);
+                alert('Đã xảy ra lỗi khi lưu bộ câu hỏi.');
+            }
+        }
+
+        function openQuizPlayModal(quizId) {
+            if (!quizId) return;
+            currentQuizPlaying = quizId;
+            currentQuizAnswers = {};
+            const modal = document.getElementById('quiz-play-modal');
+            const title = document.getElementById('quiz-play-title');
+            title.innerText = 'Làm bài trắc nghiệm';
+            const content = document.getElementById('quiz-play-content');
+            content.innerHTML = `
+                <div class="text-center py-12 text-slate-500 dark:text-slate-400 text-xs">Đang tải bài tập...</div>
+            `;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            fetchWithCsrf(`${API_URL}/quizzes/${quizId}/shuffle/`, { method: 'POST' })
+                .then(async res => {
+                    if (!res.ok) {
+                        throw new Error('Không thể tải bài tập.');
+                    }
+                    return res.json();
+                })
+                .then(questions => {
+                    if (!Array.isArray(questions) || questions.length === 0) {
+                        content.innerHTML = `<div class="text-center py-12 text-slate-500 dark:text-slate-400 text-xs">Bài tập chưa có câu hỏi nào.</div>`;
+                        return;
+                    }
+                    currentQuizAnswers = {};
+                    renderQuizPlayContent(quizId, questions);
+                })
+                .catch(err => {
+                    console.error('Quiz play error:', err);
+                    content.innerHTML = `<div class="text-center py-12 text-rose-500 dark:text-rose-400 text-xs">Không thể tải bài tập. Vui lòng thử lại.</div>`;
+                });
+        }
+
+        function closeQuizPlayModal() {
+            const modal = document.getElementById('quiz-play-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            currentQuizPlaying = null;
+            currentQuizAnswers = {};
+            document.getElementById('quiz-play-content').innerHTML = '';
+        }
+
+        function renderQuizPlayContent(quizId, questions) {
+            const content = document.getElementById('quiz-play-content');
+            if (!content) return;
+            const quizBlocks = questions.map((question, idx) => {
+                const qId = `quiz-play-${question.id}`;
+                const optionsHtml = question.options.map((opt, optIdx) => {
+                    const letter = String.fromCharCode(65 + optIdx);
+                    return `
+                        <button type="button" onclick="selectQuizOption(${question.id}, '${letter}', '${question.correct_option.toUpperCase()}')" id="${qId}-opt-${optIdx}" class="w-full text-left bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3.5 py-2.5 rounded-xl text-[11px] text-slate-650 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition font-medium">
+                            ${letter}. ${opt}
+                        </button>
+                    `;
+                }).join('');
+                return `
+                    <div class="quiz-question-card bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-3xl p-4 space-y-3">
+                        <div class="flex items-center justify-between gap-4">
+                            <div>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Câu ${idx + 1}</span>
+                                <p class="mt-2 text-sm font-semibold text-slate-900 dark:text-white">${question.question_text}</p>
+                            </div>
+                            <span id="${qId}-status" class="text-[10px] font-bold uppercase tracking-wide text-slate-400"></span>
+                        </div>
+                        <div id="${qId}-options" class="grid grid-cols-1 gap-2">${optionsHtml}</div>
+                        <div id="${qId}-result" class="hidden text-[11px] font-bold p-3 rounded-xl"></div>
+                        <div id="${qId}-explanation" class="hidden text-[10px] text-slate-500 dark:text-slate-400 italic bg-slate-100 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800"></div>
+                    </div>
+                `;
+            }).join('');
+
+            content.innerHTML = `
+                <div class="space-y-4">
+                    ${quizBlocks}
+                    <div id="quiz-play-footer" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-4 text-sm text-slate-700 dark:text-slate-300">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                            <div>
+                                <p class="font-semibold text-slate-900 dark:text-white">Chưa hoàn thành</p>
+                                <p class="text-[10px] text-slate-500 dark:text-slate-400">Hãy trả lời tất cả các câu hỏi để lưu lần làm bài.</p>
+                            </div>
+                            <button type="button" onclick="submitQuizAttempt()" class="inline-flex items-center justify-center bg-brand-600 hover:bg-brand-700 text-white font-semibold px-4 py-2 rounded-xl text-xs transition">Nộp bài và lưu kết quả</button>
+                        </div>
+                        <div id="quiz-play-summary" class="mt-4 text-[10px] text-slate-500 dark:text-slate-400"></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function selectQuizOption(questionId, selectedLetter, correctOption) {
+            const qId = `quiz-play-${questionId}`;
+            const buttons = document.querySelectorAll(`#${qId}-options button`);
+            buttons.forEach(btn => {
+                btn.disabled = true;
+                btn.classList.add('opacity-70', 'cursor-not-allowed');
+            });
+
+            const selectedIdx = selectedLetter.charCodeAt(0) - 65;
+            const selectedBtn = document.getElementById(`${qId}-opt-${selectedIdx}`);
+            const isCorrect = selectedLetter.toUpperCase() === correctOption.toUpperCase();
+            if (isCorrect) {
+                selectedBtn.classList.add('bg-emerald-500/10', 'dark:bg-emerald-500/20', 'border-emerald-500', 'text-emerald-700', 'dark:text-emerald-400');
+            } else {
+                selectedBtn.classList.add('bg-rose-500/10', 'dark:bg-rose-500/20', 'border-rose-500', 'text-rose-700', 'dark:text-rose-400');
+                buttons.forEach((btn, idx) => {
+                    const letter = String.fromCharCode(65 + idx);
+                    if (letter === correctOption.toUpperCase()) {
+                        btn.classList.add('bg-emerald-500/10', 'dark:bg-emerald-500/20', 'border-emerald-500', 'text-emerald-700', 'dark:text-emerald-400');
+                    }
+                });
+            }
+
+            const resultDiv = document.getElementById(`${qId}-result`);
+            resultDiv.classList.remove('hidden');
+            if (isCorrect) {
+                resultDiv.className = 'text-[11px] font-bold p-3 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20';
+                resultDiv.innerText = '✓ Chính xác!';
+            } else {
+                resultDiv.className = 'text-[11px] font-bold p-3 rounded-xl bg-rose-500/10 dark:bg-rose-500/20 text-rose-700 dark:text-rose-400 border border-rose-500/20';
+                resultDiv.innerText = `✗ Chưa chính xác. Đáp án đúng là ${correctOption}.`;
+            }
+
+            const explanationDiv = document.getElementById(`${qId}-explanation`);
+            explanationDiv.classList.remove('hidden');
+            explanationDiv.innerText = `Giải thích: ${isCorrect ? 'Bạn đã chọn đúng!' : 'Hãy đọc kỹ và thử lại ở bài tiếp theo.'}`;
+
+            currentQuizAnswers[String(questionId)] = selectedLetter.toUpperCase();
+            const answeredCount = Object.keys(currentQuizAnswers).length;
+            const questionCount = document.querySelectorAll('#quiz-play-content .quiz-question-card').length;
+            const summary = document.getElementById('quiz-play-summary');
+            if (summary) {
+                summary.innerText = `Đã trả lời ${answeredCount} trong tổng số ${questionCount} câu hỏi.`;
+            }
+        }
+
+        async function submitQuizAttempt() {
+            if (!currentQuizPlaying) return;
+            const totalQuestions = document.querySelectorAll('#quiz-play-content .quiz-question-card').length;
+            const answeredCount = Object.keys(currentQuizAnswers).length;
+            if (answeredCount < totalQuestions) {
+                return alert('Vui lòng trả lời tất cả câu hỏi trước khi nộp bài.');
+            }
+
+            try {
+                const res = await fetchWithCsrf(`${API_URL}/attempts/submit/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ quiz: currentQuizPlaying, answers: currentQuizAnswers })
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    return alert('Lỗi khi lưu kết quả: ' + JSON.stringify(err));
+                }
+                const data = await res.json();
+                const summary = document.getElementById('quiz-play-summary');
+                if (summary) {
+                    summary.innerHTML = `
+                        <div class="space-y-2">
+                            <p class="text-sm font-semibold text-slate-900 dark:text-white">Kết quả: ${data.score}/${data.total}</p>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400">Tỷ lệ chính xác: ${data.percentage}%</p>
+                            <p class="text-[10px] text-slate-500 dark:text-slate-400">Lần làm bài đã được lưu.</p>
+                        </div>
+                    `;
+                }
+                await loadNotebooks();
+                if (activeNotebookId) {
                     await selectNotebook(activeNotebookId, true);
-                    await loadNotebooks();
-                } else {
-                    const data = await res.json();
-                    alert("Lỗi tạo ghi chú: " + JSON.stringify(data));
                 }
             } catch (err) {
-                console.error("Lỗi kết nối tạo ghi chú:", err);
+                console.error('Lỗi khi nộp quiz:', err);
+                alert('Đã xảy ra lỗi khi gửi kết quả.');
             }
         }
 
@@ -1457,7 +1926,7 @@
             }
             
             try {
-                const res = await fetch(`${API_URL}/notes/${noteId}/unlock/`, {
+                const res = await fetchWithCsrf(`${API_URL}/notes/${noteId}/unlock/`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ initial_content: content })
@@ -1481,7 +1950,7 @@
             if (!content) return alert("Vui lòng nhập nội dung trước khi lưu.");
             
             try {
-                const res = await fetch(`${API_URL}/notes/${noteId}/revise/`, {
+                const res = await fetchWithCsrf(`${API_URL}/notes/${noteId}/revise/`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ revised_content: content })
@@ -1504,7 +1973,7 @@
         async function triggerAIGeneration(type) {
             if (!activeNotebookId) return alert("Vui lòng chọn một sổ tay trước.");
             try {
-                const res = await fetch(`${API_URL}/notebooks/${activeNotebookId}/generate/`, {
+                const res = await fetchWithCsrf(`${API_URL}/notebooks/${activeNotebookId}/generate/`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ generation_type: type })
@@ -1668,7 +2137,11 @@
             notebooks.forEach(nb => {
                 const sources = nb.sources || [];
                 sources.forEach(src => {
-                    allSources.push({ ...src, notebookName: nb.name, notebookId: nb.id });
+                    allSources.push({ ...src, notebookName: nb.name, notebookId: nb.id, type: 'source' });
+                });
+                const quizzes = nb.quizzes || [];
+                quizzes.forEach(quiz => {
+                    allSources.push({ ...quiz, notebookName: nb.name, notebookId: nb.id, type: 'quiz' });
                 });
             });
 
@@ -1679,23 +2152,23 @@
 
             container.innerHTML = allSources.map(src => `
                 <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-3 hover:scale-[1.01] hover:shadow-md transition">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <span class="text-[9px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full ${src.source_type === 'file' ? 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' : (src.source_type === 'link' ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300')}">
-                                ${src.source_type === 'file' ? 'File PDF' : (src.source_type === 'link' ? 'Link' : 'Văn bản')}
+                    <div class="flex justify-between items-start gap-3">
+                        <div class="min-w-0">
+                            <span class="text-[9px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full ${src.type === 'quiz' ? 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' : (src.source_type === 'link' ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300')}">
+                                ${src.type === 'quiz' ? 'Bài tập trắc nghiệm' : (src.source_type === 'file' ? 'File PDF' : (src.source_type === 'link' ? 'Link' : 'Văn bản'))}
                             </span>
-                            <h4 class="font-bold text-slate-850 dark:text-white text-sm mt-2">${src.title}</h4>
+                            <h4 class="font-bold text-slate-850 dark:text-white text-sm mt-2 truncate">${src.type === 'quiz' ? src.name : src.title}</h4>
                         </div>
                         <div class="flex items-center space-x-2 shrink-0">
                             <button onclick="switchView('notebooks'); selectNotebook(${src.notebookId});" class="text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-slate-600 dark:text-slate-350 hover:bg-slate-100 font-semibold">Xem Sổ tay</button>
-                            <button onclick="deleteSource(${src.id})" class="p-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-500 transition" title="Xóa tài liệu">
+                            ${src.type === 'quiz' ? `<button onclick="openQuizPlayModal(${src.id})" class="text-xs bg-brand-600 hover:bg-brand-700 text-white px-2.5 py-1.5 rounded-xl font-semibold transition">Làm bài</button>` : `<button onclick="deleteSource(${src.id})" class="p-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-500 transition" title="Xóa tài liệu">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                            </button>
+                            </button>`}
                         </div>
                     </div>
-                    ${src.file_path ? `<a href="${src.file_path}" target="_blank" class="text-[10px] text-brand-500 hover:underline truncate block mt-1">📄 Tải xuống file PDF</a>` : ''}
-                    <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-3 bg-slate-50 dark:bg-slate-900/40 p-3 rounded-xl border border-slate-100 dark:border-slate-800">${src.content}</p>
-                    <div class="flex justify-between items-center text-[10px] text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-800">
+                    ${src.type === 'quiz' ? `<p class="text-[10px] text-slate-500 dark:text-slate-400 line-clamp-3 bg-slate-50 dark:bg-slate-900/40 p-3 rounded-xl border border-slate-100 dark:border-slate-800">${src.description || 'Bộ câu hỏi trắc nghiệm đã lưu.'}</p>` : `${src.file_path ? `<a href="${src.file_path}" target="_blank" class="text-[10px] text-brand-500 hover:underline truncate block mt-1">📄 Tải xuống file PDF</a>` : ''}
+                    <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-3 bg-slate-50 dark:bg-slate-900/40 p-3 rounded-xl border border-slate-100 dark:border-slate-800">${src.content}</p>`}
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center text-[10px] text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-800 gap-2">
                         <span>Sổ tay: <strong>${src.notebookName}</strong></span>
                         <span>${new Date(src.created_at || Date.now()).toLocaleDateString('vi-VN')}</span>
                     </div>
@@ -1783,6 +2256,20 @@
                         notebookId: nb.id,
                         date: new Date(note.created_at || Date.now()),
                         status: note.is_locked ? 'Đang soạn thảo' : 'Phản biện xong',
+                        isSource: false
+                    });
+                });
+
+                const quizzes = nb.quizzes || [];
+                quizzes.forEach(quiz => {
+                    activities.push({
+                        id: quiz.id,
+                        name: quiz.name,
+                        type: 'Bài tập (Quiz)',
+                        notebookName: nb.name,
+                        notebookId: nb.id,
+                        date: new Date(quiz.updated_at || quiz.created_at || Date.now()),
+                        status: quiz.attempts_count > 0 ? 'Đã luyện' : 'Chưa làm',
                         isSource: false
                     });
                 });
@@ -1971,7 +2458,7 @@
             if (!confirm("Bạn có chắc chắn muốn xóa tài liệu này? Hành động này không thể hoàn tác.")) return;
             
             try {
-                const res = await fetch(`${API_URL}/sources/${id}/`, {
+                const res = await fetchWithCsrf(`${API_URL}/sources/${id}/`, {
                     method: 'DELETE'
                 });
                 if (res.ok) {
@@ -1997,7 +2484,7 @@
             if (!confirm("Bạn có chắc chắn muốn xóa tài nguyên AI này?")) return;
             
             try {
-                const res = await fetch(`${API_URL}/generations/${id}/`, {
+                const res = await fetchWithCsrf(`${API_URL}/generations/${id}/`, {
                     method: 'DELETE'
                 });
                 if (res.ok) {
@@ -2021,7 +2508,7 @@
             if (!confirm("Bạn có chắc chắn muốn xóa SỔ TAY này? Toàn bộ tài liệu, ghi chú và các câu hỏi AI đi kèm sẽ bị xóa vĩnh viễn và không thể khôi phục.")) return;
             
             try {
-                const res = await fetch(`${API_URL}/notebooks/${activeNotebookId}/`, {
+                const res = await fetchWithCsrf(`${API_URL}/notebooks/${activeNotebookId}/`, {
                     method: 'DELETE'
                 });
                 if (res.ok) {
@@ -2154,7 +2641,7 @@
             }
             
             try {
-                const res = await fetch(`${API_URL}/notebooks/${activeNotebookId}/sources/`, {
+                const res = await fetchWithCsrf(`${API_URL}/notebooks/${activeNotebookId}/sources/`, {
                     method: 'POST',
                     body: formData
                 });
@@ -2430,7 +2917,7 @@
             const newContent = getMermaidFromJsMind(jm);
             
             try {
-                const res = await fetch(`${API_URL}/generations/${genId}/`, {
+                const res = await fetchWithCsrf(`${API_URL}/generations/${genId}/`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ content: newContent })
@@ -2522,7 +3009,7 @@
                 
                 try {
                     // Send request to create the generation in Database
-                    const res = await fetch(`${API_URL}/generations/`, {
+                    const res = await fetchWithCsrf(`${API_URL}/generations/`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -2751,7 +3238,7 @@
                         activeNotebookId = nbs[0].id;
                     } else {
                         // Create a default notebook
-                        const createRes = await fetch(`${API_URL}/notebooks/`, {
+                        const createRes = await fetchWithCsrf(`${API_URL}/notebooks/`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ name: "Sổ tay học tập", description: "Không gian học tập và lưu trữ sơ đồ tư duy" })
@@ -2762,7 +3249,7 @@
                 }
                 
                 // POST to AIGeneration endpoint
-                const saveRes = await fetch(`${API_URL}/generations/`, {
+                const saveRes = await fetchWithCsrf(`${API_URL}/generations/`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({

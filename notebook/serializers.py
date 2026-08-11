@@ -2,7 +2,7 @@ from rest_framework.exceptions import APIException
 from rest_framework import status
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Notebook, Note, Source, AIGeneration
+from .models import Notebook, Note, Source, AIGeneration, QuizSet, QuizQuestion, QuizAttempt
 
 class NoteValidationError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
@@ -68,12 +68,54 @@ class AIGenerationSerializer(serializers.ModelSerializer):
         fields = ['id', 'notebook', 'generation_type', 'content', 'created_at']
         read_only_fields = ['created_at']
 
+class QuizQuestionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QuizQuestion
+        fields = ['id', 'question_text', 'options', 'correct_option', 'explanation', 'order']
+        read_only_fields = ['id', 'order']
+
+class QuizSetSerializer(serializers.ModelSerializer):
+    questions = QuizQuestionSerializer(many=True)
+    attempts_count = serializers.IntegerField(source='attempts.count', read_only=True)
+
+    class Meta:
+        model = QuizSet
+        fields = ['id', 'user', 'notebook', 'name', 'description', 'tag', 'questions', 'attempts_count', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'user', 'attempts_count']
+
+    def create(self, validated_data):
+        questions_data = validated_data.pop('questions', [])
+        quiz_set = QuizSet.objects.create(**validated_data)
+        for idx, question_data in enumerate(questions_data):
+            QuizQuestion.objects.create(quiz=quiz_set, order=idx, **question_data)
+        return quiz_set
+
+    def update(self, instance, validated_data):
+        questions_data = validated_data.pop('questions', None)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        if questions_data is not None:
+            instance.questions.all().delete()
+            for idx, question_data in enumerate(questions_data):
+                QuizQuestion.objects.create(quiz=instance, order=idx, **question_data)
+
+        return instance
+
+class QuizAttemptSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QuizAttempt
+        fields = ['id', 'quiz', 'user', 'score', 'total', 'percentage', 'created_at']
+        read_only_fields = ['id', 'user', 'created_at']
+
 class NotebookSerializer(serializers.ModelSerializer):
     notes = NoteSerializer(many=True, read_only=True)
     sources = SourceSerializer(many=True, read_only=True)
     generations = AIGenerationSerializer(many=True, read_only=True)
+    quizzes = QuizSetSerializer(many=True, read_only=True)
     
     class Meta:
         model = Notebook
-        fields = ['id', 'user', 'name', 'description', 'notes', 'sources', 'generations', 'created_at', 'updated_at']
+        fields = ['id', 'user', 'name', 'description', 'notes', 'sources', 'generations', 'quizzes', 'created_at', 'updated_at']
         read_only_fields = ['user', 'created_at', 'updated_at']

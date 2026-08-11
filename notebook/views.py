@@ -4,10 +4,10 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.request import Request
 from django.contrib.auth.models import User
-from .models import Notebook, Note, Source, AIGeneration
+from .models import Notebook, Note, Source, AIGeneration, QuizSet, QuizQuestion, QuizAttempt
 from .serializers import (
     NotebookSerializer, NoteSerializer, SourceSerializer, AIGenerationSerializer,
-    NoteReviseSerializer
+    NoteReviseSerializer, QuizSetSerializer, QuizQuestionSerializer, QuizAttemptSerializer
 )
 from . import ai_service
 import pypdf
@@ -196,6 +196,101 @@ class SourceViewSet(viewsets.ModelViewSet):
             return Source.objects.filter(notebook__user=self.request.user)
         return Source.objects.all()
 
+
+class QuizSetViewSet(viewsets.ModelViewSet):
+    serializer_class = QuizSetSerializer
+    queryset = QuizSet.objects.all().order_by('-created_at')
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            return QuizSet.objects.filter(user=self.request.user).order_by('-created_at')
+        return QuizSet.objects.all().order_by('-created_at')
+
+    def perform_create(self, serializer):
+        if self.request.user.is_authenticated:
+            serializer.save(user=self.request.user)
+        else:
+            user, created = User.objects.get_or_create(username='student', email='student@example.com')
+            serializer.save(user=user)
+
+    @action(detail=True, methods=['post'], url_path='shuffle')
+    def shuffle_questions(self, request, pk=None):
+        quiz = self.get_object()
+        questions = list(quiz.questions.all())
+        from random import shuffle
+        shuffle(questions)
+        serialized = QuizQuestionSerializer(questions, many=True)
+        return Response(serialized.data, status=status.HTTP_200_OK)
+
+class QuizAttemptViewSet(viewsets.ModelViewSet):
+    serializer_class = QuizAttemptSerializer
+    queryset = QuizAttempt.objects.all().order_by('-created_at')
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            return QuizAttempt.objects.filter(user=self.request.user).order_by('-created_at')
+        return QuizAttempt.objects.all().order_by('-created_at')
+
+    def perform_create(self, serializer):
+        if self.request.user.is_authenticated:
+            serializer.save(user=self.request.user)
+        else:
+            user, created = User.objects.get_or_create(username='student', email='student@example.com')
+            serializer.save(user=user)
+
+    @action(detail=False, methods=['post'], url_path='submit')
+    def submit_attempt(self, request):
+        quiz_id = request.data.get('quiz')
+        user_answers = request.data.get('answers', {})
+
+        if not quiz_id:
+            return Response({'error': 'quiz is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            quiz = QuizSet.objects.get(pk=quiz_id)
+        except QuizSet.DoesNotExist:
+            return Response({'error': 'Quiz not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        questions = list(quiz.questions.all())
+        if not questions:
+            return Response({'error': 'Quiz has no questions.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        score = 0
+        total = len(questions)
+        results = []
+        for question in questions:
+            selected = user_answers.get(str(question.id), '').strip().upper()
+            is_correct = selected == question.correct_option.upper()
+            if is_correct:
+                score += 1
+            results.append({
+                'question_id': question.id,
+                'selected': selected,
+                'correct': question.correct_option.upper(),
+                'is_correct': is_correct,
+                'explanation': question.explanation or ''
+            })
+
+        percentage = round((score / total) * 100, 1) if total else 0.0
+        if request.user.is_authenticated:
+            user = request.user
+        else:
+            user, created = User.objects.get_or_create(username='student', email='student@example.com')
+
+        attempt = QuizAttempt.objects.create(
+            quiz=quiz,
+            user=user,
+            score=score,
+            total=total,
+            percentage=percentage
+        )
+
+        return Response({
+            'attempt': QuizAttemptSerializer(attempt).data,
+            'results': results,
+            'score': score,
+            'total': total,
+            'percentage': percentage
+        }, status=status.HTTP_201_CREATED)
 
 class AIGenerationViewSet(viewsets.ModelViewSet):
     serializer_class = AIGenerationSerializer
