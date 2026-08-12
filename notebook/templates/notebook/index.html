@@ -156,10 +156,6 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                 <span>Tài nguyên học tập (Study Materials)</span>
             </button>
-            <button onclick="switchView('notes')" id="nav-notes" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                <span>Ghi chú & Phản biện</span>
-            </button>
             <button onclick="switchView('progress')" id="nav-progress" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10a2 2 0 01-2 2h-2a2 2 0 01-2-2zm9 0v-8a2 2 0 00-2-2h-2a2 2 0 00-2 2v8a2 2 0 002 2h2a2 2 0 002-2z"/></svg>
                 <span>Tiến độ & Phân tích</span>
@@ -230,17 +226,10 @@
                 </button>
 
                 <!-- Notifications -->
-                <div class="relative group">
-                    <!-- Notifivation Button -->
-                    <button
-                        id="notification-button"
-                        class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 transition relative">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                        </svg>
-                        <span
-                            class="absolute top-1.5 right-1.5 bg-rose-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">{{ notifications|length }}</span>
+                <div class="relative">
+                    <button class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 transition relative">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                        <span id="notification-badge" class="hidden absolute top-1.5 right-1.5 bg-rose-500 text-white text-[9px] font-bold w-4 h-4 rounded-full items-center justify-center">0</span>
                     </button>
                     <!-- Notification Panel -->
                     <div id="-panel"
@@ -455,11 +444,8 @@
                                 <button onclick="switchTab('sources')" id="tab-btn-sources" class="flex-1 py-2.5 text-center text-sm font-semibold rounded-lg transition bg-brand-50 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400">
                                     📁 Tài liệu liên quan
                                 </button>
-                                <button onclick="switchTab('notes')" id="tab-btn-notes" class="flex-1 py-2.5 text-center text-sm font-semibold rounded-lg transition text-slate-500 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white">
-                                    ✍️ Tự ghi chú & AI Phản biện
-                                </button>
                                 <button onclick="switchTab('ai-gen')" id="tab-btn-ai-gen" class="flex-1 py-2.5 text-center text-sm font-semibold rounded-lg transition text-slate-500 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white">
-                                    ✨ Công cụ tạo ra kiến thức AI
+                                    ✨ Tài nguyên học tập
                                 </button>
                             </div>
 
@@ -518,22 +504,7 @@
                                 </div>
                             </div>
 
-                            <!-- Tab Content 2: Notes & Lock/Unlock AI Flow -->
-                            <div id="tab-content-notes" class="hidden space-y-6">
-                                <!-- Create Note Form -->
-                                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
-                                    <h3 class="text-base font-bold text-slate-800 dark:text-white mb-4">+ Đặt câu hỏi phản biện mới</h3>
-                                    <form id="create-note-form" onsubmit="handleCreateNote(event)" class="flex gap-3">
-                                        <input type="text" id="note-title" required placeholder="Nhập chủ đề học tập bạn muốn tự viết ý kiến phản biện..." class="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition">
-                                        <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition shrink-0">
-                                            Khởi tạo
-                                        </button>
-                                    </form>
-                                </div>
-
-                                <!-- Dynamic notes list -->
-                                <div id="notes-list" class="space-y-4">
-                                <!-- Tab Content 3: AI study material generator -->
+                            <!-- Tab Content 3: AI study material generator -->
                             <div id="tab-content-ai-gen" class="hidden space-y-6">
                                 <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
                                     
@@ -548,40 +519,10 @@
                                                 </div>
                                             </div>
                                             
-                                            <div class="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl space-y-3 border border-slate-100 dark:border-slate-850/50">
-                                                <div class="text-[9px] font-bold text-slate-450 uppercase tracking-wider">Tài liệu cho phần Trắc nghiệm</div>
-                                                <div id="sources-list-quiz" class="space-y-2 max-h-36 overflow-y-auto"></div>
-                                                
-                                                <form id="inline-source-form-quiz" onsubmit="handleInlineSourceSubmit(event, 'quiz')" class="space-y-2 pt-2 border-t border-slate-200/50 dark:border-slate-800">
-                                                    <div class="flex gap-2">
-                                                        <select id="inline-source-type-quiz" onchange="toggleInlineFields('quiz')" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-600 dark:text-slate-400 font-semibold focus:outline-none w-1/3">
-                                                            <option value="file">📁 File PDF</option>
-                                                            <option value="text">✏️ Văn bản</option>
-                                                            <option value="link">🔗 Link</option>
-                                                        </select>
-                                                        <input type="text" id="inline-source-title-quiz" placeholder="Tiêu đề..." required class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-700 dark:text-slate-300 placeholder-slate-400 focus:outline-none w-2/3">
-                                                    </div>
-                                                    <div id="inline-field-file-quiz" class="w-full">
-                                                        <input type="file" id="inline-file-path-quiz" accept=".pdf" required class="block w-full text-[9px] text-slate-505 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[9px] file:font-semibold file:bg-brand-50 file:text-brand-700 dark:file:bg-slate-800 dark:file:text-slate-350">
-                                                    </div>
-                                                    <div id="inline-field-text-quiz" class="hidden w-full">
-                                                        <textarea id="inline-content-quiz" rows="2" placeholder="Nhập nội dung..." class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-755 dark:text-slate-300 focus:outline-none font-mono"></textarea>
-                                                    </div>
-                                                    <div id="inline-field-link-quiz" class="hidden w-full">
-                                                        <input type="url" id="inline-url-quiz" placeholder="https://..." class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-755 dark:text-slate-300 focus:outline-none">
-                                                    </div>
-                                                    <button type="submit" class="w-full bg-brand-500 hover:bg-brand-600 text-white font-bold py-1.5 rounded-lg text-[9px] transition">
-                                                        + Thêm tài liệu trắc nghiệm
-                                                    </button>
-                                                </form>
-                                            </div>
                                         </div>
                                         <div class="space-y-4 pt-2">
-                                            <button onclick="triggerAIGeneration('quiz')" class="w-full bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold py-2 rounded-xl text-[11px] shadow transition">
-                                                Yêu cầu hệ thống sinh Trắc nghiệm
-                                            </button>
-                                            <button onclick="openQuizBuilderModal()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2 rounded-xl text-[11px] shadow transition">
-                                                Tạo bộ câu hỏi thủ công
+                                            <button onclick="openCreateModal('quiz')" class="w-full bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold py-2 rounded-xl text-[11px] shadow transition">
+                                                + Tạo bộ câu hỏi Trắc nghiệm
                                             </button>
                                             <div id="quiz-sets-container" class="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-800"></div>
                                             <div id="ai-generations-quiz" class="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-800 max-h-96 overflow-y-auto"></div>
@@ -598,39 +539,13 @@
                                                     <p class="text-[10px] text-slate-400">Tóm tắt thuật ngữ dưới dạng hỏi và trả lời nhanh</p>
                                                 </div>
                                             </div>
-                                            
-                                            <div class="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl space-y-3 border border-slate-100 dark:border-slate-850/50">
-                                                <div class="text-[9px] font-bold text-slate-450 uppercase tracking-wider">Tài liệu cho phần Thẻ nhớ</div>
-                                                <div id="sources-list-flashcards" class="space-y-2 max-h-36 overflow-y-auto"></div>
-                                                
-                                                <form id="inline-source-form-flashcards" onsubmit="handleInlineSourceSubmit(event, 'flashcards')" class="space-y-2 pt-2 border-t border-slate-200/50 dark:border-slate-800">
-                                                    <div class="flex gap-2">
-                                                        <select id="inline-source-type-flashcards" onchange="toggleInlineFields('flashcards')" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-600 dark:text-slate-400 font-semibold focus:outline-none w-1/3">
-                                                            <option value="file">📁 File PDF</option>
-                                                            <option value="text">✏️ Văn bản</option>
-                                                            <option value="link">🔗 Link</option>
-                                                        </select>
-                                                        <input type="text" id="inline-source-title-flashcards" placeholder="Tiêu đề..." required class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-700 dark:text-slate-300 placeholder-slate-400 focus:outline-none w-2/3">
-                                                    </div>
-                                                    <div id="inline-field-file-flashcards" class="w-full">
-                                                        <input type="file" id="inline-file-path-flashcards" accept=".pdf" required class="block w-full text-[9px] text-slate-505 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[9px] file:font-semibold file:bg-brand-50 file:text-brand-700 dark:file:bg-slate-800 dark:file:text-slate-350">
-                                                    </div>
-                                                    <div id="inline-field-text-flashcards" class="hidden w-full">
-                                                        <textarea id="inline-content-flashcards" rows="2" placeholder="Nhập nội dung..." class="w-full bg-white dark:bg-slate-900 border border-slate-200 border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-755 dark:text-slate-300 focus:outline-none font-mono"></textarea>
-                                                    </div>
-                                                    <div id="inline-field-link-flashcards" class="hidden w-full">
-                                                        <input type="url" id="inline-url-flashcards" placeholder="https://..." class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-755 dark:text-slate-300 focus:outline-none">
-                                                    </div>
-                                                    <button type="submit" class="w-full bg-brand-500 hover:bg-brand-600 text-white font-bold py-1.5 rounded-lg text-[9px] transition">
-                                                        + Thêm tài liệu thẻ nhớ
-                                                    </button>
-                                                </form>
-                                            </div>
                                         </div>
                                         <div class="space-y-4 pt-2">
-                                            <button onclick="triggerAIGeneration('flashcards')" class="w-full bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold py-2 rounded-xl text-[11px] shadow transition">
-                                                Yêu cầu hệ thống sinh Thẻ nhớ
+                                            <button onclick="openCreateModal('flashcards')" class="w-full bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold py-2 rounded-xl text-[11px] shadow transition">
+                                                + Tạo Thẻ nhớ thông minh
                                             </button>
+                                        </div>
+                                        <div class="space-y-4 pt-2">
                                             <div id="ai-generations-flashcards" class="space-y-3 pt-1 border-t border-slate-100 dark:border-slate-800 max-h-96 overflow-y-auto"></div>
                                         </div>
                                     </div>
@@ -646,37 +561,10 @@
                                                 </div>
                                             </div>
                                             
-                                            <div class="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl space-y-3 border border-slate-100 dark:border-slate-850/50">
-                                                <div class="text-[9px] font-bold text-slate-450 uppercase tracking-wider">Tài liệu cho phần Sơ đồ tư duy</div>
-                                                <div id="sources-list-mind_map" class="space-y-2 max-h-36 overflow-y-auto"></div>
-                                                
-                                                <form id="inline-source-form-mind_map" onsubmit="handleInlineSourceSubmit(event, 'mind_map')" class="space-y-2 pt-2 border-t border-slate-200/50 dark:border-slate-800">
-                                                    <div class="flex gap-2">
-                                                        <select id="inline-source-type-mind_map" onchange="toggleInlineFields('mind_map')" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-600 dark:text-slate-400 font-semibold focus:outline-none w-1/3">
-                                                            <option value="file">📁 File PDF</option>
-                                                            <option value="text">✏️ Văn bản</option>
-                                                            <option value="link">🔗 Link</option>
-                                                        </select>
-                                                        <input type="text" id="inline-source-title-mind_map" placeholder="Tiêu đề..." required class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-700 dark:text-slate-300 placeholder-slate-400 focus:outline-none w-2/3">
-                                                    </div>
-                                                    <div id="inline-field-file-mind_map" class="w-full">
-                                                        <input type="file" id="inline-file-path-mind_map" accept=".pdf" required class="block w-full text-[9px] text-slate-505 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[9px] file:font-semibold file:bg-brand-50 file:text-brand-700 dark:file:bg-slate-800 dark:file:text-slate-350">
-                                                    </div>
-                                                    <div id="inline-field-text-mind_map" class="hidden w-full">
-                                                        <textarea id="inline-content-mind_map" rows="2" placeholder="Nhập nội dung..." class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-755 dark:text-slate-300 focus:outline-none font-mono"></textarea>
-                                                    </div>
-                                                    <div id="inline-field-link-mind_map" class="hidden w-full">
-                                                        <input type="url" id="inline-url-mind_map" placeholder="https://..." class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-755 dark:text-slate-300 focus:outline-none">
-                                                    </div>
-                                                    <button type="submit" class="w-full bg-brand-500 hover:bg-brand-600 text-white font-bold py-1.5 rounded-lg text-[9px] transition">
-                                                        + Thêm tài liệu sơ đồ tư duy
-                                                    </button>
-                                                </form>
-                                            </div>
                                         </div>
                                         <div class="space-y-4 pt-2">
-                                            <button onclick="triggerAIGeneration('mind_map')" class="w-full bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold py-2 rounded-xl text-[11px] shadow transition">
-                                                Yêu cầu hệ thống sinh Sơ đồ tư duy
+                                            <button onclick="openCreateModal('mindmap')" class="w-full bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold py-2 rounded-xl text-[11px] shadow transition">
+                                                + Tạo Sơ đồ tư duy
                                             </button>
                                             <div id="ai-generations-mind_map" class="space-y-3 pt-1 border-t border-slate-100 dark:border-slate-800 max-h-96 overflow-y-auto flex flex-col justify-center"></div>
                                         </div>
@@ -693,37 +581,10 @@
                                                 </div>
                                             </div>
                                             
-                                            <div class="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl space-y-3 border border-slate-100 dark:border-slate-850/50">
-                                                <div class="text-[9px] font-bold text-slate-450 uppercase tracking-wider">Tài liệu cho phần Báo cáo</div>
-                                                <div id="sources-list-report" class="space-y-2 max-h-36 overflow-y-auto"></div>
-                                                
-                                                <form id="inline-source-form-report" onsubmit="handleInlineSourceSubmit(event, 'report')" class="space-y-2 pt-2 border-t border-slate-200/50 dark:border-slate-800">
-                                                    <div class="flex gap-2">
-                                                        <select id="inline-source-type-report" onchange="toggleInlineFields('report')" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-600 dark:text-slate-400 font-semibold focus:outline-none w-1/3">
-                                                            <option value="file">📁 File PDF</option>
-                                                            <option value="text">✏️ Văn bản</option>
-                                                            <option value="link">🔗 Link</option>
-                                                        </select>
-                                                        <input type="text" id="inline-source-title-report" placeholder="Tiêu đề..." required class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-700 dark:text-slate-300 placeholder-slate-400 focus:outline-none w-2/3">
-                                                    </div>
-                                                    <div id="inline-field-file-report" class="w-full">
-                                                        <input type="file" id="inline-file-path-report" accept=".pdf" required class="block w-full text-[9px] text-slate-550 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[9px] file:font-semibold file:bg-brand-50 file:text-brand-700 dark:file:bg-slate-800 dark:file:text-slate-350">
-                                                    </div>
-                                                    <div id="inline-field-text-report" class="hidden w-full">
-                                                        <textarea id="inline-content-report" rows="2" placeholder="Nhập nội dung..." class="w-full bg-white dark:bg-slate-900 border border-slate-200 border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-755 dark:text-slate-300 focus:outline-none font-mono"></textarea>
-                                                    </div>
-                                                    <div id="inline-field-link-report" class="hidden w-full">
-                                                        <input type="url" id="inline-url-report" placeholder="https://..." class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-755 dark:text-slate-300 focus:outline-none">
-                                                    </div>
-                                                    <button type="submit" class="w-full bg-brand-500 hover:bg-brand-600 text-white font-bold py-1.5 rounded-lg text-[9px] transition">
-                                                        + Thêm tài liệu báo cáo
-                                                    </button>
-                                                </form>
-                                            </div>
                                         </div>
                                         <div class="space-y-4 pt-2">
-                                            <button onclick="triggerAIGeneration('report')" class="w-full bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold py-2 rounded-xl text-[11px] shadow transition">
-                                                Yêu cầu hệ thống sinh Báo cáo
+                                            <button onclick="openCreateModal('report')" class="w-full bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold py-2 rounded-xl text-[11px] shadow transition">
+                                                + Tạo Báo cáo tóm tắt
                                             </button>
                                             <div id="ai-generations-report" class="space-y-3 pt-1 border-t border-slate-100 dark:border-slate-800 max-h-96 overflow-y-auto"></div>
                                         </div>
@@ -731,12 +592,8 @@
                                     
                                 </div>
                             </div>
-                                </div>
-                            </div>
-
                         </div>
                     </div>
-
                 </div>
             </section>
 
@@ -769,7 +626,7 @@
             <!-- 5. VIEW: NOTES (UNIFIED LIST VIEW) -->
             <section id="view-notes" class="hidden space-y-6">
                 <div>
-                    <h2 class="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">Ghi chú & Phản biện AI</h2>
+                    <h2 class="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">Ghi chú & Phân tích Logic</h2>
                     <p class="text-xs text-slate-400 mt-1">Danh sách các bài viết cá nhân của bạn đi kèm với phản biện Logic từ AI.</p>
                 </div>
 
@@ -782,29 +639,29 @@
             <section id="view-progress" class="hidden space-y-6">
                 <div>
                     <h2 class="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">Thống kê tiến độ tự học</h2>
-                    <p class="text-xs text-slate-400 mt-1">Biểu đồ phân tích chi tiết tiến trình học của bạn thông qua việc tạo sổ tay và viết bài phản biện.</p>
+                    <p class="text-xs text-slate-400 mt-1">Theo dõi tiến trình hoàn thiện tài nguyên học tập của bạn.</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
                         <div>
-                            <h3 class="font-bold text-slate-800 dark:text-white text-sm mb-4">Các chỉ số hoạt động tiêu biểu</h3>
+                            <h3 class="font-bold text-slate-800 dark:text-white text-sm mb-4">Các chỉ số nỗ lực học tập</h3>
                             <div class="space-y-4">
                                 <div class="flex justify-between items-center">
-                                    <span class="text-xs text-slate-500">Mức độ tương tác AI:</span>
+                                    <span class="text-xs text-slate-500">Điểm chuyên cần:</span>
                                     <span class="text-xs font-bold text-brand-600 dark:text-brand-400">Rất Cao (92/100)</span>
                                 </div>
                                 <div class="flex justify-between items-center">
-                                    <span class="text-xs text-slate-500">Lượt viết phản biện:</span>
-                                    <span id="progress-notes-written" class="text-xs font-bold">0 bài viết</span>
+                                    <span class="text-xs text-slate-500">Tổng bộ Flashcard / Quiz đã tạo:</span>
+                                    <span id="progress-quiz-flashcard-count" class="text-xs font-bold">0 bộ</span>
                                 </div>
                                 <div class="flex justify-between items-center">
                                     <span class="text-xs text-slate-500">Tổng tài liệu tham chiếu:</span>
                                     <span id="progress-sources-count" class="text-xs font-bold">0 tài liệu</span>
                                 </div>
                                 <div class="flex justify-between items-center">
-                                    <span class="text-xs text-slate-500">Số tài liệu học tập đã tạo ra:</span>
-                                    <span id="progress-ai-gen-count" class="text-xs font-bold">0 tài liệu</span>
+                                    <span class="text-xs text-slate-500">Tổng Sơ đồ tư duy & Report:</span>
+                                    <span id="progress-mindmap-report-count" class="text-xs font-bold">0 tài liệu</span>
                                 </div>
                             </div>
                         </div>
@@ -814,11 +671,11 @@
                     </div>
                     
                     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
-                        <h3 class="font-bold text-slate-800 dark:text-white text-sm mb-4">Đánh giá kỹ năng học sâu</h3>
+                        <h3 class="font-bold text-slate-800 dark:text-white text-sm mb-4">Tiến độ xây dựng Tài nguyên</h3>
                         <div class="space-y-4">
                             <div>
                                 <div class="flex justify-between text-xs mb-1">
-                                    <span>Tự luận logic</span>
+                                    <span>Hoàn thiện Tài liệu đọc</span>
                                     <span class="font-semibold">75%</span>
                                 </div>
                                 <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
@@ -827,7 +684,7 @@
                             </div>
                             <div>
                                 <div class="flex justify-between text-xs mb-1">
-                                    <span>Tổng hợp tài liệu liên quan</span>
+                                    <span>Hoàn thiện Bộ câu hỏi ôn tập</span>
                                     <span class="font-semibold">88%</span>
                                 </div>
                                 <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
@@ -836,7 +693,7 @@
                             </div>
                             <div>
                                 <div class="flex justify-between text-xs mb-1">
-                                    <span>Tốc độ tiếp thu & Nhớ bài</span>
+                                    <span>Hoàn thiện Sơ đồ tổng kết</span>
                                     <span class="font-semibold">60%</span>
                                 </div>
                                 <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
@@ -899,7 +756,7 @@
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Mục tiêu học tập / Mô tả</label>
-                    <textarea id="new-notebook-desc" rows="3" placeholder="Ví dụ: Tự tổng hợp thông tin, thảo luận phản biện cùng trợ lý AI..." class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"></textarea>
+                    <textarea id="new-notebook-desc" rows="3" placeholder="Ví dụ: Tự tổng hợp thông tin, thảo luận phản biện cùng hệ thống tự động..." class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"></textarea>
                 </div>
             </div>
             <div class="flex justify-end space-x-3 pt-2">
@@ -931,6 +788,7 @@
                     <div>
                         <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 pl-1">Chủ đề học tập</label>
                         <input type="text" id="tool-input-title" required placeholder="Nhập tiêu đề hoặc tên chủ đề..." class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 transition text-slate-700 dark:text-slate-300 font-medium">
+                        <textarea id="tool-input-text" placeholder="Dán văn bản có cấu trúc:\nQ: Câu hỏi?\nA: Đáp án 1\nB: Đáp án 2 (*)\nC: Đáp án 3\nD: Đáp án 4\nEXP: Giải thích chi tiết" class="w-full hidden h-48 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 transition text-slate-700 dark:text-slate-300 font-medium whitespace-pre-wrap"></textarea>
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 pl-1">Lưu vào Sổ tay (tùy chọn)</label>
@@ -961,7 +819,7 @@
                         <div class="flex justify-between items-center mb-3">
                             <h4 class="font-bold text-slate-888 dark:text-white text-xs">🎉 Kết quả của bạn (Bản mẫu)</h4>
                             <div class="flex items-center space-x-3">
-                                <button onclick="saveToolResult()" class="text-[10px] text-emerald-600 dark:text-emerald-500 hover:underline font-bold">💾 Lưu trữ sơ đồ</button>
+                                <button onclick="saveToolResult()" class="text-[10px] text-emerald-600 dark:text-emerald-500 hover:underline font-bold">💾 Lưu vào Notebook</button>
                                 <button onclick="copyToolResult()" class="text-[10px] text-brand-600 hover:underline font-semibold">Sao chép kết quả</button>
                             </div>
                         </div>
@@ -1034,6 +892,84 @@
         </div>
     </div>
 
+    <!-- Quiz Review Modal -->
+    <div id="quiz-review-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-4xl p-6 shadow-2xl space-y-4 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+                <div>
+                    <h3 id="quiz-review-title" class="font-extrabold text-slate-900 dark:text-white text-base">Xem lại bộ câu hỏi</h3>
+                    <p class="text-[10px] text-slate-400">Ôn lại đáp án, giải thích và chỉnh sửa bộ câu hỏi nếu cần.</p>
+                </div>
+                <button onclick="closeQuizReviewModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div id="quiz-review-content" class="space-y-5"></div>
+        </div>
+    </div>
+
+    <!-- Flashcard Review Modal -->
+    <div id="flashcard-review-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-4xl p-6 shadow-2xl space-y-4 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+                <div>
+                    <h3 class="font-extrabold text-slate-900 dark:text-white text-base">Xem lại Flashcards</h3>
+                    <p class="text-[10px] text-slate-400">Lật thẻ để xem đáp án và chỉnh sửa nội dung nếu cần.</p>
+                </div>
+                <button onclick="closeFlashcardReviewModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div id="flashcard-review-content" class="space-y-4"></div>
+        </div>
+    </div>
+
+    <!-- Flashcard Editor Modal -->
+    <div id="flashcard-editor-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-3xl p-6 shadow-2xl space-y-4 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+                <div>
+                    <h3 class="font-extrabold text-slate-900 dark:text-white text-base">Chỉnh sửa Flashcard</h3>
+                    <p class="text-[10px] text-slate-400">Sửa câu hỏi và đáp án theo giao diện thân thiện, thêm hoặc xóa thẻ khi cần.</p>
+                </div>
+                <button onclick="closeFlashcardEditorModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="flex justify-end">
+                <button onclick="addFlashcardEditorRow()" class="px-3 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-[10px] font-semibold transition">+ Thêm flashcard</button>
+            </div>
+            <div id="flashcard-editor-form" class="space-y-3"></div>
+            <div class="flex justify-end gap-3 pt-2">
+                <button onclick="closeFlashcardEditorModal()" class="px-4 py-2 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition">Hủy</button>
+                <button onclick="saveFlashcardEdit()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-semibold transition">Lưu chỉnh sửa</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Generation Editor Modal -->
+    <div id="quiz-generation-editor-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-5xl p-6 shadow-2xl space-y-4 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+                <div>
+                    <h3 class="font-extrabold text-slate-900 dark:text-white text-base">Chỉnh sửa bộ câu hỏi</h3>
+                    <p class="text-[10px] text-slate-400">Sửa câu hỏi, đáp án và giải thích theo giao diện trực quan, thêm hoặc xóa câu hỏi khi cần.</p>
+                </div>
+                <button onclick="closeQuizGenerationEditorModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="flex justify-end">
+                <button onclick="addQuizGenerationEditorRow()" class="px-3 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-[10px] font-semibold transition">+ Thêm câu hỏi</button>
+            </div>
+            <div id="quiz-generation-editor-form" class="space-y-3"></div>
+            <div class="flex justify-end gap-3 pt-2">
+                <button onclick="closeQuizGenerationEditorModal()" class="px-4 py-2 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition">Hủy</button>
+                <button onclick="saveQuizGenerationEdit()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-semibold transition">Lưu chỉnh sửa</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Frontend logic & dynamic integration -->
     <script>
         const API_URL = '/api';
@@ -1047,6 +983,11 @@
         let distChartObj = null;
         let currentQuizPlaying = null;
         let currentQuizAnswers = {};
+        let currentEditingQuizId = null;
+        let currentFlashcardEditingId = null;
+        let currentFlashcardEditorCards = [];
+        let currentQuizGenerationEditingId = null;
+        let currentQuizGenerationEditorQuestions = [];
 
         // CSRF Token helper function
         function getCsrfToken() {
@@ -1093,6 +1034,10 @@
         // Switching Dashboard View Mode
         function switchView(viewName) {
             activeView = viewName;
+            
+            if (viewName === 'dashboard') {
+                fetchNotifications();
+            }
             
             // Toggle view visibility
             ['dashboard', 'notebooks', 'documents', 'study-materials', 'notes', 'progress', 'settings'].forEach(v => {
@@ -1583,15 +1528,84 @@
             openQuizPlayModal(quizId);
         }
 
-        function openQuizBuilderModal() {
+        async function openQuizBuilderModal(quizId = null) {
             const modal = document.getElementById('quiz-builder-modal');
             const container = document.getElementById('quiz-questions-container');
+            currentEditingQuizId = quizId;
             document.getElementById('quiz-builder-name').value = '';
             document.getElementById('quiz-builder-desc').value = '';
             container.innerHTML = '';
             currentQuizAnswers = {};
             populateNotebookSelectors();
-            addQuizQuestionRow();
+
+            if (quizId) {
+                try {
+                    const res = await fetch(`${API_URL}/quizzes/${quizId}/`);
+                    if (!res.ok) throw new Error('Không thể tải dữ liệu quiz');
+                    const quiz = await res.json();
+                    document.getElementById('quiz-builder-name').value = quiz.name || '';
+                    document.getElementById('quiz-builder-desc').value = quiz.description || '';
+                    document.getElementById('quiz-builder-notebook').value = quiz.notebook ? String(quiz.notebook) : '';
+
+                    const questions = Array.isArray(quiz.questions) ? quiz.questions : [];
+                    questions.forEach((question, index) => {
+                        const row = document.createElement('div');
+                        row.className = 'bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-3xl p-4 space-y-3';
+                        row.setAttribute('data-question-row', index);
+                        row.innerHTML = `
+                            <div class="flex items-start justify-between gap-3">
+                                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Câu hỏi ${index + 1}</span>
+                                <button type="button" onclick="this.closest('div[data-question-row]').remove()" class="text-[10px] text-rose-500 hover:text-rose-700 font-semibold">Xóa</button>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">Nội dung câu hỏi</label>
+                                <textarea data-question-input rows="2" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500">${question.question_text || ''}</textarea>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">Đáp án A</label>
+                                    <input data-option-input="A" type="text" value="${(question.options || [])[0] || ''}" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">Đáp án B</label>
+                                    <input data-option-input="B" type="text" value="${(question.options || [])[1] || ''}" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">Đáp án C</label>
+                                    <input data-option-input="C" type="text" value="${(question.options || [])[2] || ''}" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">Đáp án D</label>
+                                    <input data-option-input="D" type="text" value="${(question.options || [])[3] || ''}" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">Đáp án đúng</label>
+                                    <select data-correct-option class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                                        ${['A','B','C','D'].map(letter => `<option value="${letter}" ${letter === (question.correct_option || 'A') ? 'selected' : ''}>${letter}</option>`).join('')}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">Giải thích</label>
+                                    <textarea data-explanation-input rows="2" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500">${question.explanation || ''}</textarea>
+                                </div>
+                            </div>
+                        `;
+                        container.appendChild(row);
+                    });
+
+                    if (!questions.length) {
+                        addQuizQuestionRow();
+                    }
+                } catch (err) {
+                    console.error('Lỗi khi tải quiz để sửa:', err);
+                    addQuizQuestionRow();
+                }
+            } else {
+                addQuizQuestionRow();
+            }
+
             modal.classList.remove('hidden');
             modal.classList.add('flex');
         }
@@ -1601,6 +1615,7 @@
             modal.classList.add('hidden');
             modal.classList.remove('flex');
             document.getElementById('quiz-questions-container').innerHTML = '';
+            currentEditingQuizId = null;
         }
 
         function addQuizQuestionRow() {
@@ -1692,16 +1707,20 @@
             }
 
             try {
-                const res = await fetchWithCsrf(`${API_URL}/quizzes/`, {
-                    method: 'POST',
+                const payload = {
+                    name,
+                    description,
+                    notebook: notebookId,
+                    tag: 'Bài tập trắc nghiệm',
+                    questions
+                };
+                const endpoint = currentEditingQuizId ? `${API_URL}/quizzes/${currentEditingQuizId}/` : `${API_URL}/quizzes/`;
+                const method = currentEditingQuizId ? 'PATCH' : 'POST';
+
+                const res = await fetchWithCsrf(endpoint, {
+                    method,
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        name,
-                        description,
-                        notebook: notebookId,
-                        tag: 'Bài tập trắc nghiệm',
-                        questions
-                    })
+                    body: JSON.stringify(payload)
                 });
                 if (!res.ok) {
                     const err = await res.json();
@@ -1713,7 +1732,7 @@
                 if (notebookId) {
                     selectNotebook(parseInt(notebookId, 10), true);
                 }
-                alert('Đã lưu bộ câu hỏi trắc nghiệm thành công!');
+                alert(currentEditingQuizId ? 'Đã cập nhật bộ câu hỏi trắc nghiệm thành công!' : 'Đã lưu bộ câu hỏi trắc nghiệm thành công!');
             } catch (err) {
                 console.error('Lỗi lưu quiz:', err);
                 alert('Đã xảy ra lỗi khi lưu bộ câu hỏi.');
@@ -1764,6 +1783,540 @@
             document.getElementById('quiz-play-content').innerHTML = '';
         }
 
+        function closeQuizReviewModal() {
+            const modal = document.getElementById('quiz-review-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.getElementById('quiz-review-content').innerHTML = '';
+        }
+
+        async function openQuizGenerationEditorModal(materialId) {
+            if (!materialId) return;
+            currentQuizGenerationEditingId = materialId;
+            try {
+                const res = await fetch(`${API_URL}/generations/${materialId}/`);
+                if (!res.ok) throw new Error('Không thể tải bộ câu hỏi để sửa');
+                const material = await res.json();
+                let parsed = [];
+                try {
+                    parsed = JSON.parse(material.content);
+                    if (!Array.isArray(parsed)) parsed = [];
+                } catch (err) {
+                    parsed = [];
+                }
+                currentQuizGenerationEditorQuestions = parsed.length ? parsed.map(item => ({
+                    question_text: item.question || item.question_text || '',
+                    options: Array.isArray(item.options) ? item.options.slice(0, 4) : ['', '', '', ''],
+                    answer: (item.answer || item.correct_option || item.correctOption || 'A').toString().toUpperCase(),
+                    explanation: item.explanation || ''
+                })) : [{ question_text: '', options: ['', '', '', ''], answer: 'A', explanation: '' }];
+                currentQuizGenerationEditorQuestions = currentQuizGenerationEditorQuestions.map(item => ({
+                    ...item,
+                    options: [...item.options, '', '', '', ''].slice(0, 4)
+                }));
+                renderQuizGenerationEditorForm(currentQuizGenerationEditorQuestions);
+                document.getElementById('quiz-generation-editor-modal').classList.remove('hidden');
+                document.getElementById('quiz-generation-editor-modal').classList.add('flex');
+            } catch (err) {
+                console.error('Open quiz generation editor error:', err);
+                alert('Không thể mở trình chỉnh sửa bộ câu hỏi.');
+            }
+        }
+
+        async function saveQuizGenerationEdit() {
+            if (!currentQuizGenerationEditingId) return;
+            const questions = collectQuizGenerationEditorQuestions();
+            if (!questions.length) return alert('Vui lòng thêm ít nhất một câu hỏi.');
+            try {
+                const payload = JSON.stringify(questions, null, 2);
+                const res = await fetchWithCsrf(`${API_URL}/generations/${currentQuizGenerationEditingId}/`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content: payload })
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(JSON.stringify(err));
+                }
+                closeQuizGenerationEditorModal();
+                await loadNotebooks();
+                if (activeNotebookId) await selectNotebook(activeNotebookId, true);
+                alert('Đã cập nhật bộ câu hỏi thành công!');
+            } catch (err) {
+                console.error('Save quiz generation edit error:', err);
+                alert('Lỗi khi lưu bộ câu hỏi.');
+            }
+        }
+
+        async function openQuizReviewModal(quizId) {
+            if (!quizId) return;
+            const modal = document.getElementById('quiz-review-modal');
+            const content = document.getElementById('quiz-review-content');
+            const title = document.getElementById('quiz-review-title');
+            title.innerText = 'Xem lại bộ câu hỏi';
+            content.innerHTML = '<div class="text-center py-12 text-slate-500 dark:text-slate-400 text-xs">Đang tải nội dung câu hỏi...</div>';
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            try {
+                let quiz = null;
+                let res = await fetch(`${API_URL}/quizzes/${quizId}/`);
+                if (res.ok) {
+                    quiz = await res.json();
+                } else {
+                    const generationRes = await fetch(`${API_URL}/generations/${quizId}/`);
+                    if (!generationRes.ok) throw new Error('Không thể tải bộ câu hỏi');
+                    const generation = await generationRes.json();
+                    const fallback = parseQuizGenerationContent(generation.content);
+                    if (!fallback || !Array.isArray(fallback.questions) || fallback.questions.length === 0) {
+                        content.innerHTML = '<div class="text-center py-12 text-slate-500 dark:text-slate-400 text-xs">Bộ câu hỏi này chưa có nội dung nào.</div>';
+                        return;
+                    }
+                    title.innerText = generation.generation_type === 'quiz' ? 'Xem lại bộ câu hỏi đã lưu' : 'Xem lại tài liệu';
+                    content.innerHTML = `
+                        <div class="space-y-4">
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-4">
+                                <div>
+                                    <p class="text-[10px] uppercase tracking-wider font-bold text-slate-500">Bộ câu hỏi</p>
+                                    <h4 class="font-bold text-slate-900 dark:text-white text-base mt-1">${fallback.title}</h4>
+                                    <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1">${fallback.description}</p>
+                                </div>
+                                <button onclick="openQuizGenerationEditorModal(${quizId})" class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-3 py-2 rounded-xl text-[10px] font-semibold transition hover:bg-slate-200 dark:hover:bg-slate-700">Sửa câu hỏi</button>
+                            </div>
+                            ${fallback.questions.map((question, idx) => {
+                                const options = Array.isArray(question.options) ? question.options : [];
+                                const correctOption = (question.correct_option || question.answer || 'A').toString().toUpperCase();
+                                return `
+                                    <div class="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 space-y-3">
+                                        <div class="flex items-center justify-between gap-3">
+                                            <span class="text-[10px] uppercase tracking-wider font-bold text-slate-500">Câu ${idx + 1}</span>
+                                            <span id="quiz-review-status-${generation.id}-${idx}" class="text-[10px] font-bold uppercase tracking-wide text-slate-400">&nbsp;</span>
+                                        </div>
+                                        <p class="text-sm font-semibold text-slate-900 dark:text-white">${question.question_text || question.question || 'Câu hỏi chưa có nội dung'}</p>
+                                        <div id="quiz-review-${generation.id}-${idx}-options" class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                            ${options.map((opt, optIdx) => `
+                                                <button type="button" onclick="selectQuizReviewOption('${generation.id}-${idx}', '${String.fromCharCode(65 + optIdx)}', '${correctOption}')" id="quiz-review-${generation.id}-${idx}-opt-${optIdx}" data-explanation="${escapeHtml(question.explanation || '')}" class="w-full text-left bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3.5 py-2.5 rounded-xl text-[11px] text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition font-medium">
+                                                    ${formatQuizOption(opt, optIdx)}
+                                                </button>
+                                            `).join('')}
+                                        </div>
+                                        <div id="quiz-review-${generation.id}-${idx}-result" class="hidden text-[11px] font-bold p-3 rounded-xl"></div>
+                                        <div id="quiz-review-${generation.id}-${idx}-explanation" class="hidden text-[10px] text-slate-500 dark:text-slate-400 italic bg-slate-100 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800"></div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    `;
+                    return;
+                }
+
+                const questions = Array.isArray(quiz.questions) ? quiz.questions : [];
+                if (!questions.length) {
+                    content.innerHTML = '<div class="text-center py-12 text-slate-500 dark:text-slate-400 text-xs">Bộ câu hỏi này chưa có nội dung nào.</div>';
+                    return;
+                }
+
+                title.innerText = quiz.name || 'Xem lại bộ câu hỏi';
+                content.innerHTML = `
+                    <div class="space-y-4">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-4">
+                            <div>
+                                <p class="text-[10px] uppercase tracking-wider font-bold text-slate-500">Bộ câu hỏi</p>
+                                <h4 class="font-bold text-slate-900 dark:text-white text-base mt-1">${quiz.name || 'Bộ câu hỏi'}</h4>
+                                <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1">${quiz.description || 'Không có mô tả'}</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="openQuizPlayModal(${quiz.id})" class="bg-brand-600 hover:bg-brand-700 text-white px-3 py-2 rounded-xl text-[10px] font-semibold transition">Làm lại</button>
+                                <button onclick="openQuizBuilderModal(${quiz.id})" class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-3 py-2 rounded-xl text-[10px] font-semibold transition hover:bg-slate-200 dark:hover:bg-slate-700">Sửa câu hỏi</button>
+                            </div>
+                        </div>
+                        ${questions.map((question, idx) => {
+                            const options = Array.isArray(question.options) ? question.options : [];
+                            const correctOption = (question.correct_option || 'A').toString().toUpperCase();
+                            return `
+                                <div class="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 space-y-3">
+                                    <div class="flex items-center justify-between gap-3">
+                                        <span class="text-[10px] uppercase tracking-wider font-bold text-slate-500">Câu ${idx + 1}</span>
+                                        <span id="quiz-review-status-${quiz.id}-${idx}" class="text-[10px] font-bold uppercase tracking-wide text-slate-400">&nbsp;</span>
+                                    </div>
+                                    <p class="text-sm font-semibold text-slate-900 dark:text-white">${question.question_text || 'Câu hỏi chưa có nội dung'}</p>
+                                    <div id="quiz-review-${quiz.id}-${idx}-options" class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                        ${options.map((opt, optIdx) => `
+                                            <button type="button" onclick="selectQuizReviewOption('${quiz.id}-${idx}', '${String.fromCharCode(65 + optIdx)}', '${correctOption}')" id="quiz-review-${quiz.id}-${idx}-opt-${optIdx}" data-explanation="${escapeHtml(question.explanation || '')}" class="w-full text-left bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3.5 py-2.5 rounded-xl text-[11px] text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition font-medium">
+                                                ${formatQuizOption(opt, optIdx)}
+                                            </button>
+                                        `).join('')}
+                                    </div>
+                                    <div id="quiz-review-${quiz.id}-${idx}-result" class="hidden text-[11px] font-bold p-3 rounded-xl"></div>
+                                    <div id="quiz-review-${quiz.id}-${idx}-explanation" class="hidden text-[10px] text-slate-500 dark:text-slate-400 italic bg-slate-100 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800"></div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            } catch (err) {
+                console.error('Quiz review error:', err);
+                content.innerHTML = '<div class="text-center py-12 text-rose-500 dark:text-rose-400 text-xs">Không thể tải nội dung bộ câu hỏi. Vui lòng thử lại.</div>';
+            }
+        }
+
+        function closeFlashcardReviewModal() {
+            const modal = document.getElementById('flashcard-review-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.getElementById('flashcard-review-content').innerHTML = '';
+        }
+
+        function closeQuizGenerationEditorModal() {
+            const modal = document.getElementById('quiz-generation-editor-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            currentQuizGenerationEditingId = null;
+            currentQuizGenerationEditorQuestions = [];
+        }
+
+        function toggleFlashcardReviewCard(cardIndex) {
+            const front = document.getElementById(`flash-review-front-${cardIndex}`);
+            const back = document.getElementById(`flash-review-back-${cardIndex}`);
+            if (!front || !back) return;
+            front.classList.toggle('hidden');
+            back.classList.toggle('hidden');
+        }
+
+        function escapeHtml(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function normalizeQuizOption(option) {
+            const value = String(option ?? '').trim();
+            return value.replace(/^[A-D]\.\s*/i, '').trim();
+        }
+
+        function formatQuizOption(option, optIdx) {
+            const cleanText = normalizeQuizOption(option);
+            const letter = String.fromCharCode(65 + optIdx);
+            return `${letter}. ${cleanText}`;
+        }
+
+        function parseFlashcardJson(content) {
+            if (!content) return [];
+            try {
+                const parsed = JSON.parse(content);
+                if (Array.isArray(parsed)) {
+                    return parsed
+                        .filter(item => item && typeof item === 'object')
+                        .map(item => ({
+                            question: String(item.question || item.front || ''),
+                            answer: String(item.answer || item.back || '')
+                        }));
+                }
+            } catch (err) {
+                // Ignore invalid JSON and fall back to text parsing below
+            }
+
+            const text = String(content).replace(/\r\n/g, '\n');
+            const questionMatches = [...text.matchAll(/QUESTION\s*[:\-]?\s*([\s\S]*?)(?=(?:\s*ANSWER\s*[:\-]?\s*|\s*QUESTION\s*[:\-]?|\s*$))/gi)];
+            if (questionMatches.length) {
+                const cards = [];
+                questionMatches.forEach((match) => {
+                    let question = (match[1] || '').trim();
+                    const answerMatch = text.match(new RegExp(`ANSWER\\s*[:\\-]?\\s*([\\s\\S]*?)(?=(?:\\s*QUESTION\\s*[:\\-]?|\\s*$))`, 'i'));
+                    let answer = answerMatch ? answerMatch[1].trim() : 'Chưa có đáp án';
+
+                    if (question.includes('ANSWER')) {
+                        const answerSplit = question.split(/\s*ANSWER\s*[:\-]?\s*/i);
+                        if (answerSplit.length > 1) {
+                            question = answerSplit[0].trim();
+                            answer = answerSplit.slice(1).join(' ANSWER ').trim();
+                        }
+                    }
+
+                    question = question.replace(/^[^A-Za-z0-9À-ỹ]+/, '').trim();
+                    if (!question) return;
+                    cards.push({ question, answer: answer && answer !== 'Chưa có đáp án' ? answer : 'Chưa có đáp án' });
+                });
+                if (cards.length) return cards;
+            }
+
+            return [];
+        }
+
+        function parseQuizGenerationContent(content) {
+            if (!content) return null;
+
+            let raw = String(content).trim();
+            if (!raw) return null;
+
+            // Try parse JSON content first, including fenced code blocks.
+            try {
+                if (raw.startsWith('```')) {
+                    raw = raw.replace(/^```(?:json)?\s*/, '').replace(/```$/, '').trim();
+                }
+                const parsed = JSON.parse(raw);
+                if (Array.isArray(parsed) && parsed.length) {
+                    const questions = parsed.map((item) => ({
+                        question_text: item.question_text || item.question || '',
+                        options: Array.isArray(item.options) ? item.options : [],
+                        correct_option: (item.correct_option || item.answer || (typeof item.correct_index === 'number' ? String.fromCharCode(65 + item.correct_index) : 'A')).toString().toUpperCase(),
+                        explanation: item.explanation || item.explanation || ''
+                    }));
+                    return {
+                        title: 'Bộ câu hỏi đã lưu',
+                        description: 'Đã lưu từ tài nguyên học tập.',
+                        questions
+                    };
+                }
+            } catch (err) {
+                // Ignore JSON parse errors and fall back to plain text parsing.
+            }
+
+            const text = raw.replace(/\r\n/g, '\n');
+            const cleaned = text.replace(/^\s*🏷️\s*Chủ đề:\s*.*?\n?/i, '').trim();
+            if (!cleaned) return null;
+            return {
+                title: 'Bộ câu hỏi đã lưu',
+                description: 'Đã lưu từ tài nguyên học tập.',
+                questions: [{
+                    question_text: cleaned,
+                    options: ['A. Xem thêm nội dung', 'B. Xem thêm nội dung', 'C. Xem thêm nội dung', 'D. Xem thêm nội dung'],
+                    correct_option: 'A',
+                    explanation: cleaned
+                }]
+            };
+        }
+
+        function renderFlashcardEditorForm(cards) {
+            const container = document.getElementById('flashcard-editor-form');
+            if (!container) return;
+            container.innerHTML = `
+                <div class="space-y-3">
+                    ${cards.length ? cards.map((card, idx) => `
+                        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-4 space-y-3" data-flashcard-row="${idx}">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Thẻ ${idx + 1}</span>
+                                <button type="button" onclick="removeFlashcardEditorRow(${idx})" class="text-[10px] text-rose-500 hover:text-rose-700 font-semibold">Xóa</button>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">Câu hỏi</label>
+                                <input data-flashcard-question type="text" value="${escapeHtml(card.question || '')}" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">Đáp án</label>
+                                <textarea data-flashcard-answer rows="3" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500">${escapeHtml(card.answer || '')}</textarea>
+                            </div>
+                        </div>
+                    `).join('') : '<div class="text-center py-6 text-[11px] text-slate-400">Chưa có flashcard nào. Nhấn “+ Thêm flashcard” để bắt đầu.</div>'}
+                </div>
+            `;
+        }
+
+        function addFlashcardEditorRow() {
+            currentFlashcardEditorCards.push({ question: '', answer: '' });
+            renderFlashcardEditorForm(currentFlashcardEditorCards);
+        }
+
+        function removeFlashcardEditorRow(index) {
+            currentFlashcardEditorCards = currentFlashcardEditorCards.filter((_, idx) => idx !== index);
+            if (!currentFlashcardEditorCards.length) {
+                currentFlashcardEditorCards.push({ question: '', answer: '' });
+            }
+            renderFlashcardEditorForm(currentFlashcardEditorCards);
+        }
+
+        function collectFlashcardEditorCards() {
+            const container = document.getElementById('flashcard-editor-form');
+            if (!container) return [];
+            return Array.from(container.querySelectorAll('[data-flashcard-row]')).map((row) => ({
+                question: row.querySelector('[data-flashcard-question]').value.trim(),
+                answer: row.querySelector('[data-flashcard-answer]').value.trim()
+            })).filter(card => card.question || card.answer);
+        }
+
+        function renderQuizGenerationEditorForm(questions) {
+            const container = document.getElementById('quiz-generation-editor-form');
+            if (!container) return;
+            container.innerHTML = `
+                <div class="space-y-3">
+                    ${questions.length ? questions.map((question, idx) => `
+                        <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-4 space-y-3" data-quiz-generation-row="${idx}">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Câu hỏi ${idx + 1}</span>
+                                <button type="button" onclick="removeQuizGenerationEditorRow(${idx})" class="text-[10px] text-rose-500 hover:text-rose-700 font-semibold">Xóa</button>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">Nội dung câu hỏi</label>
+                                <textarea data-quiz-question rows="2" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500">${escapeHtml(question.question_text || question.question || '')}</textarea>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                ${['A','B','C','D'].map((letter, optIdx) => `
+                                    <div>
+                                        <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">Đáp án ${letter}</label>
+                                        <input data-quiz-option="${letter}" type="text" value="${escapeHtml(normalizeQuizOption((question.options || [])[optIdx] || ''))}" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">Đáp án đúng</label>
+                                    <select data-quiz-correct-answer class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                                        ${['A','B','C','D'].map((letter) => `<option value="${letter}" ${letter === (question.answer || question.correct_option || 'A') ? 'selected' : ''}>${letter}</option>`).join('')}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">Giải thích</label>
+                                    <textarea data-quiz-explanation rows="2" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500">${escapeHtml(question.explanation || '')}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('') : '<div class="text-center py-6 text-[11px] text-slate-400">Chưa có câu hỏi nào. Nhấn “+ Thêm câu hỏi” để bắt đầu.</div>'}
+                </div>
+            `;
+        }
+
+        function addQuizGenerationEditorRow() {
+            currentQuizGenerationEditorQuestions.push({
+                question_text: '',
+                options: ['', '', '', ''],
+                answer: 'A',
+                explanation: ''
+            });
+            renderQuizGenerationEditorForm(currentQuizGenerationEditorQuestions);
+        }
+
+        function removeQuizGenerationEditorRow(index) {
+            currentQuizGenerationEditorQuestions = currentQuizGenerationEditorQuestions.filter((_, idx) => idx !== index);
+            if (!currentQuizGenerationEditorQuestions.length) {
+                currentQuizGenerationEditorQuestions.push({
+                    question_text: '',
+                    options: ['', '', '', ''],
+                    answer: 'A',
+                    explanation: ''
+                });
+            }
+            renderQuizGenerationEditorForm(currentQuizGenerationEditorQuestions);
+        }
+
+        function collectQuizGenerationEditorQuestions() {
+            const container = document.getElementById('quiz-generation-editor-form');
+            if (!container) return [];
+            return Array.from(container.querySelectorAll('[data-quiz-generation-row]')).map((row) => {
+                const options = ['A', 'B', 'C', 'D'].map(letter => row.querySelector(`[data-quiz-option="${letter}"]`).value.trim());
+                return {
+                    question: row.querySelector('[data-quiz-question]').value.trim(),
+                    options: options.map(normalizeQuizOption),
+                    answer: row.querySelector('[data-quiz-correct-answer]').value.trim().toUpperCase(),
+                    explanation: row.querySelector('[data-quiz-explanation]').value.trim()
+                };
+            }).filter(item => item.question || item.options.some(Boolean) || item.explanation);
+        }
+
+        async function openFlashcardReviewModal(materialId) {
+            if (!materialId) return;
+            const modal = document.getElementById('flashcard-review-modal');
+            const content = document.getElementById('flashcard-review-content');
+            content.innerHTML = '<div class="text-center py-12 text-slate-500 dark:text-slate-400 text-xs">Đang tải flashcard...</div>';
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            try {
+                const res = await fetch(`${API_URL}/generations/${materialId}/`);
+                if (!res.ok) throw new Error('Không thể tải flashcard');
+                const material = await res.json();
+                const cards = parseFlashcardJson(material.content);
+                if (!cards.length) {
+                    content.innerHTML = '<div class="text-center py-12 text-slate-500 dark:text-slate-400 text-xs">Flashcard này chưa có nội dung để xem lại.</div>';
+                    return;
+                }
+
+                content.innerHTML = `
+                    <div class="space-y-4">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-4">
+                            <div>
+                                <p class="text-[10px] uppercase tracking-wider font-bold text-slate-500">Flashcard</p>
+                                <h4 class="font-bold text-slate-900 dark:text-white text-base mt-1">Danh sách thẻ ghi nhớ</h4>
+                            </div>
+                            <button onclick="openFlashcardEditorModal(${material.id})" class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-3 py-2 rounded-xl text-[10px] font-semibold transition hover:bg-slate-200 dark:hover:bg-slate-700">Sửa flashcard</button>
+                        </div>
+                        ${cards.map((card, idx) => `
+                            <div class="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-4">
+                                <div id="flash-review-front-${idx}" class="space-y-3">
+                                    <div class="text-[10px] uppercase tracking-wider font-bold text-brand-500">Question</div>
+                                    <p class="text-base font-bold text-slate-900 dark:text-white">${card.question || 'Câu hỏi chưa có nội dung'}</p>
+                                </div>
+                                <div id="flash-review-back-${idx}" class="hidden space-y-3">
+                                    <div class="text-[10px] uppercase tracking-wider font-bold text-emerald-500">Answer</div>
+                                    <p class="text-sm text-slate-700 dark:text-slate-300">${card.answer || 'Chưa có đáp án'}</p>
+                                </div>
+                                <button onclick="toggleFlashcardReviewCard(${idx})" class="mt-4 bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-xl text-[10px] font-semibold transition">Lật thẻ</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } catch (err) {
+                console.error('Flashcard review error:', err);
+                content.innerHTML = '<div class="text-center py-12 text-rose-500 dark:text-rose-400 text-xs">Không thể tải flashcard. Vui lòng thử lại.</div>';
+            }
+        }
+
+        async function openFlashcardEditorModal(materialId) {
+            if (!materialId) return;
+            currentFlashcardEditingId = materialId;
+            try {
+                const res = await fetch(`${API_URL}/generations/${materialId}/`);
+                if (!res.ok) throw new Error('Không thể tải flashcard để sửa');
+                const material = await res.json();
+                currentFlashcardEditorCards = parseFlashcardJson(material.content);
+                if (!currentFlashcardEditorCards.length) {
+                    currentFlashcardEditorCards.push({ question: '', answer: '' });
+                }
+                renderFlashcardEditorForm(currentFlashcardEditorCards);
+                document.getElementById('flashcard-editor-modal').classList.remove('hidden');
+                document.getElementById('flashcard-editor-modal').classList.add('flex');
+            } catch (err) {
+                console.error('Open flashcard editor error:', err);
+                alert('Không thể mở trình chỉnh sửa flashcard.');
+            }
+        }
+
+        function closeFlashcardEditorModal() {
+            const modal = document.getElementById('flashcard-editor-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            currentFlashcardEditingId = null;
+            currentFlashcardEditorCards = [];
+        }
+
+        async function saveFlashcardEdit() {
+            if (!currentFlashcardEditingId) return;
+            const cards = collectFlashcardEditorCards();
+            if (!cards.length) return alert('Vui lòng thêm ít nhất một flashcard.');
+            try {
+                const payload = JSON.stringify(cards, null, 2);
+                const res = await fetchWithCsrf(`${API_URL}/generations/${currentFlashcardEditingId}/`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content: payload })
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(JSON.stringify(err));
+                }
+                closeFlashcardEditorModal();
+                closeFlashcardReviewModal();
+                await loadNotebooks();
+                if (activeNotebookId) await selectNotebook(activeNotebookId, true);
+                alert('Đã cập nhật flashcard thành công!');
+            } catch (err) {
+                console.error('Save flashcard edit error:', err);
+                alert('Lỗi khi lưu flashcard.');
+            }
+        }
+
         function renderQuizPlayContent(quizId, questions) {
             const content = document.getElementById('quiz-play-content');
             if (!content) return;
@@ -1773,7 +2326,7 @@
                     const letter = String.fromCharCode(65 + optIdx);
                     return `
                         <button type="button" onclick="selectQuizOption(${question.id}, '${letter}', '${question.correct_option.toUpperCase()}')" id="${qId}-opt-${optIdx}" class="w-full text-left bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3.5 py-2.5 rounded-xl text-[11px] text-slate-650 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition font-medium">
-                            ${letter}. ${opt}
+                            ${formatQuizOption(opt, optIdx)}
                         </button>
                     `;
                 }).join('');
@@ -1808,6 +2361,69 @@
                     </div>
                 </div>
             `;
+        }
+
+        function selectQuizReviewOption(reviewId, selectedLetter, correctOption) {
+            const qId = `quiz-review-${reviewId}`;
+            const optionsContainer = document.getElementById(`${qId}-options`);
+            if (!optionsContainer) return;
+            const buttons = optionsContainer.querySelectorAll('button');
+            const correctClasses = ['bg-emerald-500/10', 'dark:bg-emerald-500/20', 'border-emerald-500', 'text-emerald-700', 'dark:text-emerald-400'];
+            const wrongClasses = ['bg-rose-500/10', 'dark:bg-rose-500/20', 'border-rose-500', 'text-rose-700', 'dark:text-rose-400'];
+            const normalClasses = ['bg-white', 'dark:bg-slate-900', 'border-slate-200', 'dark:border-slate-800', 'text-slate-700', 'dark:text-slate-300'];
+            buttons.forEach(btn => {
+                btn.classList.remove(...correctClasses, ...wrongClasses);
+                btn.classList.add(...normalClasses);
+            });
+
+            const selectedIdx = selectedLetter.charCodeAt(0) - 65;
+            const selectedBtn = document.getElementById(`${qId}-opt-${selectedIdx}`);
+            const isCorrect = selectedLetter.toUpperCase() === correctOption.toUpperCase();
+            if (selectedBtn) {
+                if (isCorrect) {
+                    selectedBtn.classList.remove(...normalClasses);
+                    selectedBtn.classList.add(...correctClasses);
+                } else {
+                    selectedBtn.classList.remove(...normalClasses);
+                    selectedBtn.classList.add(...wrongClasses);
+                    buttons.forEach((btn, idx) => {
+                        const letter = String.fromCharCode(65 + idx);
+                        if (letter === correctOption.toUpperCase()) {
+                            btn.classList.remove(...normalClasses);
+                            btn.classList.add(...correctClasses);
+                        }
+                    });
+                }
+            }
+
+            buttons.forEach(btn => {
+                btn.disabled = true;
+                btn.classList.add('opacity-70', 'cursor-not-allowed');
+            });
+
+            const resultDiv = document.getElementById(`${qId}-result`);
+            const statusSpan = document.getElementById(`quiz-review-status-${reviewId}`);
+            if (resultDiv) {
+                resultDiv.classList.remove('hidden');
+                if (isCorrect) {
+                    resultDiv.className = 'text-[11px] font-bold p-3 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20';
+                    resultDiv.innerText = '✓ Chính xác!';
+                } else {
+                    resultDiv.className = 'text-[11px] font-bold p-3 rounded-xl bg-rose-500/10 dark:bg-rose-500/20 text-rose-700 dark:text-rose-400 border border-rose-500/20';
+                    resultDiv.innerText = '✗ Chưa chính xác.';
+                }
+            }
+            if (statusSpan) {
+                statusSpan.innerText = isCorrect ? 'Đúng' : 'Sai';
+                statusSpan.className = `text-[10px] font-bold uppercase tracking-wide ${isCorrect ? 'text-emerald-600' : 'text-rose-500'}`;
+            }
+
+            const explanationDiv = document.getElementById(`${qId}-explanation`);
+            const explanation = selectedBtn?.dataset?.explanation || '';
+            if (explanationDiv) {
+                explanationDiv.classList.remove('hidden');
+                explanationDiv.innerText = explanation ? `Giải thích: ${explanation}` : (isCorrect ? 'Bạn đã chọn đúng!' : 'Hãy đọc kỹ và thử lại lần sau.');
+            }
         }
 
         function selectQuizOption(questionId, selectedLetter, correctOption) {
@@ -1919,7 +2535,7 @@
                             </div>
                             <div class="flex justify-end">
                                 <button onclick="unlockNote(${note.id})" class="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-4 py-2 rounded-xl text-xs transition">
-                                    Gửi ý kiến & Mở khóa Phản biện AI
+                                    Gửi ý kiến & Mở khóa Phân tích Logic
                                 </button>
                             </div>
                         </div>
@@ -2024,7 +2640,7 @@
                     await selectNotebook(activeNotebookId, true);
                 } else {
                     const data = await res.json();
-                    alert("Lỗi AI sinh nội dung: " + (data.error || JSON.stringify(data)));
+                    alert("Lỗi Hệ thống sinh nội dung: " + (data.error || JSON.stringify(data)));
                 }
             } catch (err) {
                 console.error("Lỗi kết nối AI Generation:", err);
@@ -2300,7 +2916,7 @@
             });
 
             if (allMaterials.length === 0) {
-                container.innerHTML = `<div class="col-span-full text-xs text-slate-400 text-center py-12">Chưa có tài nguyên học tập nào. Hãy tạo quiz, flashcards hoặc nội dung AI từ sổ tay của bạn.</div>`;
+                container.innerHTML = `<div class="col-span-full text-xs text-slate-400 text-center py-12">Chưa có tài nguyên học tập nào. Hãy tạo quiz, flashcards hoặc nội dung tự động từ sổ tay của bạn.</div>`;
                 return;
             }
 
@@ -2320,9 +2936,27 @@
                 const isQuiz = item.materialType === 'quiz';
                 const label = isQuiz ? 'Bài tập trắc nghiệm' : (generationLabel[item.generation_type] || 'Tài liệu học tập');
                 const title = isQuiz ? item.name : `${item.generation_type ? (generationLabel[item.generation_type] || item.generation_type) : 'Tài liệu học tập'}`;
-                const summary = isQuiz
-                    ? (item.description || 'Bộ câu hỏi trắc nghiệm đã lưu.')
-                    : (item.content ? String(item.content).replace(/<[^>]*>/g, '').slice(0, 180) : 'Không có mô tả nội dung.');
+                let summary = 'Không có mô tả nội dung.';
+                if (isQuiz) {
+                    summary = item.description || 'Bộ câu hỏi trắc nghiệm đã lưu.';
+                } else if (item.content) {
+                    if (item.generation_type === 'quiz' || item.generation_type === 'flashcards') {
+                        try {
+                            let cleanContent = item.content.trim();
+                            if (cleanContent.startsWith("```")) {
+                                cleanContent = cleanContent.replace(/^```(?:json)?/, "").replace(/```$/, "").trim();
+                            }
+                            const arr = JSON.parse(cleanContent);
+                            summary = `Gồm ${arr.length} ${item.generation_type === 'quiz' ? 'câu hỏi trắc nghiệm' : 'thẻ nhớ'}.`;
+                        } catch (e) {
+                            summary = 'Tài liệu học tập đã lưu.';
+                        }
+                    } else if (item.generation_type === 'mind_map') {
+                        summary = 'Sơ đồ tư duy trực quan (Mermaid).';
+                    } else {
+                        summary = String(item.content).replace(/<[^>]*>/g, '').slice(0, 180);
+                    }
+                }
 
                 return `
                     <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm hover:scale-[1.01] hover:shadow-md transition">
@@ -2334,7 +2968,18 @@
                                 <h4 class="font-bold text-slate-850 dark:text-white text-sm mt-2 truncate">${title}</h4>
                             </div>
                             <div class="flex items-center gap-2 shrink-0">
-                                ${isQuiz ? `<button onclick="openQuizPlayModal(${item.id})" class="text-xs bg-brand-600 hover:bg-brand-700 text-white px-2.5 py-1.5 rounded-xl font-semibold transition">Làm bài</button>` : ``}
+                                ${isQuiz ? `
+                                    <button onclick="openQuizPlayModal(${item.id})" class="text-xs bg-brand-600 hover:bg-brand-700 text-white px-2.5 py-1.5 rounded-xl font-semibold transition">Làm bài</button>
+                                    <button onclick="openQuizReviewModal(${item.id})" class="text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-slate-600 dark:text-slate-350 hover:bg-slate-100 font-semibold">Xem lại</button>
+                                ` : ``}
+                                ${!isQuiz && item.generation_type === 'flashcards' ? `
+                                    <button onclick="openFlashcardReviewModal(${item.id})" class="text-xs bg-brand-600 hover:bg-brand-700 text-white px-2.5 py-1.5 rounded-xl font-semibold transition">Xem lại</button>
+                                    <button onclick="openFlashcardEditorModal(${item.id})" class="text-xs bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1.5 rounded-xl font-semibold transition">Sửa</button>
+                                ` : ``}
+                                ${!isQuiz && item.generation_type === 'quiz' ? `
+                                    <button onclick="openQuizReviewModal(${item.id})" class="text-xs bg-brand-600 hover:bg-brand-700 text-white px-2.5 py-1.5 rounded-xl font-semibold transition">Xem lại</button>
+                                    <button onclick="openQuizGenerationEditorModal(${item.id})" class="text-xs bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1.5 rounded-xl font-semibold transition">Sửa</button>
+                                ` : ``}
                                 ${item.notebookId ? `<button onclick="switchView('notebooks'); selectNotebook(${item.notebookId});" class="text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-slate-600 dark:text-slate-350 hover:bg-slate-100 font-semibold">Xem Sổ tay</button>` : ''}
                             </div>
                         </div>
@@ -2391,7 +3036,7 @@
                                 <p class="text-slate-750 dark:text-slate-300 line-clamp-4">${note.initial_content}</p>
                             </div>
                             <div class="bg-indigo-50/30 dark:bg-indigo-950/10 p-3.5 rounded-xl border border-indigo-100/50 dark:border-indigo-900/30 text-xs">
-                                <span class="text-[9px] text-indigo-500 uppercase font-bold block mb-1">Phản biện AI</span>
+                                <span class="text-[9px] text-indigo-500 uppercase font-bold block mb-1">Phân tích Logic</span>
                                 <p class="text-slate-750 dark:text-slate-350 line-clamp-4">${note.ai_rebuttal}</p>
                             </div>
                         </div>
@@ -2699,7 +3344,7 @@
                     
                     // Refresh
                     await loadNotebooks();
-                    switchView('dashboard');
+                    switchView('notebooks');
                 } else {
                     alert("Không thể xóa Sổ tay. Vui lòng thử lại.");
                 }
@@ -3282,6 +3927,27 @@
             document.getElementById('tool-output-section').classList.add('hidden');
             
             // Configure modal details based on selected tool
+            const titleInput = document.getElementById('tool-input-title');
+            const textInput = document.getElementById('tool-input-text');
+            if (type === 'quiz' || type === 'report') {
+                titleInput.classList.add('hidden');
+                textInput.classList.remove('hidden');
+                if (type === 'quiz') {
+                    textInput.placeholder = "Dán văn bản có cấu trúc:\nQ: Câu hỏi?\nA: Đáp án 1\nB: Đáp án 2 (*)\nC: Đáp án 3\nD: Đáp án 4\nEXP: Giải thích chi tiết";
+                } else {
+                    textInput.placeholder = "Dán nội dung tài liệu dài vào đây để hệ thống tự động tóm tắt...";
+                }
+                textInput.value = ''; // Reset
+                titleInput.required = false;
+                textInput.required = true;
+            } else {
+                titleInput.classList.remove('hidden');
+                textInput.classList.add('hidden');
+                titleInput.value = ''; // Reset
+                titleInput.required = true;
+                textInput.required = false;
+            }
+
             if (type === 'flashcards') {
                 icon.innerText = '🎴';
                 title.innerText = 'Tạo Flashcards';
@@ -3336,132 +4002,21 @@
                 let mockResult = '';
                 
                 if (activeToolType === 'flashcards') {
-                    const cards = [
-                        {
-                            question: `${title} là gì?`,
-                            answer: `Đây là câu trả lời mẫu cho ${title}`
-                        },
-                        {
-                            question: `${title} là gì?`,
-                            answer: `Đây là câu trả lời mẫu cho ${title}`
-                        },
-                        {
-                            question: `${title} là gì?`,
-                            answer: `Đây là câu trả lời mẫu cho ${title}`
-                        }
-                    ];
-
-                    mockResult = `
-                        <div class="space-y-4 font-sans text-center">
-                            <p class="text-xs font-semibold text-slate-500">
-                                🏷️ Chủ đề: ${title}
-                            </p>
-                            ${cards.map((card, index) => `
-                            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6">
-                                <div id="tool-front-${index}">
-                                    <div class="text-[10px] font-bold text-slate-400 uppercase mb-3">
-                                        Question
-                                    </div>
-                                    <div class="text-sm font-bold text-slate-800 dark:text-slate-200">
-                                        ${card.question}
-                                    </div>
-                                </div>
-                            <div id="tool-back-${index}" class="hidden">
-                                <div class="text-[10px] font-bold text-brand-500 uppercase mb-3">
-                                    Answer
-                                </div>
-                                <div class="text-sm text-slate-700 dark:text-slate-300">
-                                    ${card.answer}
-                                </div>
-                            </div>
-
-                            <button 
-                                id="tool-btn-${index}"
-                                onclick="flipToolCard(${index})"
-                                class="mt-4 bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-xl text-xs font-bold"
-                            >
-                                Check the answer
-                            </button>
-                        </div>
-                    `).join('')}
-
-                    </div>
-                    `;
+                    mockResult = getFlashcardMockHTML(title);
                 } else if (activeToolType === 'quiz') {
-                    mockResult = `
-                        <div class="space-y-4 font-sans text-left">
-                            <p class="text-xs font-semibold text-slate-500 mb-1">🏷️ Chủ đề: ${title}</p>
-                            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 space-y-2">
-                                <span class="text-xs font-bold text-slate-855 dark:text-slate-200">Câu 1: Đâu là đặc trưng cơ bản nhất khi thiết kế ${title}?</span>
-                                <div class="grid grid-cols-1 gap-2 mt-2">
-                                    <button class="text-left bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3 py-2 rounded-lg text-xs hover:bg-slate-100 transition">A. Chạy online hoàn toàn trên đám mây</button>
-                                    <button class="text-left bg-emerald-500/10 border border-emerald-500 text-emerald-700 dark:text-emerald-400 px-3 py-2 rounded-lg text-xs">B. Chạy offline và xử lý nội dung cực kỳ nhanh (Đáp án đúng)</button>
-                                    <button class="text-left bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3 py-2 rounded-lg text-xs hover:bg-slate-100 transition">C. Yêu cầu nhập Gemini API Key liên tục</button>
-                                </div>
-                                <div class="text-[10px] text-slate-400 italic mt-2 bg-slate-100 dark:bg-slate-900/50 p-2.5 rounded-lg">
-                                    Giải thích: Hệ thống đã được chuyển sang chế độ hoạt động offline, giúp nâng cao hiệu năng và độ ổn định bảo mật.
-                                </div>
-                            </div>
-                        </div>
-                    `;
+                    const rawText = document.getElementById('tool-input-text').value;
+                    mockResult = parseQuizText(rawText);
                 } else if (activeToolType === 'report') {
-                    mockResult = `
-                        <div class="text-left font-sans space-y-3">
-                            <p class="text-xs font-semibold text-slate-500">🏷️ Chủ đề: ${title}</p>
-                            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 space-y-3">
-                                <h4 class="text-sm font-bold text-slate-855 dark:text-white border-b pb-2">BÁO CÁO TÓM TẮT HỌC THUẬT: ${title.toUpperCase()}</h4>
-                                <div class="text-xs text-slate-655 dark:text-slate-350 space-y-2 leading-relaxed font-normal">
-                                    <p><strong>1. Tổng quan:</strong> Đây là bản tóm lược của tài liệu về chủ đề ${title}. Nội dung chính xoay quanh các khái niệm cốt lõi, phương pháp luận và các kết quả nghiên cứu tiêu biểu.</p>
-                                    <p><strong>2. Điểm mấu chốt:</strong> Phân hệ xử lý dữ liệu thông minh, tích hợp các cấu trúc mô hình offline để sinh thông tin mà không cần kết nối mạng bên ngoài.</p>
-                                    <p><strong>3. Đề xuất hành động:</strong> Triển khai tích hợp sâu các thuật toán tìm kiếm ngữ nghĩa cục bộ để cải thiện độ chính xác.</p>
-                                </div>
-                            </div>
-                        </div>
-                    `;
+                    const rawText = document.getElementById('tool-input-text').value;
+                    mockResult = generateReportHTML(rawText, title);
                 } else if (activeToolType === 'mindmap') {
-                    const uniqueId = `jsmind-tool-${Date.now()}`;
-                    const mockMermaid = generateMockMermaidMindmap(title);
+                    const mindmapData = getMindmapMockHTML(title);
+                    mockResult = mindmapData.html;
                     
-                    mockResult = `
-                        <div class="space-y-4 font-sans text-left w-full">
-                            <p class="text-xs font-semibold text-slate-500">🏷️ Sơ đồ chủ đề: ${title}</p>
-                            <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-100/60 dark:bg-slate-900/40 p-3 rounded-2xl border border-slate-200 dark:border-slate-800/80">
-                                <div class="flex items-center space-x-2">
-                                    <button onclick="addJsMindChildNode('modal')" class="bg-brand-500 hover:bg-brand-600 text-white font-bold py-1.5 px-3.5 rounded-lg text-[10px] transition shadow flex items-center space-x-1">
-                                        <span>➕</span> <span>Thêm nhánh con</span>
-                                    </button>
-                                    <button onclick="editJsMindNodeName('modal')" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-1.5 px-3.5 rounded-lg text-[10px] transition shadow flex items-center space-x-1">
-                                        <span>✏️</span> <span>Sửa tên</span>
-                                    </button>
-                                    <button onclick="removeJsMindNode('modal')" class="bg-rose-500 hover:bg-rose-600 text-white font-bold py-1.5 px-3.5 rounded-lg text-[10px] transition shadow flex items-center space-x-1">
-                                        <span>🗑️</span> <span>Xóa nhánh</span>
-                                    </button>
-                                </div>
-                                <div class="flex items-center space-x-2 border-l border-slate-250 dark:border-slate-800 pl-3">
-                                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Màu nút:</span>
-                                    <div class="flex items-center space-x-1.5">
-                                        <button onclick="changeJsMindNodeColor('modal', '#6366f1')" class="w-4 h-4 rounded-full bg-[#6366f1] ring-1 ring-white/50 hover:scale-110 transition" title="Indigo"></button>
-                                        <button onclick="changeJsMindNodeColor('modal', '#10b981')" class="w-4 h-4 rounded-full bg-[#10b981] ring-1 ring-white/50 hover:scale-110 transition" title="Green"></button>
-                                        <button onclick="changeJsMindNodeColor('modal', '#f43f5e')" class="w-4 h-4 rounded-full bg-[#f43f5e] ring-1 ring-white/50 hover:scale-110 transition" title="Rose"></button>
-                                        <button onclick="changeJsMindNodeColor('modal', '#f59e0b')" class="w-4 h-4 rounded-full bg-[#f59e0b] ring-1 ring-white/50 hover:scale-110 transition" title="Amber"></button>
-                                        <button onclick="changeJsMindNodeColor('modal', '#1e293b')" class="w-4 h-4 rounded-full bg-[#1e293b] ring-1 ring-white/50 hover:scale-110 transition" title="Slate"></button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="relative w-full border border-slate-200 dark:border-slate-800 rounded-3xl overflow-hidden bg-slate-50 dark:bg-slate-950 shadow-inner">
-                                <div class="absolute top-3 left-3 text-[9px] font-bold text-slate-400 uppercase tracking-wider z-10 select-none">Đúp chuột để sửa chữ, kéo rê để di chuyển</div>
-                                <div id="${uniqueId}" class="jsmind-container w-full h-[400px]"></div>
-                            </div>
-                        </div>
-                    `;
-                    
-                    const capturedUniqueId = uniqueId;
-                    const capturedMermaid = mockMermaid;
                     setTimeout(() => {
-                        const parsedTree = parseMermaidToJsMind(capturedMermaid);
-                        initJsMindInstance('modal', capturedUniqueId, parsedTree);
-                    }, 200);
+                        const parsedTree = parseMermaidToJsMind(mindmapData.mermaid);
+                        initJsMindInstance('modal', mindmapData.id, parsedTree);
+                    }, 100);
                 }
                 
                 outputContent.innerHTML = mockResult;
@@ -3482,21 +4037,40 @@
 
         // POST Request: Save generated tool result to database (persists in backend)
         async function saveToolResult() {
+            const saveBtn = document.querySelector('button[onclick="saveToolResult()"]');
+            let originalBtnHTML = '';
+            if (saveBtn) {
+                originalBtnHTML = saveBtn.innerHTML;
+                saveBtn.disabled = true;
+                saveBtn.innerHTML = '<span class="animate-spin inline-block w-3 h-3 border-2 border-white border-t-transparent rounded-full mr-2"></span> Đang lưu...';
+            }
+
             let content = '';
             if (activeToolType === 'mindmap') {
                 const jm = jmInstances['modal'];
                 content = jm ? getMermaidFromJsMind(jm) : '';
+            } else if (activeToolType === 'quiz') {
+                const hiddenData = document.getElementById('quiz-hidden-data');
+                content = hiddenData ? hiddenData.value : '';
+            } else if (activeToolType === 'report') {
+                const hiddenData = document.getElementById('report-hidden-data');
+                content = hiddenData ? hiddenData.value : '';
             } else {
                 const container = document.getElementById('tool-output-content');
                 content = container ? container.innerText.trim() : '';
             }
             
-            if (!content) return alert("Không có nội dung để lưu!");
+            if (!content) {
+                if (saveBtn) {
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = originalBtnHTML;
+                }
+                return alert("Không có nội dung để lưu!");
+            }
             
             try {
-                // Ensure there is at least one active notebook to link the AIGeneration
                 if (!activeNotebookId) {
-                    const nbRes = await fetch(`${API_URL}/notebooks/`);
+                    const nbRes = await fetch(`/api/notebooks/`);
                     const nbs = await nbRes.json();
                     if (nbs.length > 0) {
                         activeNotebookId = nbs[0].id;
@@ -3524,7 +4098,12 @@
                 });
                 
                 if (saveRes.ok) {
-                    alert("Đã lưu trữ sơ đồ tư duy/tài liệu học tập thành công vào cơ sở dữ liệu!");
+                    showToastNotification("Đã lưu vào Sổ tay thành công!");
+                    await loadNotebooks(); // Refresh the global notebooks array
+                    if (activeNotebookId) {
+                        selectNotebook(activeNotebookId, true); // Refresh the workspace view
+                    }
+                    closeToolModal();
                 } else {
                     const err = await saveRes.json();
                     alert("Lỗi lưu trữ: " + JSON.stringify(err));
@@ -3532,9 +4111,85 @@
             } catch (err) {
                 console.error("Lỗi khi lưu trữ:", err);
                 alert("Đã xảy ra lỗi khi kết nối lưu trữ.");
+            } finally {
+                if (saveBtn) {
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = originalBtnHTML;
+                }
             }
         }
+
+        function showToastNotification(message) {
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-4 right-4 bg-emerald-500 text-white px-4 py-3 rounded-lg shadow-lg text-xs font-bold z-[9999] transition-opacity duration-500';
+            toast.innerText = message;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
         {% endverbatim %}
+    
+        function getColorClasses(color) {
+            const maps = {
+                'indigo': { bg: 'bg-indigo-50 dark:bg-indigo-500/10', border: 'border-indigo-200 dark:border-indigo-500/20', title: 'text-indigo-800 dark:text-indigo-300', text: 'text-indigo-600 dark:text-indigo-400/80' },
+                'rose': { bg: 'bg-rose-50 dark:bg-rose-500/10', border: 'border-rose-200 dark:border-rose-500/20', title: 'text-rose-800 dark:text-rose-300', text: 'text-rose-600 dark:text-rose-400/80' },
+                'emerald': { bg: 'bg-emerald-50 dark:bg-emerald-500/10', border: 'border-emerald-200 dark:border-emerald-500/20', title: 'text-emerald-800 dark:text-emerald-300', text: 'text-emerald-600 dark:text-emerald-400/80' },
+                'orange': { bg: 'bg-orange-50 dark:bg-orange-500/10', border: 'border-orange-200 dark:border-orange-500/20', title: 'text-orange-800 dark:text-orange-300', text: 'text-orange-600 dark:text-orange-400/80' },
+                'amber': { bg: 'bg-amber-50 dark:bg-amber-500/10', border: 'border-amber-200 dark:border-amber-500/20', title: 'text-amber-800 dark:text-amber-300', text: 'text-amber-600 dark:text-amber-400/80' },
+                'slate': { bg: 'bg-slate-50 dark:bg-slate-500/10', border: 'border-slate-200 dark:border-slate-500/20', title: 'text-slate-800 dark:text-slate-300', text: 'text-slate-600 dark:text-slate-400/80' },
+            };
+            return maps[color] || maps['slate'];
+        }
+
+        async function fetchNotifications() {
+            try {
+                const res = await fetchWithCsrf(`${API_URL}/dashboard/notifications/`);
+                if (res.ok) {
+                    const data = await res.json();
+                    const container = document.getElementById('notifications-container');
+                    const badge = document.getElementById('notification-badge');
+                    if (!container) return;
+                    
+                    if (data.length > 0) {
+                        badge.classList.remove('hidden');
+                        badge.classList.add('flex');
+                        badge.innerText = data.length;
+                    } else {
+                        badge.classList.add('hidden');
+                        badge.classList.remove('flex');
+                    }
+                    
+                    if (data.length === 0) {
+                        container.innerHTML = `<div class="col-span-full p-6 text-center text-slate-500 text-sm bg-slate-50 dark:bg-slate-800/30 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">Hôm nay bạn không có nhiệm vụ khẩn cấp nào. Hãy thoải mái tạo tài liệu mới nhé!</div>`;
+                        return;
+                    }
+                    
+                    let html = '';
+                    data.forEach(item => {
+                        const classes = getColorClasses(item.color);
+                        html += `
+                            <div class="${classes.bg} ${classes.border} rounded-xl p-4 flex items-start space-x-4 transition hover:shadow-sm">
+                                <div class="text-2xl">${item.icon}</div>
+                                <div>
+                                    <h4 class="text-sm font-bold ${classes.title} mb-1">${item.title}</h4>
+                                    <p class="text-xs ${classes.text} leading-relaxed">${item.message}</p>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    container.innerHTML = html;
+                }
+            } catch (err) {
+                console.error("Lỗi khi tải thông báo:", err);
+            }
+        }
+
     </script>
+    {% include 'notebook/features/flashcard/template.html' %}
+    {% include 'notebook/features/quiz/template.html' %}
+    {% include 'notebook/features/report/template.html' %}
+    {% include 'notebook/features/mindmap/template.html' %}
 </body>
 </html>
