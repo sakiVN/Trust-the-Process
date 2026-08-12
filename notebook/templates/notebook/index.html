@@ -523,8 +523,8 @@
                                             <button onclick="openCreateModal('quiz')" class="w-full bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold py-2 rounded-xl text-[11px] shadow transition">
                                                 + Tạo bộ câu hỏi Trắc nghiệm
                                             </button>
-                                            <div id="quiz-sets-container" class="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-800"></div>
-                                            <div id="ai-generations-quiz" class="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-800 max-h-96 overflow-y-auto"></div>
+                                            <div id="quiz-sets-container" class=""></div>
+                                            <div id="ai-generations-quiz" class="max-h-96 overflow-y-auto"></div>
                                         </div>
                                     </div>
                                     
@@ -1495,9 +1495,11 @@
 
             if (!quizzes || quizzes.length === 0) {
                 container.innerHTML = '';
+                container.classList.add('hidden');
                 return;
             }
 
+            container.classList.remove('hidden');
             container.innerHTML = quizzes.map(quiz => `
                 <div class="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl p-4 text-xs text-slate-700 dark:text-slate-300">
                     <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
@@ -2663,11 +2665,9 @@
             if (allStudyMaterials.length === 0) {
                 categories.forEach(cat => {
                     const el = document.getElementById(`ai-generations-${cat}`);
-                    if (el) el.innerHTML = `<div class="text-[10px] text-slate-400 italic text-center py-4 bg-slate-50 dark:bg-slate-950/40 border border-dashed border-slate-200 dark:border-slate-850 rounded-xl">Chưa có Study Materials nào trong notebook này. Hãy tạo quiz hoặc tài liệu học tập mới.</div>`;
+                    if (el) el.innerHTML = '';
                 });
-                if (genericContainer) {
-                    genericContainer.innerHTML = `<div class="text-[10px] text-slate-400 italic text-center py-4 bg-slate-50 dark:bg-slate-950/40 border border-dashed border-slate-200 dark:border-slate-850 rounded-xl">Chưa có tài liệu học tập nào được tạo trong notebook này.</div>`;
-                }
+                if (genericContainer) genericContainer.innerHTML = '';
                 return;
             }
 
@@ -2716,10 +2716,12 @@
                 if (!el) return;
                 
                 if (catGens.length === 0) {
-                    el.innerHTML = `<div class="text-[10px] text-slate-400 italic text-center py-4 bg-slate-50 dark:bg-slate-950/40 border border-dashed border-slate-200 dark:border-slate-850 rounded-xl">Chưa có Study Materials nào trong notebook này. Hãy tạo quiz hoặc tài liệu học tập mới.</div>`;
+                    el.innerHTML = '';
+                    el.classList.add('hidden');
                     return;
                 }
                 
+                el.classList.remove('hidden');
                 el.innerHTML = catGens.map(gen => {
                     let renderedContent = '';
                     if (gen.generation_type === 'quiz' || gen.generation_type === 'flashcards') {
