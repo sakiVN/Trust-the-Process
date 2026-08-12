@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="vi" class="light">
 <head>
@@ -10,6 +11,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Mermaid.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <!-- CSS style -->
+    <link rel="stylesheet" href="{%static 'notebook/css/style.css' %}">
     
     <!-- jsMind CDN (0.6.4 UMD - global window.jsMind, no module issues) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsmind@0.6.4/style/jsmind.css" />
@@ -149,7 +152,7 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                 <span>Tài liệu liên quan</span>
             </button>
-            <button onclick="switchView('study-materials')" id="nav-study-materials" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
+            <button onclick="switchView('study-materials')" id="nav-study-materials" class="w-full flex items-center justify-start space-x-3 px-4 py-3 rounded-xl text-sm text-left font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                 <span>Tài nguyên học tập (Study Materials)</span>
             </button>
@@ -228,8 +231,25 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
                         <span id="notification-badge" class="hidden absolute top-1.5 right-1.5 bg-rose-500 text-white text-[9px] font-bold w-4 h-4 rounded-full items-center justify-center">0</span>
                     </button>
+                    <!-- Notification Panel -->
+                    <div id="-panel"
+                        class="hidden group-hover:block opacity-0 group-hover:opacity-100 transition-opacity duration-200 absolute left-1/2 -translate-x-1/2 mt-1.5 w-64
+                            bg-white dark:bg-slate-900 border-2 dark:border-slate-800
+                            rounded-lg shadow-lg max-h-64 overflow-y-auto">
+                        <ul class="divide-y divide-slate-200 dark:divide-slate-700">
+                            <li class="p-3 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">Thông báo 1</li>
+                            <li class="p-3 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">Thông báo 2</li>
+                            <li class="p-3 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">Thông báo 3</li>
+                            <li class="p-3 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">Thông báo 4</li>
+                            <li class="p-3 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">Thông báo 5</li>
+                            <li class="p-3 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">Thông báo 6</li>
+                            <li class="p-3 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">Thông báo 7</li>
+                            <li class="p-3 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">Thông báo 8</li>
+                            <li class="p-3 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">Thông báo 9</li>
+                            <li class="p-3 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">Thông báo 10</li>
+                        </ul>
+                    </div>
                 </div>
-
                 <!-- User Profile -->
                 <div class="relative">
                     <div class="flex items-center space-x-3 cursor-pointer pl-1 py-1 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition">
@@ -254,10 +274,6 @@
                         <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Chào mừng bạn quay lại, Linh!</h2>
                         <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Dưới đây là tóm tắt tiến độ và các tài liệu học tập của bạn.</p>
                     </div>
-                    <button onclick="switchView('notebooks'); openNewNotebookModal();" class="flex items-center justify-center space-x-2 bg-brand-600 hover:bg-brand-700 text-white font-semibold py-2.5 px-4 rounded-xl text-sm transition">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                        <span>Tạo sổ tay mới</span>
-                    </button>
                 </div>
 
                 <!-- Stat Cards -->
@@ -1034,9 +1050,9 @@
                 const navBtn = document.getElementById(`nav-${v}`);
                 if (navBtn) {
                     if (v === viewName) {
-                        navBtn.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition bg-brand-50 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400 shadow-sm";
+                        navBtn.className = "w-full flex items-center justify-start space-x-3 px-4 py-3 rounded-xl text-sm text-left font-semibold transition bg-brand-50 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400 shadow-sm";
                     } else {
-                        navBtn.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white";
+                        navBtn.className = "w-full flex items-center justify-start space-x-3 px-4 py-3 rounded-xl text-sm text-left font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white";
                     }
                 }
             });
@@ -3632,16 +3648,22 @@
             // jsMind 0.6.4 stores node data - update via set_node_data and re-render
             // Use direct DOM manipulation as fallback
             try {
+                if(!selected.data) selected.data = {};
+                selected.data['background-color'] = color;
                 // Try official API first (may work in some versions)
                 if (typeof jm.set_node_color === 'function') {
                     jm.set_node_color(selected.id, color, '#ffffff');
-                } else {
-                    // Direct DOM approach
-                    const nodeEl = document.querySelector(`jmnode[nodeid="${selected.id}"]`);
-                    if (nodeEl) {
-                        nodeEl.style.backgroundColor = color;
-                        nodeEl.style.color = '#ffffff';
-                    }
+                }
+                else
+                {
+                    jm.update_node(selected.id, selected.topic);
+                }
+                // Direct DOM approach
+                const nodeEl = document.querySelector(`jmnode[nodeid="${selected.id}"]`);
+                if(nodeEl)
+                {
+                    nodeEl.style.setProperty('background-color', color, 'important');
+                    nodeEl.style.setProperty('color', '#ffffff', 'important');
                 }
             } catch(e) {
                 console.warn('Color change error:', e);
@@ -3744,13 +3766,13 @@
                 alert("Không tìm thấy sơ đồ tư duy để lưu. Vui lòng thử lại.");
                 return;
             }
-            const newContent = getMermaidFromJsMind(jm);
+            const mindData = jm.get_data();
             
             try {
                 const res = await fetchWithCsrf(`${API_URL}/generations/${genId}/`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ content: newContent })
+                    body: JSON.stringify({ content: mindData })
                 });
                 
                 if (res.ok) {
@@ -3763,6 +3785,31 @@
                 console.error("Lỗi cập nhật sơ đồ tư duy:", err);
             }
         }
+
+        async function loadSavedMindmap(genId) {
+        try {
+            const res = await fetch(`${API_URL}/generations/${genId}/`);
+            if (!res.ok) {
+                alert("Không thể tải sơ đồ tư duy!");
+                return;
+            }
+
+            const data = await res.json();
+            // data.content chính là JSON bạn đã lưu từ jm.get_data()
+            const mindData = typeof data.content === 'string' ? JSON.parse(data.content) : data.content;
+
+            const jm = jmInstances['ws-' + genId] || jmInstances[genId];
+            if (!jm) {
+                alert("Không tìm thấy workspace để hiển thị sơ đồ!");
+                return;
+            }
+
+            jm.show(mindData); // hiển thị lại sơ đồ với màu đã lưu
+        } catch (err) {
+            console.error("Lỗi tải sơ đồ tư duy:", err);
+        }
+}
+
 
         async function generateWorkspaceMaterial(category) {
             const input = document.getElementById('tool-title-input-' + category);
