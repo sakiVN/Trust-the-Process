@@ -501,13 +501,6 @@
                                     </div>
                                 </div>
 
-                                <!-- AI Generated Content Display -->
-                                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
-                                    <h3 class="text-base font-bold text-slate-800 dark:text-white mb-4">Các tài liệu học tập đã tạo</h3>
-                                    <div id="ai-generations-container" class="space-y-6">
-                                        <!-- Loaded dynamically -->
-                                    </div>
-                                </div>
                             </div>
 
                             <!-- Tab Content 3: AI study material generator -->
@@ -521,7 +514,7 @@
                                                 <span class="text-2xl">❓</span>
                                                 <div>
                                                     <h4 class="font-bold text-slate-850 dark:text-white text-xs">1. Trắc nghiệm ôn tập (Quiz)</h4>
-                                                    <p class="text-[10px] text-slate-400">Sinh 5 câu hỏi trắc nghiệm có giải thích chi tiết</p>
+                                                    <p class="text-[10px] text-slate-400">Tạo bộ câu hỏi trắc nghiệm để ôn tập và kiểm tra</p>
                                                 </div>
                                             </div>
                                             
@@ -1501,11 +1494,7 @@
             if (!container) return;
 
             if (!quizzes || quizzes.length === 0) {
-                container.innerHTML = `
-                    <div class="text-[10px] text-slate-400 italic text-center py-4 bg-slate-50 dark:bg-slate-950/40 border border-dashed border-slate-200 dark:border-slate-850 rounded-xl">
-                        Chưa có bộ câu hỏi nào. Bạn có thể tạo bộ câu hỏi thủ công hoặc sinh Quiz mới.
-                    </div>
-                `;
+                container.innerHTML = '';
                 return;
             }
 
