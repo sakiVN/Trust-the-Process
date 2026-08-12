@@ -261,7 +261,7 @@
                     <div class="flex items-center space-x-3 cursor-pointer pl-1 py-1 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition">
                         <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100" class="w-9 h-9 rounded-xl object-cover ring-2 ring-brand-100 dark:ring-slate-800" alt="Avatar">
                         <div class="hidden md:block text-left pr-2">
-                            <span class="block text-sm font-bold text-slate-800 dark:text-white leading-tight">Linh Nguyễn</span>
+                            <span id="profile-display-name" class="block text-sm font-bold text-slate-800 dark:text-white leading-tight">Linh Nguyễn</span>
                             <span class="block text-[10px] text-slate-400 font-medium">Học sinh</span>
                         </div>
                     </div>
@@ -277,7 +277,7 @@
                 <!-- Welcome Title -->
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Chào mừng bạn quay lại, Linh!</h2>
+                        <h2 id="welcome-title" class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Chào mừng bạn quay lại, Linh!</h2>
                         <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Dưới đây là tóm tắt tiến độ và các tài liệu học tập của bạn.</p>
                     </div>
                 </div>
@@ -719,11 +719,11 @@
                 </div>
 
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm max-w-2xl">
-                    <form onsubmit="event.preventDefault(); alert('Đã lưu thông tin cài đặt!');" class="space-y-4">
+                    <form onsubmit="saveSettings(event)" class="space-y-4">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Tên hiển thị</label>
-                                <input type="text" value="Linh Nguyễn" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-500">
+                                <input type="text" id="setting-display-name" value="Linh Nguyễn" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-500">
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Email</label>
@@ -3207,9 +3207,11 @@
             // Gather distribution of source types
             let textCount = 0;
             let linkCount = 0;
+            let pdfCount = 0;
             notebooks.forEach(nb => {
                 (nb.sources || []).forEach(src => {
                     if (src.source_type === 'link') linkCount++;
+                    else if (src.source_type === 'file') pdfCount++;
                     else textCount++;
                 });
             });
@@ -3251,6 +3253,12 @@
                 });
             }
 
+            // Handle empty state fallback
+            const hasData = textCount > 0 || linkCount > 0 || pdfCount > 0;
+            const chartData = hasData ? [textCount, linkCount, pdfCount] : [1, 0, 0];
+            const chartLabels = hasData ? ['Văn bản nguồn', 'Web Link', 'Tài liệu PDF'] : ['Chưa có tài liệu', '', ''];
+            const chartColors = hasData ? ['#6366f1', '#14b8a6', '#f43f5e'] : [isDark ? '#334155' : '#e2e8f0', 'transparent', 'transparent'];
+
             // 2. Type distribution Chart
             const distCtx = document.getElementById('distributionChart');
             if (distCtx) {
@@ -3258,10 +3266,10 @@
                 distChartObj = new Chart(distCtx, {
                     type: 'doughnut',
                     data: {
-                        labels: ['Văn bản nguồn', 'Web Link'],
+                        labels: chartLabels,
                         datasets: [{
-                            data: [textCount || 1, linkCount],
-                            backgroundColor: ['#6366f1', '#14b8a6'],
+                            data: chartData,
+                            backgroundColor: chartColors,
                             borderWidth: isDark ? 3 : 1,
                             borderColor: isDark ? '#0f172a' : '#ffffff'
                         }]
@@ -4403,6 +4411,26 @@
             const modal = document.getElementById('document-read-modal');
             modal.classList.add('hidden');
             modal.classList.remove('flex');
+        }
+
+        function saveSettings(event) {
+            event.preventDefault();
+            const newName = document.getElementById('setting-display-name').value;
+            
+            // Update header profile
+            const profileNameEl = document.getElementById('profile-display-name');
+            if (profileNameEl) profileNameEl.innerText = newName;
+            
+            // Update welcome title
+            const welcomeTitleEl = document.getElementById('welcome-title');
+            if (welcomeTitleEl) {
+                // Extract first name (last word for Vietnamese or just use the first word if preferred, here we just use the first word to match "Linh")
+                const nameParts = newName.trim().split(' ');
+                const firstName = nameParts.length > 0 ? nameParts[0] : newName;
+                welcomeTitleEl.innerText = `Chào mừng bạn quay lại, ${firstName}!`;
+            }
+            
+            alert('Đã lưu thông tin cài đặt!');
         }
     </script>
 
