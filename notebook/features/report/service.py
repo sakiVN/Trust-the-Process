@@ -14,7 +14,7 @@ STOP_WORDS = {
 
 def clean_word(word):
     # Xóa các ký tự đặc biệt ở đầu/cuối từ
-    return re.sub(r'^[.,!?()\[\]{}"\':;]+|[.,!?()\[\]{}"\':;]+$', '', word).lower()
+    return re.sub(r'^[.,!?()\[\]{}"\':;。！？、]+|[.,!?()\[\]{}"\':;。！？、]+$', '', word).lower()
 
 def generate_report(sources_text: str, title: str) -> str:
     """
@@ -30,7 +30,7 @@ def generate_report(sources_text: str, title: str) -> str:
     # Better: finditer or simple split
     # Let's just use re.split with a capturing group to keep punctuation if needed,
     # but the JS just splits and keeps the text. We will use a simpler regex.
-    sentences = [s.strip() for s in re.split(r'[.!?]+', sources_text) if len(s.strip()) > 0]
+    sentences = [s.strip() for s in re.split(r'[.!?。！？\n]+', sources_text) if len(s.strip()) > 0]
     
     if not sentences:
         return ""
@@ -38,7 +38,14 @@ def generate_report(sources_text: str, title: str) -> str:
     # 2. Calculate word frequencies
     word_freq = {}
     for sentence in sentences:
-        words = sentence.split()
+        words = []
+        for token in sentence.split():
+            if re.search(r'[\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff]', token) and len(token) > 1:
+                for i in range(len(token)-1):
+                    words.append(token[i:i+2])
+            else:
+                words.append(token)
+                
         for raw_word in words:
             word = clean_word(raw_word)
             if len(word) > 1 and word not in STOP_WORDS:
@@ -54,7 +61,14 @@ def generate_report(sources_text: str, title: str) -> str:
     # 3. Score sentences
     sentence_scores = []
     for i, sentence in enumerate(sentences):
-        words = sentence.split()
+        words = []
+        for token in sentence.split():
+            if re.search(r'[\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff]', token) and len(token) > 1:
+                for j in range(len(token)-1):
+                    words.append(token[j:j+2])
+            else:
+                words.append(token)
+                
         score = 0
         valid_words = 0
         for raw_word in words:
