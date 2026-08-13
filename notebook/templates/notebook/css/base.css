@@ -1,0 +1,54 @@
+body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* jsMind interactive custom UI styling overrides */
+        .jsmind-container {
+            height: 400px !important;
+            width: 100% !important;
+            position: relative !important;
+            background: transparent !important;
+        }
+        .jsmind-container jmnode {
+            border-radius: 12px !important;
+            padding: 10px 16px !important;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
+            font-family: inherit !important;
+            font-size: 11px !important;
+            font-weight: 600 !important;
+            border: 1px solid rgba(226, 232, 240, 0.8) !important;
+            background-color: #6366f1 !important;
+            color: #ffffff !important;
+        }
+        html.dark .jsmind-container jmnode {
+            border-color: rgba(51, 65, 85, 0.8) !important;
+        }
+        .jsmind-container jmnode.selected {
+            outline: 2px solid #10b981 !important;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.5) !important;
+        }
+        /* Custom styles for connections */
+        .jsmind-container canvas {
+            z-index: 1 !important;
+        }
+        .jsmind-container jmopt {
+            z-index: 10 !important;
+        }

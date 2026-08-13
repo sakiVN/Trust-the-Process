@@ -1,17 +1,3 @@
-    (function() {
-        function applyMermaidTheme() {
-            if(typeofmermaid !== "undefined") {
-                mermaid.initialize({
-                    startOnLoad: false,
-                    theme: document.documentElement.classList.contains('dark') ? 'dark' : 'default',
-                    securityLevel: 'loose',
-                    themeVariables: {
-                        background: 'transparent'
-                    }
-                });
-            }
-        }
- 
         function initTheme() {
             if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                 document.documentElement.classList.add('dark');
@@ -22,7 +8,6 @@
                 document.getElementById('sun-icon').classList.add('hidden');
                 document.getElementById('moon-icon').classList.remove('hidden');
             }
-            applyMermaidTheme();
         }
 
         function toggleDarkMode() {
@@ -37,17 +22,14 @@
                 document.getElementById('sun-icon').classList.remove('hidden');
                 document.getElementById('moon-icon').classList.add('hidden');
             }
-            applyMermaidTheme();
             // Re-render charts to match dark mode context
-            if (typeof renderCharts === 'function' && window.activeView === 'dashboard') {
+            if (activeView === 'dashboard') {
                 setTimeout(renderCharts, 150);
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            initTheme();
-        });
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('-translate-x-full');
+        }
 
-        window.initTheme = initTheme;
-        window.toggleDarkMode = toggleDarkMode;
-    })();
