@@ -265,8 +265,6 @@
                             <span id="header-user-name" class="block text-sm font-bold text-slate-800 dark:text-white leading-tight">
                                 Linh Nguyễn</span>
                             <span id="header-user-role" class="block text-[10px] text-slate-400 font-medium">Học sinh</span>
-                            <span id="profile-display-name" class="block text-sm font-bold text-slate-800 dark:text-white leading-tight">Linh Nguyễn</span>
-                            <span class="block text-[10px] text-slate-400 font-medium">Học sinh</span>
                         </div>
                     </div>
                 </div>
@@ -708,7 +706,7 @@
                 </div>
             </section>
 
-            <!-- 6. VIEW: SETTINGS -->
+             <!-- 6. VIEW: SETTINGS -->
             <section id="view-settings" class="hidden space-y-6">
                 <div>
                     <h2 class="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">Cài đặt hệ thống</h2>
@@ -741,28 +739,8 @@
             Lưu thay đổi
         </button>
     </div>
+    
 </form>
-                    <form onsubmit="saveSettings(event)" class="space-y-4">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Tên hiển thị</label>
-                                <input type="text" id="setting-display-name" value="Linh Nguyễn" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-500">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Email</label>
-                                <input type="email" value="linh.nguyen@example.com" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-500">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Quyền hạn tài khoản</label>
-                            <input type="text" disabled value="Student (Học sinh) - Free Account" class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm cursor-not-allowed">
-                        </div>
-                        <div class="flex justify-end pt-4">
-                            <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-6 py-2.5 rounded-xl text-sm transition">
-                                Lưu thay đổi
-                            </button>
-                        </div>
-                    </form>
                 </div>
     
             </section>
