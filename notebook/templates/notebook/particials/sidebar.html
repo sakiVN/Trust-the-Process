@@ -1,0 +1,92 @@
+<!-- Left Sidebar (Collapsible & Responsive) -->
+<aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col transition-all duration-300 transform -translate-x-full lg:translate-x-0">
+  <!-- Sidebar Brand Logo -->
+  <div class="px-6 py-5 flex items-center justify-between border-b border-slate-100 dark:border-slate-800">
+    <div class="flex items-center space-x-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center text-white shadow-md shadow-brand-200 dark:shadow-none">
+        <span class="font-extrabold text-lg">EB</span>
+      </div>
+      <div>
+        <h1 class="text-base font-bold tracking-tight text-slate-900 dark:text-white">EduBrain</h1>
+        <p class="text-[10px] text-brand-600 dark:text-brand-400 font-bold uppercase tracking-wider">NotebookLM LMS</p>
+      </div>
+    </div>
+    <!-- Collapse Button (Mobile) -->
+    <button onclick="toggleSidebar()" class="lg:hidden p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Sidebar Navigation Menu -->
+  <nav class="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
+    <button onclick="switchView('dashboard')" id="nav-dashboard" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition bg-brand-50 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+      </svg>
+      <span>Dashboard</span>
+    </button>
+    <button onclick="switchView('notebooks')" id="nav-notebooks" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+      </svg>
+      <span>Notebooks (Sổ tay)</span>
+    </button>
+    <button onclick="switchView('documents')" id="nav-documents" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+      <span>Tài liệu liên quan</span>
+    </button>
+    <button onclick="switchView('study-materials')" id="nav-study-materials" class="w-full flex items-center justify-start space-x-3 px-4 py-3 rounded-xl text-sm text-left font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+      </svg>
+      <span>Tài nguyên học tập (Study Materials)</span>
+    </button>
+    <button onclick="switchView('progress')" id="nav-progress" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10a2 2 0 01-2 2h-2a2 2 0 01-2-2zm9 0v-8a2 2 0 00-2-2h-2a2 2 0 00-2 2v8a2 2 0 002 2h2a2 2 0 002-2z" />
+      </svg>
+      <span>Tiến độ & Phân tích</span>
+    </button>
+    <button onclick="switchView('settings')" id="nav-settings" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+      </svg>
+      <span>Cài đặt</span>
+    </button>
+
+    <!-- Quick Action Creators -->
+    <div class="pt-4 border-t border-slate-100 dark:border-slate-800/60 my-2">
+      <span class="block px-4 pb-2 text-[9px] font-bold text-slate-400 uppercase tracking-wider">⚡ Tạo nhanh</span>
+      <button onclick="openCreateModal('flashcards')" class="w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-xs font-bold transition text-slate-655 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
+        <span>🎴</span>
+        <span>Tạo Flashcard</span>
+      </button>
+      <button onclick="openCreateModal('quiz')" class="w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-xs font-bold transition text-slate-655 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
+        <span>❓</span>
+        <span>Tạo Trắc nghiệm</span>
+      </button>
+      <button onclick="openCreateModal('report')" class="w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-xs font-bold transition text-slate-655 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
+        <span>📝</span>
+        <span>Tạo Report tóm tắt</span>
+      </button>
+      <button onclick="openCreateModal('mindmap')" class="w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-xs font-bold transition text-slate-655 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
+        <span>🌿</span>
+        <span>Tạo Mindmap</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Sidebar Quick Action CTA -->
+  <div class="p-6 border-t border-slate-100 dark:border-slate-800">
+    <button onclick="openNewNotebookModal()" class="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-semibold py-3 px-4 rounded-xl text-sm shadow-lg shadow-brand-100 dark:shadow-none transition transform hover:-translate-y-0.5">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+      </svg>
+      <span>Tạo Notebook mới</span>
+    </button>
+  </div>
+</aside>

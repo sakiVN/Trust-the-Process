@@ -1,0 +1,72 @@
+<!-- Header -->
+<header class="h-20 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 flex items-center justify-between sticky top-0 z-40">
+  <!-- Left Side: Hamburger Menu & Mobile Search -->
+  <div class="flex items-center space-x-4 flex-1">
+    <button onclick="toggleSidebar()" class="lg:hidden p-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 transition">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
+    <!-- Global Search -->
+    <div class="relative w-full max-w-md hidden md:block search-dropdown-wrapper">
+      <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </span>
+      <input type="text" id="global-search" oninput="handleGlobalSearch()" placeholder="Tìm kiếm nhanh tài liệu, sổ tay, phản biện..." class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:focus:ring-brand-600 transition" />
+      <div id="search-results-popup" class="hidden absolute left-0 right-0 mt-2 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl z-50 overflow-hidden max-h-72 overflow-y-auto"></div>
+    </div>
+  </div>
+
+  <!-- Right Side: Dark Mode, Notification & User Dropdown -->
+  <div class="flex items-center space-x-3.5">
+    <!-- Theme Toggle -->
+    <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 transition" title="Đổi chế độ sáng/tối">
+      <!-- Sun Icon -->
+      <svg id="sun-icon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+      </svg>
+      <!-- Moon Icon -->
+      <svg id="moon-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+      </svg>
+    </button>
+
+    <!-- Notifications -->
+    <div class="relative group">
+      <!-- Notifivation Button -->
+      <button id="notification-button" class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 transition relative">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+        </svg>
+        <span class="absolute top-1.5 right-1.5 bg-rose-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">{{ notifications|length }}</span>
+      </button>
+      <!-- Notification Panel -->
+      <div id="notification-panel" class="hidden group-hover:block opacity-0 group-hover:opacity-100 transition-opacity duration-200 absolute left-1/2 -translate-x-1/2 mt-1.5 w-64 bg-white dark:bg-slate-900 border-2 dark:border-slate-800 rounded-lg shadow-lg max-h-64 overflow-y-auto">
+        <ul class="divide-y divide-slate-200 dark:divide-slate-700">
+          <li class="p-3 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">Thông báo 1</li>
+          <li class="p-3 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">Thông báo 2</li>
+          <li class="p-3 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">Thông báo 3</li>
+          <li class="p-3 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">Thông báo 4</li>
+          <li class="p-3 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">Thông báo 5</li>
+          <li class="p-3 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">Thông báo 6</li>
+          <li class="p-3 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">Thông báo 7</li>
+          <li class="p-3 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">Thông báo 8</li>
+          <li class="p-3 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">Thông báo 9</li>
+          <li class="p-3 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">Thông báo 10</li>
+        </ul>
+      </div>
+    </div>
+    <!-- User Profile -->
+    <div class="relative">
+      <div class="flex items-center space-x-3 cursor-pointer pl-1 py-1 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+        <img id="header-user-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100" class="w-9 h-9 rounded-xl object-cover ring-2 ring-brand-100 dark:ring-slate-800" alt="Avatar" />
+        <div class="hidden md:block text-left pr-2">
+          <span id="header-user-name" class="block text-sm font-bold text-slate-800 dark:text-white leading-tight">Linh Nguyễn</span>
+          <span id="header-user-role" class="block text-[10px] text-slate-400 font-medium">Học sinh</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
