@@ -11,6 +11,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             loadNotebooks();
             initTheme();
+        });
 
         // Toggle Sidebar for mobile
 
@@ -162,8 +163,4 @@
         
     
     
-
-
-        
-    
-
+        })
