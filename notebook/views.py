@@ -396,3 +396,17 @@ def process_context_action(request):
         
     result = contextual_service.process_context_action(text, action_type, notebook_id=notebook_id)
     return Response({'result': result})
+
+
+@api_view(['PATCH'])
+def update_profile(request):
+    user = request.user
+    if not user.is_authenticated:
+        return Response({'detail': 'Not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
+    
+    first_name = request.data.get('first_name')
+    if first_name is not None:
+        user.first_name = first_name
+        user.save()
+        return Response({'status': 'success', 'first_name': user.first_name})
+    return Response({'status': 'error', 'detail': 'No valid data provided'}, status=status.HTTP_400_BAD_REQUEST)

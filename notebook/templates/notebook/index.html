@@ -61,7 +61,41 @@
         }
     </script>
     <link rel="stylesheet" href="{% static 'notebook/css/base.css' %}">
+
+    
+    <style>
+        /* Hide Google Translate Toolbar (Legacy and New) */
+        .goog-te-banner-frame.skiptranslate,
+        .goog-te-banner-frame {
+            display: none !important;
+            visibility: hidden !important;
+        }
+        .VIpgJd-ZVi9od-aZ2wEe-wOHMyf,
+        .VIpgJd-ZVi9od-aZ2wEe-wOHMyf-ti6hGc,
+        .VIpgJd-ZVi9od-ORHb-OEVmcd {
+            display: none !important;
+        }
+        iframe[id^=":1.container"],
+        iframe[id^=":2.container"],
+        iframe.skiptranslate {
+            display: none !important;
+        }
+        body {
+            top: 0px !important;
+            position: static !important;
+        }
+        /* Hide hover tooltip */
+        #goog-gt-tt, .goog-te-balloon-frame {
+            display: none !important;
+        }
+        .goog-text-highlight {
+            background: none !important;
+            box-shadow: none !important;
+        }
+    </style>
+
 </head>
+
 <body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 min-h-screen flex transition-colors duration-200">
 
 <!-- Left Sidebar (Collapsible & Responsive) -->
@@ -817,14 +851,14 @@
     </div>
                 <div class="mt-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm max-w-2xl">
               
-                <from>
+                <form onsubmit="saveLanguage(event)">
     
     <div class="mt-6">
   <label class="block mb-2 text-xs font-bold tracking-wider text-gray-500 uppercase">
     NGÔN NGỮ / LANGUAGE / 言語
   </label>
   <div class="relative">
-    <select class="w-full px-4 py-3 text-sm text-gray-700 bg-gray-50 border border-transparent rounded-xl focus:outline-none focus:bg-white focus:border-blue-500 appearance-none">
+    <select id="select-language" class="w-full px-4 py-3 text-sm text-gray-700 bg-gray-50 border border-transparent rounded-xl focus:outline-none focus:bg-white focus:border-blue-500 appearance-none">
       <option value="vi">VN /Tiếng Việt /ベトナム語</option>
       <option value="ja">JP /Tiếng Nhật /日本語</option>
       <option value="en">US /Tiếng Anh /英語</option>
@@ -842,7 +876,7 @@
     </div>
 </div>
 </div>
-</from>
+</form>
             </section>
             </section>
 
@@ -1088,33 +1122,33 @@
 
     <script>
         
- function saveSettings(event) {
-    // 1. ページ再読み込みを防止
+ async function saveSettings(event) {
     event.preventDefault();
-
-    // 2. 入力欄（フォーム側）の要素を取得
     const inputName = document.getElementById('input-display-name');
     const selectRole = document.getElementById('select-user-role');
-    const inputAvatar = document.getElementById('input-avatar-url');
-
-    // 3. 表示（ヘッダー側）の要素を取得
-    const headerName = document.getElementById('header-user-name');
-    const headerRole = document.getElementById('header-user-role');
-    const headerAvatar = document.getElementById('header-user-avatar');
-
-    // 4. 要素が存在する場合のみ安全に値を更新する
-    if (inputName && headerName) {
-        headerName.textContent = inputName.value;
+    
+    if (inputName) {
+        try {
+            const res = await fetchWithCsrf('/api/users/me/', {
+                method: 'PATCH',
+                body: JSON.stringify({ first_name: inputName.value })
+            });
+            if (res.ok) {
+                const data = await res.json();
+                const headerName = document.getElementById('header-user-name');
+                if (headerName) headerName.textContent = data.first_name;
+                
+                const headerRole = document.getElementById('header-user-role');
+                if (headerRole && selectRole) headerRole.textContent = selectRole.value;
+                
+                showToastNotification('Đã lưu cài đặt hệ thống thành công!');
+            } else {
+                alert('Có lỗi xảy ra khi lưu tên hiển thị.');
+            }
+        } catch (err) {
+            console.error('Lỗi saveSettings:', err);
+        }
     }
-    if (selectRole && headerRole) {
-        headerRole.textContent = selectRole.value;
-    }
-    if (inputAvatar && headerAvatar) {
-        headerAvatar.src = inputAvatar.value;
-    }
-
-    // 5. 保存完了アラート
-    alert('Cài đặt đã được lưu!');
 }
     </script>
     <!-- Contextual AI Toolbar -->
@@ -1176,5 +1210,46 @@
             </div>
         </div>
     </div>
+
+    <!-- Google Translate Integration -->
+    <div id="google_translate_element" style="display:none;"></div>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({pageLanguage: 'vi', includedLanguages: 'ja,en,vi', autoDisplay: false}, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    
+    <script>
+        function saveLanguage(event) {
+            event.preventDefault();
+            const lang = document.getElementById('select-language').value;
+            if (lang === 'vi') {
+                document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+                document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=' + location.hostname + ';';
+            } else {
+                document.cookie = 'googtrans=/vi/' + lang + '; path=/; domain=' + location.hostname + ';';
+                document.cookie = 'googtrans=/vi/' + lang + '; path=/;';
+            }
+            if(typeof showToastNotification === 'function') {
+                showToastNotification('Đã thay đổi ngôn ngữ! Đang tải lại trang...');
+            } else {
+                alert('Đã thay đổi ngôn ngữ! Đang tải lại trang...');
+            }
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        }
+
+        // Set select value on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const match = document.cookie.match(/googtrans=\/vi\/([a-z]{2})/);
+            if (match && match[1]) {
+                const select = document.getElementById('select-language');
+                if (select) select.value = match[1];
+            }
+        });
+    </script>
 </body>
+
 </html>
