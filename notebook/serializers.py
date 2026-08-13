@@ -12,7 +12,7 @@ class NoteValidationError(APIException):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email']
+        fields = ['id', 'username', 'email','first_name','last_name']
 
 class NoteSerializer(serializers.ModelSerializer):
     initial_content = serializers.CharField(required=False, allow_blank=True)

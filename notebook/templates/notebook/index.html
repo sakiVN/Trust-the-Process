@@ -207,11 +207,12 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
                 </button>
                 <!-- Global Search -->
-                <div class="relative w-full max-w-md hidden md:block">
+                <div class="relative w-full max-w-md hidden md:block search-dropdown-wrapper">
                     <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     </span>
                     <input type="text" id="global-search" oninput="handleGlobalSearch()" placeholder="Tìm kiếm nhanh tài liệu, sổ tay, phản biện..." class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:focus:ring-brand-600 transition">
+                    <div id="search-results-popup" class="hidden absolute left-0 right-0 mt-2 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl z-50 overflow-hidden max-h-72 overflow-y-auto"></div>
                 </div>
             </div>
 
@@ -259,8 +260,11 @@
                 <!-- User Profile -->
                 <div class="relative">
                     <div class="flex items-center space-x-3 cursor-pointer pl-1 py-1 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition">
-                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100" class="w-9 h-9 rounded-xl object-cover ring-2 ring-brand-100 dark:ring-slate-800" alt="Avatar">
+                        <img id="header-user-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100" class="w-9 h-9 rounded-xl object-cover ring-2 ring-brand-100 dark:ring-slate-800" alt="Avatar">
                         <div class="hidden md:block text-left pr-2">
+                            <span id="header-user-name" class="block text-sm font-bold text-slate-800 dark:text-white leading-tight">
+                                Linh Nguyễn</span>
+                            <span id="header-user-role" class="block text-[10px] text-slate-400 font-medium">Học sinh</span>
                             <span id="profile-display-name" class="block text-sm font-bold text-slate-800 dark:text-white leading-tight">Linh Nguyễn</span>
                             <span class="block text-[10px] text-slate-400 font-medium">Học sinh</span>
                         </div>
@@ -501,13 +505,6 @@
                                     </div>
                                 </div>
 
-                                <!-- AI Generated Content Display -->
-                                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
-                                    <h3 class="text-base font-bold text-slate-800 dark:text-white mb-4">Các tài liệu học tập đã tạo</h3>
-                                    <div id="ai-generations-container" class="space-y-6">
-                                        <!-- Loaded dynamically -->
-                                    </div>
-                                </div>
                             </div>
 
                             <!-- Tab Content 3: AI study material generator -->
@@ -521,7 +518,7 @@
                                                 <span class="text-2xl">❓</span>
                                                 <div>
                                                     <h4 class="font-bold text-slate-850 dark:text-white text-xs">1. Trắc nghiệm ôn tập (Quiz)</h4>
-                                                    <p class="text-[10px] text-slate-400">Sinh 5 câu hỏi trắc nghiệm có giải thích chi tiết</p>
+                                                    <p class="text-[10px] text-slate-400">Tạo bộ câu hỏi trắc nghiệm để ôn tập và kiểm tra</p>
                                                 </div>
                                             </div>
                                             
@@ -530,8 +527,8 @@
                                             <button onclick="openCreateModal('quiz')" class="w-full bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold py-2 rounded-xl text-[11px] shadow transition">
                                                 + Tạo bộ câu hỏi Trắc nghiệm
                                             </button>
-                                            <div id="quiz-sets-container" class="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-800"></div>
-                                            <div id="ai-generations-quiz" class="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-800 max-h-96 overflow-y-auto"></div>
+                                            <div id="quiz-sets-container" class=""></div>
+                                            <div id="ai-generations-quiz" class="max-h-96 overflow-y-auto"></div>
                                         </div>
                                     </div>
                                     
@@ -719,6 +716,32 @@
                 </div>
 
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm max-w-2xl">
+                  <form onsubmit="saveSettings(event)" class="space-y-4">  
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Tên hiển thị</label>
+            <input id="input-display-name" type="text" value="{{ user.first_name|default:user.username }}" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-500">
+        </div>
+        <div>
+            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Email</label>
+            <input type="email" value="{{ user.email }}" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-500">
+        </div>
+    </div>
+    <div>
+        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Quyền hạn tài khoản</label>
+     <select id="select-user-role" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-500">
+        <option value="Học sinh">Student (Học sinh) - Free Account</option>
+        <option value="Giáo viên">Teacher (Giáo viên) - Pro Account</option>
+        <option value="Quản trị viên">Admin (Quản trị viên) - Premium</option>
+    </select>
+    </div>
+    <div class="flex justify-end pt-4">
+        <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-6 py-2.5 rounded-xl text-sm transition">
+            Lưu thay đổi
+        </button>
+    </div>
+</form>
                     <form onsubmit="saveSettings(event)" class="space-y-4">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
@@ -741,6 +764,7 @@
                         </div>
                     </form>
                 </div>
+    
             </section>
 
         </main>
@@ -1235,8 +1259,11 @@
                 return;
             }
             container.innerHTML = notebooks.map(nb => `
-                <button onclick="selectNotebook(${nb.id})" class="w-full text-left px-4 py-3 rounded-xl transition text-sm flex flex-col space-y-1 ${nb.id === activeNotebookId ? 'bg-brand-600 text-white font-medium shadow-md shadow-brand-100 dark:shadow-none' : 'hover:bg-slate-100 dark:hover:bg-slate-850 text-slate-700 dark:text-slate-300' }">
-                    <span class="truncate block font-semibold">${nb.name}</span>
+                <button onclick="selectNotebook(${nb.id})" class="w-full text-left px-4 py-3 rounded-xl transition text-sm ${nb.id === activeNotebookId ? 'bg-brand-600 text-white font-medium shadow-md shadow-brand-100 dark:shadow-none' : 'hover:bg-slate-100 dark:hover:bg-slate-850 text-slate-700 dark:text-slate-300' }">
+                    <div class="flex items-center justify-between gap-3">
+                        <span class="truncate block font-semibold">${nb.name}</span>
+                        <span class="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-300">Sổ tay</span>
+                    </div>
                     <span class="truncate text-[10px] ${nb.id === activeNotebookId ? 'text-brand-100' : 'text-slate-400'}">${nb.description || 'Không mô tả'}</span>
                 </button>
             `).join('');
@@ -1501,14 +1528,12 @@
             if (!container) return;
 
             if (!quizzes || quizzes.length === 0) {
-                container.innerHTML = `
-                    <div class="text-[10px] text-slate-400 italic text-center py-4 bg-slate-50 dark:bg-slate-950/40 border border-dashed border-slate-200 dark:border-slate-850 rounded-xl">
-                        Chưa có bộ câu hỏi nào. Bạn có thể tạo bộ câu hỏi thủ công hoặc sinh Quiz mới.
-                    </div>
-                `;
+                container.innerHTML = '';
+                container.classList.add('hidden');
                 return;
             }
 
+            container.classList.remove('hidden');
             container.innerHTML = quizzes.map(quiz => `
                 <div class="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl p-4 text-xs text-slate-700 dark:text-slate-300">
                     <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
@@ -2674,11 +2699,9 @@
             if (allStudyMaterials.length === 0) {
                 categories.forEach(cat => {
                     const el = document.getElementById(`ai-generations-${cat}`);
-                    if (el) el.innerHTML = `<div class="text-[10px] text-slate-400 italic text-center py-4 bg-slate-50 dark:bg-slate-950/40 border border-dashed border-slate-200 dark:border-slate-850 rounded-xl">Chưa có Study Materials nào trong notebook này. Hãy tạo quiz hoặc tài liệu học tập mới.</div>`;
+                    if (el) el.innerHTML = '';
                 });
-                if (genericContainer) {
-                    genericContainer.innerHTML = `<div class="text-[10px] text-slate-400 italic text-center py-4 bg-slate-50 dark:bg-slate-950/40 border border-dashed border-slate-200 dark:border-slate-850 rounded-xl">Chưa có tài liệu học tập nào được tạo trong notebook này.</div>`;
-                }
+                if (genericContainer) genericContainer.innerHTML = '';
                 return;
             }
 
@@ -2727,10 +2750,12 @@
                 if (!el) return;
                 
                 if (catGens.length === 0) {
-                    el.innerHTML = `<div class="text-[10px] text-slate-400 italic text-center py-4 bg-slate-50 dark:bg-slate-950/40 border border-dashed border-slate-200 dark:border-slate-850 rounded-xl">Chưa có Study Materials nào trong notebook này. Hãy tạo quiz hoặc tài liệu học tập mới.</div>`;
+                    el.innerHTML = '';
+                    el.classList.add('hidden');
                     return;
                 }
                 
+                el.classList.remove('hidden');
                 el.innerHTML = catGens.map(gen => {
                     let renderedContent = '';
                     if (gen.generation_type === 'quiz' || gen.generation_type === 'flashcards') {
@@ -3168,35 +3193,211 @@
         // Global search in header
         function handleGlobalSearch() {
             const query = document.getElementById('global-search').value.toLowerCase().trim();
-            if (!query) {
-                // If dashboard is active, reset filters
+
+            const resetViewFilters = () => {
                 if (activeView === 'dashboard') {
                     document.getElementById('table-search').value = '';
                     filterTable();
+                } else if (activeView === 'documents') {
+                    document.querySelectorAll('#all-documents-list > div').forEach(doc => doc.style.display = '');
+                } else if (activeView === 'study-materials') {
+                    document.querySelectorAll('#all-study-materials-list > div').forEach(item => item.style.display = '');
+                } else if (activeView === 'notes') {
+                    document.querySelectorAll('#all-notes-list > div').forEach(note => note.style.display = '');
+                } else if (activeView === 'notebooks') {
+                    document.querySelectorAll('#notebooks-list > button').forEach(btn => btn.style.display = '');
                 }
+            };
+
+            if (!query) {
+                resetViewFilters();
                 return;
             }
 
-            // Route search to table filter if Dashboard is active
             if (activeView === 'dashboard') {
                 document.getElementById('table-search').value = query;
                 filterTable();
             } else if (activeView === 'documents') {
                 const docs = document.querySelectorAll('#all-documents-list > div');
                 docs.forEach(doc => {
-                    const title = doc.querySelector('h4').innerText.toLowerCase();
-                    const content = doc.querySelector('p').innerText.toLowerCase();
-                    doc.style.display = (title.includes(query) || content.includes(query)) ? '' : 'none';
+                    const title = (doc.querySelector('h4')?.innerText || '').toLowerCase();
+                    const content = (doc.querySelector('p')?.innerText || '').toLowerCase();
+                    const tag = (doc.querySelector('span')?.innerText || '').toLowerCase();
+                    const notebook = (doc.querySelector('strong')?.innerText || '').toLowerCase();
+                    doc.style.display = (title.includes(query) || content.includes(query) || tag.includes(query) || notebook.includes(query)) ? '' : 'none';
+                });
+            } else if (activeView === 'study-materials') {
+                const materials = document.querySelectorAll('#all-study-materials-list > div');
+                materials.forEach(item => {
+                    const title = (item.querySelector('h4')?.innerText || '').toLowerCase();
+                    const summary = (item.querySelector('p')?.innerText || '').toLowerCase();
+                    const tag = (item.querySelector('span')?.innerText || '').toLowerCase();
+                    const notebook = (item.querySelector('strong')?.innerText || '').toLowerCase();
+                    item.style.display = (title.includes(query) || summary.includes(query) || tag.includes(query) || notebook.includes(query)) ? '' : 'none';
                 });
             } else if (activeView === 'notes') {
                 const notes = document.querySelectorAll('#all-notes-list > div');
                 notes.forEach(note => {
-                    const title = note.querySelector('h4').innerText.toLowerCase();
+                    const title = (note.querySelector('h4')?.innerText || '').toLowerCase();
                     const text = note.innerText.toLowerCase();
-                    note.style.display = (title.includes(query) || text.includes(query)) ? '' : 'none';
+                    const notebook = (note.querySelector('strong')?.innerText || '').toLowerCase();
+                    note.style.display = (title.includes(query) || text.includes(query) || notebook.includes(query)) ? '' : 'none';
+                });
+            } else if (activeView === 'notebooks') {
+                const buttons = document.querySelectorAll('#notebooks-list > button');
+                buttons.forEach(btn => {
+                    const title = (btn.querySelector('span')?.innerText || '').toLowerCase();
+                    const desc = (btn.querySelectorAll('span')[1]?.innerText || '').toLowerCase();
+                    btn.style.display = (title.includes(query) || desc.includes(query)) ? '' : 'none';
                 });
             }
+
+            renderGlobalSearchResults(query);
         }
+
+        function getGlobalSearchItems() {
+            const items = [];
+            notebooks.forEach(nb => {
+                if (nb.name) {
+                    items.push({
+                        id: String(nb.id),
+                        type: 'notebook',
+                        title: nb.name,
+                        subtitle: nb.description || 'Sổ tay học tập',
+                        tag: 'Sổ tay',
+                        notebookName: nb.name,
+                        notebookId: nb.id
+                    });
+                }
+
+                (nb.sources || []).forEach(src => {
+                    const label = src.source_type === 'file' ? 'File PDF' : src.source_type === 'link' ? 'Link' : 'Văn bản';
+                    items.push({
+                        id: String(src.id),
+                        type: 'source',
+                        title: src.title,
+                        subtitle: (src.content || '').slice(0, 120),
+                        tag: label,
+                        notebookName: nb.name,
+                        notebookId: nb.id
+                    });
+                });
+
+                (nb.quizzes || []).forEach(quiz => {
+                    items.push({
+                        id: String(quiz.id),
+                        type: 'quiz',
+                        title: quiz.name,
+                        subtitle: quiz.description || 'Bộ câu hỏi trắc nghiệm',
+                        tag: 'Bài tập trắc nghiệm',
+                        notebookName: nb.name,
+                        notebookId: nb.id
+                    });
+                });
+
+                (nb.notes || []).forEach(note => {
+                    items.push({
+                        id: String(note.id),
+                        type: 'note',
+                        title: note.title,
+                        subtitle: note.initial_content || note.ai_rebuttal || 'Ghi chú cá nhân',
+                        tag: 'Ghi chú',
+                        notebookName: nb.name,
+                        notebookId: nb.id
+                    });
+                });
+
+                (nb.generations || []).forEach(gen => {
+                    const labels = {
+                        flashcards: 'Flashcards',
+                        mind_map: 'Mind Map',
+                        report: 'Báo cáo',
+                        audio_overview: 'Audio Overview',
+                        presentation: 'Presentation',
+                        video_overview: 'Video Overview',
+                        infographics: 'Infographics',
+                        data_table: 'Data Table'
+                    };
+                    const label = labels[gen.generation_type] || 'Tài liệu học tập';
+                    items.push({
+                        id: String(gen.id),
+                        type: 'generation',
+                        title: label,
+                        subtitle: (gen.content || '').slice(0, 120),
+                        tag: label,
+                        notebookName: nb.name,
+                        notebookId: nb.id
+                    });
+                });
+            });
+            return items;
+        }
+
+        function navigateSearchResult(type, id, notebookId) {
+            if (type === 'notebook') {
+                switchView('notebooks');
+                selectNotebook(Number(id));
+            } else if (type === 'source') {
+                switchView('documents');
+            } else if (type === 'quiz' || type === 'generation') {
+                switchView('study-materials');
+            } else if (type === 'note') {
+                switchView('notes');
+            }
+            const popup = document.getElementById('search-results-popup');
+            if (popup) popup.classList.add('hidden');
+        }
+
+        function renderGlobalSearchResults(query) {
+            const popup = document.getElementById('search-results-popup');
+            if (!popup) return;
+
+            if (!query) {
+                popup.classList.add('hidden');
+                popup.innerHTML = '';
+                return;
+            }
+
+            const normalizedQuery = query.toLowerCase();
+            const items = getGlobalSearchItems().filter(item => {
+                return item.title.toLowerCase().includes(normalizedQuery)
+                    || item.subtitle.toLowerCase().includes(normalizedQuery)
+                    || item.tag.toLowerCase().includes(normalizedQuery)
+                    || item.notebookName.toLowerCase().includes(normalizedQuery);
+            });
+
+            if (items.length === 0) {
+                popup.innerHTML = `<div class="p-3 text-sm text-slate-500 dark:text-slate-400">Không tìm thấy tài liệu tương ứng.</div>`;
+                popup.classList.remove('hidden');
+                return;
+            }
+
+            const maxResults = 8;
+            popup.innerHTML = items.slice(0, maxResults).map(item => `
+                <button type="button" onclick="navigateSearchResult('${item.type}', '${item.id}', '${item.notebookId || ''}')" class="w-full text-left px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-950 transition">
+                    <div class="flex items-center justify-between gap-3">
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-2">
+                                <span class="font-semibold text-slate-900 dark:text-slate-100 truncate">${item.title}</span>
+                                <span class="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-300">${item.tag}</span>
+                            </div>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-1">${item.subtitle}</p>
+                        </div>
+                        <span class="text-[10px] text-slate-400 dark:text-slate-500">${item.notebookName || ''}</span>
+                    </div>
+                </button>
+            `).join('');
+            popup.classList.remove('hidden');
+        }
+
+        document.addEventListener('click', event => {
+            const wrapper = document.querySelector('.search-dropdown-wrapper');
+            const popup = document.getElementById('search-results-popup');
+            if (!wrapper || !popup) return;
+            if (!wrapper.contains(event.target)) {
+                popup.classList.add('hidden');
+            }
+        });
 
         // Render Chart.js
         function renderCharts() {
@@ -4206,6 +4407,38 @@
     {% include 'notebook/features/quiz/template.html' %}
     {% include 'notebook/features/report/template.html' %}
     {% include 'notebook/features/mindmap/template.html' %}
+
+    <script>
+        
+ function saveSettings(event) {
+    // 1. ページ再読み込みを防止
+    event.preventDefault();
+
+    // 2. 入力欄（フォーム側）の要素を取得
+    const inputName = document.getElementById('input-display-name');
+    const selectRole = document.getElementById('select-user-role');
+    const inputAvatar = document.getElementById('input-avatar-url');
+
+    // 3. 表示（ヘッダー側）の要素を取得
+    const headerName = document.getElementById('header-user-name');
+    const headerRole = document.getElementById('header-user-role');
+    const headerAvatar = document.getElementById('header-user-avatar');
+
+    // 4. 要素が存在する場合のみ安全に値を更新する
+    if (inputName && headerName) {
+        headerName.textContent = inputName.value;
+    }
+    if (selectRole && headerRole) {
+        headerRole.textContent = selectRole.value;
+    }
+    if (inputAvatar && headerAvatar) {
+        headerAvatar.src = inputAvatar.value;
+    }
+
+    // 5. 保存完了アラート
+    alert('Cài đặt đã được lưu!');
+}
+    </script>
     <!-- Contextual AI Toolbar -->
     <div id="contextual-ai-toolbar" class="hidden absolute z-[90] bg-slate-900 shadow-xl rounded-lg border border-slate-700 p-1.5 flex items-center space-x-1 transition-all duration-200" style="top: 0; left: 0;">
         <button onclick="triggerContextAction('explain')" class="flex items-center space-x-1.5 px-3 py-1.5 hover:bg-slate-800 rounded-md text-slate-200 text-xs font-semibold transition group">
