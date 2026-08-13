@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import NotebookViewSet, NoteViewSet, SourceViewSet, AIGenerationViewSet, QuizSetViewSet, QuizAttemptViewSet, get_dashboard_notifications
+from .views import NotebookViewSet, NoteViewSet, SourceViewSet, AIGenerationViewSet, QuizSetViewSet, QuizAttemptViewSet, get_dashboard_notifications, process_context_action
 
 router = DefaultRouter()
 router.register(r'notebooks', NotebookViewSet, basename='notebook')
@@ -12,5 +12,6 @@ router.register(r'attempts', QuizAttemptViewSet, basename='quizattempt')
 
 urlpatterns = [
     path('dashboard/notifications/', get_dashboard_notifications, name='dashboard-notifications'),
+    path('ai/context_action/', process_context_action, name='context-action'),
     path('', include(router.urls)),
 ]

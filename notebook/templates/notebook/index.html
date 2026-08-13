@@ -265,6 +265,8 @@
                             <span id="header-user-name" class="block text-sm font-bold text-slate-800 dark:text-white leading-tight">
                                 Linh Nguyễn</span>
                             <span id="header-user-role" class="block text-[10px] text-slate-400 font-medium">Học sinh</span>
+                            <span id="profile-display-name" class="block text-sm font-bold text-slate-800 dark:text-white leading-tight">Linh Nguyễn</span>
+                            <span class="block text-[10px] text-slate-400 font-medium">Học sinh</span>
                         </div>
                     </div>
                 </div>
@@ -279,7 +281,7 @@
                 <!-- Welcome Title -->
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Chào mừng bạn quay lại, Linh!</h2>
+                        <h2 id="welcome-title" class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Chào mừng bạn quay lại, Linh!</h2>
                         <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Dưới đây là tóm tắt tiến độ và các tài liệu học tập của bạn.</p>
                     </div>
                 </div>
@@ -740,6 +742,27 @@
         </button>
     </div>
 </form>
+                    <form onsubmit="saveSettings(event)" class="space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Tên hiển thị</label>
+                                <input type="text" id="setting-display-name" value="Linh Nguyễn" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Email</label>
+                                <input type="email" value="linh.nguyen@example.com" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-500">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Quyền hạn tài khoản</label>
+                            <input type="text" disabled value="Student (Học sinh) - Free Account" class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm cursor-not-allowed">
+                        </div>
+                        <div class="flex justify-end pt-4">
+                            <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-6 py-2.5 rounded-xl text-sm transition">
+                                Lưu thay đổi
+                            </button>
+                        </div>
+                    </form>
                 </div>
     
             </section>
@@ -2884,7 +2907,7 @@
             }
 
             container.innerHTML = allSources.map(src => `
-                <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-3 hover:scale-[1.01] hover:shadow-md transition">
+                <div onclick="${src.type === 'quiz' ? `openQuizPlayModal(${src.id})` : `openDocumentModal(${src.id})`}" class="cursor-pointer bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-3 hover:scale-[1.01] hover:shadow-md transition hover:border-brand-300 dark:hover:border-brand-700">
                     <div class="flex justify-between items-start gap-3">
                         <div class="min-w-0">
                             <span class="text-[9px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full ${src.type === 'quiz' ? 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' : (src.source_type === 'link' ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300')}">
@@ -2893,8 +2916,9 @@
                             <h4 class="font-bold text-slate-850 dark:text-white text-sm mt-2 truncate">${src.type === 'quiz' ? src.name : src.title}</h4>
                         </div>
                         <div class="flex items-center space-x-2 shrink-0">
-                            <button onclick="switchView('notebooks'); selectNotebook(${src.notebookId});" class="text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-slate-600 dark:text-slate-350 hover:bg-slate-100 font-semibold">Xem Sổ tay</button>
-                            ${src.type === 'quiz' ? `<button onclick="openQuizPlayModal(${src.id})" class="text-xs bg-brand-600 hover:bg-brand-700 text-white px-2.5 py-1.5 rounded-xl font-semibold transition">Làm bài</button>` : `<button onclick="deleteSource(${src.id})" class="p-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-500 transition" title="Xóa tài liệu">
+                            ${src.type !== 'quiz' ? `<button onclick="event.stopPropagation(); openDocumentModal(${src.id});" class="text-xs bg-brand-500 hover:bg-brand-600 text-white rounded-xl px-3 py-1.5 font-bold transition shadow-sm flex items-center space-x-1"><span>📖</span> <span>Đọc ngay</span></button>` : ''}
+                            <button onclick="event.stopPropagation(); switchView('notebooks'); selectNotebook(${src.notebookId});" class="text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-slate-600 dark:text-slate-350 hover:bg-slate-100 font-semibold transition opacity-70 hover:opacity-100">Sổ tay</button>
+                            ${src.type === 'quiz' ? `<button onclick="event.stopPropagation(); openQuizPlayModal(${src.id})" class="text-xs bg-brand-600 hover:bg-brand-700 text-white px-2.5 py-1.5 rounded-xl font-semibold transition">Làm bài</button>` : `<button onclick="event.stopPropagation(); deleteSource(${src.id})" class="p-1.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-500 transition opacity-70 hover:opacity-100" title="Xóa tài liệu">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                             </button>`}
                         </div>
@@ -3384,9 +3408,11 @@
             // Gather distribution of source types
             let textCount = 0;
             let linkCount = 0;
+            let pdfCount = 0;
             notebooks.forEach(nb => {
                 (nb.sources || []).forEach(src => {
                     if (src.source_type === 'link') linkCount++;
+                    else if (src.source_type === 'file') pdfCount++;
                     else textCount++;
                 });
             });
@@ -3428,6 +3454,12 @@
                 });
             }
 
+            // Handle empty state fallback
+            const hasData = textCount > 0 || linkCount > 0 || pdfCount > 0;
+            const chartData = hasData ? [textCount, linkCount, pdfCount] : [1, 0, 0];
+            const chartLabels = hasData ? ['Văn bản nguồn', 'Web Link', 'Tài liệu PDF'] : ['Chưa có tài liệu', '', ''];
+            const chartColors = hasData ? ['#6366f1', '#14b8a6', '#f43f5e'] : [isDark ? '#334155' : '#e2e8f0', 'transparent', 'transparent'];
+
             // 2. Type distribution Chart
             const distCtx = document.getElementById('distributionChart');
             if (distCtx) {
@@ -3435,10 +3467,10 @@
                 distChartObj = new Chart(distCtx, {
                     type: 'doughnut',
                     data: {
-                        labels: ['Văn bản nguồn', 'Web Link'],
+                        labels: chartLabels,
                         datasets: [{
-                            data: [textCount || 1, linkCount],
-                            backgroundColor: ['#6366f1', '#14b8a6'],
+                            data: chartData,
+                            backgroundColor: chartColors,
                             borderWidth: isDark ? 3 : 1,
                             borderColor: isDark ? '#0f172a' : '#ffffff'
                         }]
@@ -4407,5 +4439,252 @@
     alert('Cài đặt đã được lưu!');
 }
     </script>
+    <!-- Contextual AI Toolbar -->
+    <div id="contextual-ai-toolbar" class="hidden absolute z-[90] bg-slate-900 shadow-xl rounded-lg border border-slate-700 p-1.5 flex items-center space-x-1 transition-all duration-200" style="top: 0; left: 0;">
+        <button onclick="triggerContextAction('explain')" class="flex items-center space-x-1.5 px-3 py-1.5 hover:bg-slate-800 rounded-md text-slate-200 text-xs font-semibold transition group">
+            <span>💡</span><span class="group-hover:text-white">Giải thích</span>
+        </button>
+        <div class="w-px h-4 bg-slate-700"></div>
+        <button onclick="triggerContextAction('translate')" class="flex items-center space-x-1.5 px-3 py-1.5 hover:bg-slate-800 rounded-md text-slate-200 text-xs font-semibold transition group">
+            <span>🌐</span><span class="group-hover:text-white">Dịch</span>
+        </button>
+        <div class="w-px h-4 bg-slate-700"></div>
+        <button onclick="triggerContextAction('flashcard')" class="flex items-center space-x-1.5 px-3 py-1.5 hover:bg-brand-600 bg-brand-500/20 rounded-md text-brand-300 text-xs font-bold transition group">
+            <span>🔖</span><span class="group-hover:text-white">Lưu Flashcard</span>
+        </button>
+    </div>
+
+    <!-- Contextual AI Result Modal -->
+    <div id="contextual-result-modal" class="hidden fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden flex flex-col border border-slate-200 dark:border-slate-800 animate-[fadeIn_0.2s_ease-out]">
+            <div class="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-900/50">
+                <h3 class="font-bold text-slate-800 dark:text-slate-100 flex items-center space-x-2">
+                    <span id="contextual-result-icon">✨</span>
+                    <span id="contextual-result-title">Kết quả AI</span>
+                </h3>
+                <button onclick="closeContextualModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition bg-slate-200/50 dark:bg-slate-800 p-1.5 rounded-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto max-h-[60vh]">
+                <div id="contextual-result-content" class="text-sm text-slate-600 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">
+                    <!-- Loading or content here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Contextual AI Logic
+        const toolbar = document.getElementById('contextual-ai-toolbar');
+        let selectedTextForAI = '';
+
+        document.addEventListener('mouseup', function(e) {
+            // Prevent hiding if clicking on the toolbar itself
+            if(toolbar.contains(e.target)) return;
+            
+            const selection = window.getSelection();
+            const text = selection.toString().trim();
+            
+            if (text.length > 1) { // Show for any selected text (useful for short words like Japanese)
+                selectedTextForAI = text;
+                const range = selection.getRangeAt(0);
+                const rect = range.getBoundingClientRect();
+                
+                // Position toolbar above the selection
+                const top = rect.top + window.scrollY - 50; 
+                // We need to calculate left but wait until toolbar has width, or estimate
+                // Since it's position absolute, we can just center it over rect
+                const left = rect.left + window.scrollX + (rect.width / 2) - 150; // estimate half width of toolbar is 150px
+                
+                toolbar.style.top = `${top > 0 ? top : 10}px`;
+                toolbar.style.left = `${left > 0 ? left : 10}px`;
+                toolbar.classList.remove('hidden');
+            } else {
+                toolbar.classList.add('hidden');
+                selectedTextForAI = '';
+            }
+        });
+
+        document.addEventListener('mousedown', function(e) {
+            if(!toolbar.contains(e.target) && !document.getElementById('contextual-result-modal').contains(e.target)) {
+                toolbar.classList.add('hidden');
+            }
+        });
+
+        async function triggerContextAction(action) {
+            toolbar.classList.add('hidden');
+            if(!selectedTextForAI) return;
+            
+            const modal = document.getElementById('contextual-result-modal');
+            const titleEl = document.getElementById('contextual-result-title');
+            const iconEl = document.getElementById('contextual-result-icon');
+            const contentEl = document.getElementById('contextual-result-content');
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            // Set titles based on action
+            const actionTitles = {
+                'explain': { title: 'Giải thích', icon: '💡' },
+                'translate': { title: 'Bản dịch', icon: '🌐' },
+                'flashcard': { title: 'Lưu Flashcard', icon: '🔖' }
+            };
+            
+            titleEl.innerText = actionTitles[action].title;
+            iconEl.innerText = actionTitles[action].icon;
+            contentEl.innerHTML = '<div class="flex flex-col items-center justify-center py-6 space-y-3"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-500"></div><p class="text-xs text-slate-500">AI đang xử lý...</p></div>';
+            
+            try {
+                // Get CSRF Token
+                let csrftoken = '';
+                const cookies = document.cookie.split(';');
+                for(let i=0; i<cookies.length; i++) {
+                    if(cookies[i].trim().startsWith('csrftoken=')) {
+                        csrftoken = cookies[i].trim().substring(10);
+                        break;
+                    }
+                }
+
+                const response = await fetch('/api/ai/context_action/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify({
+                        text: selectedTextForAI,
+                        action: action,
+                        notebook_id: window.currentContextualNotebookId || activeNotebookId || null
+                    })
+                });
+                
+                const data = await response.json();
+                if(data.result) {
+                    contentEl.innerText = data.result;
+                } else {
+                    contentEl.innerText = 'Lỗi: Không nhận được kết quả.';
+                }
+            } catch(e) {
+                console.error("Contextual AI Error:", e);
+                contentEl.innerText = 'Đã có lỗi xảy ra khi kết nối tới AI.';
+            }
+        }
+
+        function closeContextualModal() {
+            const modal = document.getElementById('contextual-result-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            // Clear selection
+            window.getSelection().removeAllRanges();
+            selectedTextForAI = '';
+        }
+
+        // View Document Modal Logic
+        window.currentContextualNotebookId = null;
+
+        function openDocumentModal(sourceId) {
+            let targetSource = null;
+            let targetNotebookName = "";
+            for (const nb of notebooks) {
+                const src = (nb.sources || []).find(s => s.id === sourceId);
+                if (src) {
+                    targetSource = src;
+                    targetNotebookName = nb.name;
+                    break;
+                }
+            }
+            if (!targetSource) return;
+            
+            window.currentContextualNotebookId = targetSource.notebookId;
+            
+            const modal = document.getElementById('document-read-modal');
+            document.getElementById('document-read-title').innerText = targetSource.title || "Tài liệu";
+            document.getElementById('document-read-notebook').innerText = "Nguồn: " + targetNotebookName;
+            
+            const contentEl = document.getElementById('document-read-content');
+            if (targetSource.source_type === 'file') {
+                contentEl.innerHTML = `<div class="flex flex-col items-center justify-center p-8 text-center space-y-4">
+                    <div class="p-4 bg-red-50 dark:bg-red-900/20 text-red-500 rounded-full">
+                        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-slate-800 dark:text-slate-200">Tài liệu PDF</h4>
+                        <p class="text-sm text-slate-500 mt-1 mb-4">Nhấn nút bên dưới để xem hoặc tải xuống tệp PDF gốc.</p>
+                        <a href="${targetSource.file_path}" target="_blank" class="inline-flex items-center space-x-2 bg-brand-500 hover:bg-brand-600 text-white font-bold py-2.5 px-6 rounded-xl transition shadow-sm">
+                            <span>📄</span>
+                            <span>Mở tệp PDF</span>
+                        </a>
+                    </div>
+                </div>`;
+            } else if (targetSource.source_type === 'link') {
+                contentEl.innerHTML = `<div class="flex flex-col items-center justify-center p-8 text-center space-y-4">
+                    <div class="p-4 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-500 rounded-full">
+                        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-slate-800 dark:text-slate-200">Liên kết Website</h4>
+                        <p class="text-sm text-slate-500 mt-1 mb-4">Tài liệu này được trích xuất từ một trang web.</p>
+                        <a href="${targetSource.content}" target="_blank" class="inline-flex items-center space-x-2 bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2.5 px-6 rounded-xl transition shadow-sm">
+                            <span>🔗</span>
+                            <span>Truy cập trang web</span>
+                        </a>
+                    </div>
+                </div>`;
+            } else {
+                contentEl.innerHTML = `<div class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-serif p-2">${targetSource.content.replace(/\n/g, '<br/>')}</div>`;
+            }
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeDocumentModal() {
+            window.currentContextualNotebookId = null;
+            const modal = document.getElementById('document-read-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function saveSettings(event) {
+            event.preventDefault();
+            const newName = document.getElementById('setting-display-name').value;
+            
+            // Update header profile
+            const profileNameEl = document.getElementById('profile-display-name');
+            if (profileNameEl) profileNameEl.innerText = newName;
+            
+            // Update welcome title
+            const welcomeTitleEl = document.getElementById('welcome-title');
+            if (welcomeTitleEl) {
+                // Extract first name (last word for Vietnamese or just use the first word if preferred, here we just use the first word to match "Linh")
+                const nameParts = newName.trim().split(' ');
+                const firstName = nameParts.length > 0 ? nameParts[0] : newName;
+                welcomeTitleEl.innerText = `Chào mừng bạn quay lại, ${firstName}!`;
+            }
+            
+            alert('Đã lưu thông tin cài đặt!');
+        }
+    </script>
+
+    <!-- Document Read Modal -->
+    <div id="document-read-modal" class="hidden fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm items-center justify-center p-4 sm:p-6">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-3xl w-full h-full max-h-[85vh] shadow-2xl flex flex-col border border-slate-200 dark:border-slate-800 animate-[fadeIn_0.2s_ease-out]">
+            <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-900/80 rounded-t-2xl shrink-0">
+                <div class="min-w-0 pr-4">
+                    <h3 id="document-read-title" class="font-bold text-slate-800 dark:text-slate-100 text-lg truncate">Tiêu đề tài liệu</h3>
+                    <p id="document-read-notebook" class="text-xs text-brand-500 font-semibold mt-0.5 truncate">Sổ tay</p>
+                </div>
+                <button onclick="closeDocumentModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-2 rounded-xl shrink-0">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="p-6 sm:p-8 overflow-y-auto flex-1 custom-scrollbar bg-white dark:bg-slate-950">
+                <div id="document-read-content" class="w-full">
+                    <!-- Content injected here -->
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

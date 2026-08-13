@@ -381,3 +381,18 @@ def get_dashboard_notifications(request):
         })
 
     return Response(notifications)
+
+
+from .features.contextual import service as contextual_service
+
+@api_view(['POST'])
+def process_context_action(request):
+    text = request.data.get('text', '')
+    action_type = request.data.get('action', '')
+    notebook_id = request.data.get('notebook_id')
+    
+    if not text or not action_type:
+        return Response({'error': 'Missing text or action'}, status=status.HTTP_400_BAD_REQUEST)
+        
+    result = contextual_service.process_context_action(text, action_type, notebook_id=notebook_id)
+    return Response({'result': result})
