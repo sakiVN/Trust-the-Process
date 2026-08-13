@@ -119,78 +119,201 @@
 </head>
 <body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 min-h-screen flex transition-colors duration-200">
 
-    <!-- Left Sidebar (Collapsible & Responsive) -->
-    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col transition-all duration-300 transform -translate-x-full lg:translate-x-0">
-        <!-- Sidebar Brand Logo -->
-        <div class="px-6 py-5 flex items-center justify-between border-b border-slate-100 dark:border-slate-800">
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center text-white shadow-md shadow-brand-200 dark:shadow-none">
-                    <span class="font-extrabold text-lg">EB</span>
-                </div>
-                <div>
-                    <h1 class="text-base font-bold tracking-tight text-slate-900 dark:text-white">EduBrain</h1>
-                    <p class="text-[10px] text-brand-600 dark:text-brand-400 font-bold uppercase tracking-wider">NotebookLM LMS</p>
-                </div>
+<!-- Left Sidebar (Collapsible & Responsive) -->
+<aside id="sidebar"
+    class="fixed inset-y-0 left-0 z-50 w-72 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col transition-all duration-300 transform -translate-x-full lg:translate-x-0">
+
+    <!-- Sidebar Brand Logo -->
+    <div class="px-6 py-5 flex items-center justify-between border-b border-slate-100 dark:border-slate-800">
+        <div class="flex items-center space-x-3">
+
+            <!-- Logo -->
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center text-white shadow-md shadow-brand-200 dark:shadow-none">
+                <span class="font-extrabold text-lg">EB</span>
             </div>
-            <!-- Collapse Button (Mobile) -->
-            <button onclick="toggleSidebar()" class="lg:hidden p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
+
+            <div>
+                <h1 class="text-base font-bold tracking-tight text-slate-900 dark:text-white">
+                    EduBrain
+                </h1>
+                <p class="text-[10px] text-brand-600 dark:text-brand-400 font-bold uppercase tracking-wider">
+                    NotebookLM LMS
+                </p>
+            </div>
         </div>
 
-        <!-- Sidebar Navigation Menu -->
-        <nav class="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
-            <button onclick="switchView('dashboard')" id="nav-dashboard" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition bg-brand-50 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-                <span>Dashboard</span>
-            </button>
-            <button onclick="switchView('notebooks')" id="nav-notebooks" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
-                <span>Notebooks (Sổ tay)</span>
-            </button>
-            <button onclick="switchView('documents')" id="nav-documents" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                <span>Tài liệu liên quan</span>
-            </button>
-            <button onclick="switchView('study-materials')" id="nav-study-materials" class="w-full flex items-center justify-start space-x-3 px-4 py-3 rounded-xl text-sm text-left font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
-                <span>Tài nguyên học tập (Study Materials)</span>
-            </button>
-            <button onclick="switchView('progress')" id="nav-progress" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10a2 2 0 01-2 2h-2a2 2 0 01-2-2zm9 0v-8a2 2 0 00-2-2h-2a2 2 0 00-2 2v8a2 2 0 002 2h2a2 2 0 002-2z"/></svg>
-                <span>Tiến độ & Phân tích</span>
-            </button>
-            <button onclick="switchView('settings')" id="nav-settings" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/></svg>
-                <span>Cài đặt</span>
+        <!-- Collapse Button (Mobile) -->
+        <button onclick="toggleSidebar()"
+            class="lg:hidden p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+    </div>
+
+
+    <!-- Sidebar Navigation Menu -->
+    <nav class="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
+
+        <!-- ==================== MAIN NAVIGATION ==================== -->
+
+        <!-- Dashboard -->
+        <button onclick="switchView('dashboard')" id="nav-dashboard"
+            class="w-full !h-12 !min-h-12 !max-h-12 flex items-center space-x-2 px-3 rounded-xl text-sm font-semibold transition bg-brand-50 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400">
+
+            <span class="w-10 h-10 flex items-center justify-center flex-shrink-0 overflow-visible">
+                <img src="{% static 'notebook/icons/dashboard.png' %}"
+                    class="w-11 h-11 object-contain"
+                    alt="Dashboard">
+            </span>
+
+            <span>Dashboard</span>
+        </button>
+
+
+        <!-- Notebooks -->
+        <button onclick="switchView('notebooks')" id="nav-notebooks"
+            class="w-full !h-12 !min-h-12 !max-h-12 flex items-center space-x-2 px-3 rounded-xl text-sm font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
+
+            <span class="w-10 h-10 flex items-center justify-center flex-shrink-0 overflow-visible">
+                <img src="{% static 'notebook/icons/notebook.png' %}"
+                    class="w-11 h-11 object-contain"
+                    alt="Notebooks">
+            </span>
+
+            <span>Notebooks (Sổ tay)</span>
+        </button>
+
+
+        <!-- Tài liệu liên quan -->
+        <button onclick="switchView('documents')" id="nav-documents"
+            class="w-full !h-12 !min-h-12 !max-h-12 flex items-center space-x-2 px-3 rounded-xl text-sm font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
+
+            <span class="w-10 h-10 flex items-center justify-center flex-shrink-0 overflow-visible">
+                <img src="{% static 'notebook/icons/material.png' %}"
+                    class="w-11 h-11 object-contain"
+                    alt="Tài liệu">
+            </span>
+
+            <span>Tài liệu liên quan</span>
+        </button>
+
+
+        <!-- Tài nguyên học tập -->
+        <button onclick="switchView('study-materials')" id="nav-study-materials"
+            class="w-full !h-12 !min-h-12 !max-h-12 flex items-center justify-start space-x-2 px-3 rounded-xl text-sm text-left font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
+
+            <span class="w-10 h-10 flex items-center justify-center flex-shrink-0 overflow-visible">
+                <img src="{% static 'notebook/icons/material.png' %}"
+                    class="w-11 h-11 object-contain"
+                    alt="Tài nguyên">
+            </span>
+
+            <span>Tài nguyên học tập (Study Materials)</span>
+        </button>
+
+
+        <!-- Tiến độ & Phân tích -->
+        <button onclick="switchView('progress')" id="nav-progress"
+            class="w-full !h-12 !min-h-12 !max-h-12 flex items-center space-x-2 px-3 rounded-xl text-sm font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
+
+            <span class="w-10 h-10 flex items-center justify-center flex-shrink-0 overflow-visible">
+                <img src="{% static 'notebook/icons/chart.png' %}"
+                    class="w-11 h-11 object-contain"
+                    alt="Tiến độ">
+            </span>
+
+            <span>Tiến độ &amp; Phân tích</span>
+        </button>
+
+
+        <!-- Cài đặt -->
+        <button onclick="switchView('settings')" id="nav-settings"
+            class="w-full !h-12 !min-h-12 !max-h-12 flex items-center space-x-2 px-3 rounded-xl text-sm font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
+
+            <span class="w-10 h-10 flex items-center justify-center flex-shrink-0 overflow-visible">
+                <img src="{% static 'notebook/icons/option.png' %}"
+                    class="w-11 h-11 object-contain"
+                    alt="Cài đặt">
+            </span>
+
+            <span>Cài đặt</span>
+        </button>
+
+
+        <!-- ==================== QUICK ACTIONS ==================== -->
+
+        <div class="pt-4 border-t border-slate-100 dark:border-slate-800/60 my-2">
+
+            <span class="block px-4 pb-2 text-[9px] font-bold text-slate-400 uppercase tracking-wider">
+                Tạo nhanh
+            </span>
+
+
+            <!-- Flashcard -->
+            <button onclick="openCreateModal('flashcards')"
+                class="w-full !h-10 !min-h-10 !max-h-10 flex items-center space-x-2 px-3 rounded-xl text-xs font-bold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
+
+                <span class="w-8 h-8 flex items-center justify-center flex-shrink-0 overflow-visible">
+                    <img src="{% static 'notebook/icons/flashcard.png' %}"
+                        class="w-9 h-9 object-contain"
+                        alt="Flashcard">
+                </span>
+
+                <span>Tạo Flashcard</span>
             </button>
 
-            <!-- Quick Action Creators -->
-            <div class="pt-4 border-t border-slate-100 dark:border-slate-800/60 my-2">
-                <span class="block px-4 pb-2 text-[9px] font-bold text-slate-400 uppercase tracking-wider">⚡ Tạo nhanh</span>
-                <button onclick="openCreateModal('flashcards')" class="w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-xs font-bold transition text-slate-655 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
-                    <span>🎴</span>
-                    <span>Tạo Flashcard</span>
-                </button>
-                <button onclick="openCreateModal('quiz')" class="w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-xs font-bold transition text-slate-655 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
-                    <span>❓</span>
-                    <span>Tạo Trắc nghiệm</span>
-                </button>
-                <button onclick="openCreateModal('report')" class="w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-xs font-bold transition text-slate-655 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
-                    <span>📝</span>
-                    <span>Tạo Report tóm tắt</span>
-                </button>
-                <button onclick="openCreateModal('mindmap')" class="w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-xs font-bold transition text-slate-655 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
-                    <span>🌿</span>
-                    <span>Tạo Mindmap</span>
-                </button>
-            </div>
-        </nav>
+
+            <!-- Quiz -->
+            <button onclick="openCreateModal('quiz')"
+                class="w-full !h-10 !min-h-10 !max-h-10 flex items-center space-x-2 px-3 rounded-xl text-xs font-bold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
+
+                <span class="w-8 h-8 flex items-center justify-center flex-shrink-0 overflow-visible">
+                    <img src="{% static 'notebook/icons/quiz.png' %}"
+                        class="w-9 h-9 object-contain"
+                        alt="Quiz">
+                </span>
+
+                <span>Tạo Trắc nghiệm</span>
+            </button>
+
+
+            <!-- Report -->
+            <button onclick="openCreateModal('report')"
+                class="w-full !h-10 !min-h-10 !max-h-10 flex items-center space-x-2 px-3 rounded-xl text-xs font-bold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
+
+                <span class="w-8 h-8 flex items-center justify-center flex-shrink-0 overflow-visible">
+                    <img src="{% static 'notebook/icons/report.png' %}"
+                        class="w-9 h-9 object-contain"
+                        alt="Report">
+                </span>
+
+                <span>Tạo Report tóm tắt</span>
+            </button>
+
+
+            <!-- Mindmap -->
+            <button onclick="openCreateModal('mindmap')"
+                class="w-full !h-10 !min-h-10 !max-h-10 flex items-center space-x-2 px-3 rounded-xl text-xs font-bold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
+
+                <span class="w-8 h-8 flex items-center justify-center flex-shrink-0 overflow-visible">
+                    <img src="{% static 'notebook/icons/mindmap.png' %}"
+                        class="w-9 h-9 object-contain"
+                        alt="Mindmap">
+                </span>
+
+                <span>Tạo Mindmap</span>
+            </button>
+
+        </div>
+
+    </nav>
 
         <!-- Sidebar Quick Action CTA -->
         <div class="p-6 border-t border-slate-100 dark:border-slate-800">
             <button onclick="openNewNotebookModal()" class="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-semibold py-3 px-4 rounded-xl text-sm shadow-lg shadow-brand-100 dark:shadow-none transition transform hover:-translate-y-0.5">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                 <span>Tạo Notebook mới</span>
             </button>
         </div>
@@ -513,7 +636,7 @@
                                     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4 flex flex-col justify-between">
                                         <div class="space-y-4">
                                             <div class="flex items-center space-x-3 border-b border-slate-100 dark:border-slate-800 pb-3">
-                                                <span class="text-2xl">❓</span>
+                                                <img src="{% static 'notebook/icons/quiz.png' %}" class="w-6 h-6 object-contain" alt="Quiz">
                                                 <div>
                                                     <h4 class="font-bold text-slate-850 dark:text-white text-xs">1. Trắc nghiệm ôn tập (Quiz)</h4>
                                                     <p class="text-[10px] text-slate-400">Tạo bộ câu hỏi trắc nghiệm để ôn tập và kiểm tra</p>
@@ -534,7 +657,7 @@
                                     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4 flex flex-col justify-between">
                                         <div class="space-y-4">
                                             <div class="flex items-center space-x-3 border-b border-slate-100 dark:border-slate-800 pb-3">
-                                                <span class="text-2xl">🎴</span>
+                                                <img src="{% static 'notebook/icons/flashcard.png' %}" class="w-6 h-6 object-contain" alt="Flashcard">
                                                 <div>
                                                     <h4 class="font-bold text-slate-850 dark:text-white text-xs">2. Thẻ nhớ thông minh (Flashcards)</h4>
                                                     <p class="text-[10px] text-slate-400">Tóm tắt thuật ngữ dưới dạng hỏi và trả lời nhanh</p>
@@ -555,7 +678,7 @@
                                     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4 flex flex-col justify-between">
                                         <div class="space-y-4">
                                             <div class="flex items-center space-x-3 border-b border-slate-100 dark:border-slate-800 pb-3">
-                                                <span class="text-2xl">🌿</span>
+                                                <img src="{% static 'notebook/icons/mindmap.png' %}" class="w-6 h-6 object-contain" alt="Mindmap">
                                                 <div>
                                                     <h4 class="font-bold text-slate-850 dark:text-white text-xs">3. Sơ đồ tư duy (Mind Map)</h4>
                                                     <p class="text-[10px] text-slate-400">Vẽ sơ đồ tư duy liên kết trực quan bằng Mermaid</p>
@@ -575,7 +698,7 @@
                                     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4 flex flex-col justify-between font-sans">
                                         <div class="space-y-4">
                                             <div class="flex items-center space-x-3 border-b border-slate-100 dark:border-slate-800 pb-3">
-                                                <span class="text-2xl">📝</span>
+                                                <img src="{% static 'notebook/icons/report.png' %}" class="w-6 h-6 object-contain" alt="Report">
                                                 <div>
                                                     <h4 class="font-bold text-slate-850 dark:text-white text-xs">4. Báo cáo tóm tắt (Report)</h4>
                                                     <p class="text-[10px] text-slate-400">Sinh báo cáo tóm lược học thuật ngắn gọn của tài liệu</p>
@@ -811,8 +934,8 @@
     <div id="tool-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-4xl p-6 shadow-2xl space-y-4 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
-                <div class="flex items-center space-x-3">
-                    <span id="modal-icon" class="text-2xl">⚡</span>
+                <div class="flex items-center space-x-2">
+                    <img id="modal-icon" src="{% static 'notebook/icons/mindmap.png' %}" class="w-16 h-16 object-contain flex-shrink-0" alt="Icon">
                     <div>
                         <h3 id="modal-title" class="font-extrabold text-slate-900 dark:text-white text-base">Tạo Sơ đồ tư duy</h3>
                         <p id="modal-subtitle" class="text-[10px] text-slate-400">Nhập chủ đề học tập để sinh sơ đồ tư duy tương tác</p>
@@ -1075,25 +1198,63 @@
         // Switching Dashboard View Mode
         function switchView(viewName) {
             activeView = viewName;
-            
+
             if (viewName === 'dashboard') {
                 fetchNotifications();
             }
-            
+
             // Toggle view visibility
-            ['dashboard', 'notebooks', 'documents', 'study-materials', 'notes', 'progress', 'settings'].forEach(v => {
+            [
+                'dashboard',
+                'notebooks',
+                'documents',
+                'study-materials',
+                'notes',
+                'progress',
+                'settings'
+            ].forEach(v => {
+
+                // Toggle content view
                 const el = document.getElementById(`view-${v}`);
+
                 if (el) {
                     el.classList.toggle('hidden', v !== viewName);
                 }
-                
+
                 // Toggle active styles on navbar links
                 const navBtn = document.getElementById(`nav-${v}`);
+
                 if (navBtn) {
+
                     if (v === viewName) {
-                        navBtn.className = "w-full flex items-center justify-start space-x-3 px-4 py-3 rounded-xl text-sm text-left font-semibold transition bg-brand-50 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400 shadow-sm";
+                        // Active state
+                        navBtn.classList.add(
+                            'bg-brand-50',
+                            'text-brand-600',
+                            'dark:bg-brand-900/30',
+                            'dark:text-brand-400',
+                            'shadow-sm'
+                        );
+
+                        navBtn.classList.remove(
+                            'text-slate-600',
+                            'dark:text-slate-400'
+                        );
+
                     } else {
-                        navBtn.className = "w-full flex items-center justify-start space-x-3 px-4 py-3 rounded-xl text-sm text-left font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white";
+                        // Inactive state
+                        navBtn.classList.remove(
+                            'bg-brand-50',
+                            'text-brand-600',
+                            'dark:bg-brand-900/30',
+                            'dark:text-brand-400',
+                            'shadow-sm'
+                        );
+
+                        navBtn.classList.add(
+                            'text-slate-600',
+                            'dark:text-slate-400'
+                        );
                     }
                 }
             });
@@ -1103,19 +1264,27 @@
                 updateDashboardStats();
                 renderRecentActivityTable();
                 setTimeout(renderCharts, 100);
+
             } else if (viewName === 'documents') {
                 renderAllDocumentsView();
+
             } else if (viewName === 'study-materials') {
                 renderStudyMaterialsView();
+
             } else if (viewName === 'notes') {
                 renderAllNotesView();
+
             } else if (viewName === 'progress') {
                 updateProgressViewStats();
             }
-            
+
             // Auto close mobile sidebar
             const sidebar = document.getElementById('sidebar');
-            if (!sidebar.classList.contains('-translate-x-full')) {
+
+            if (
+                sidebar &&
+                !sidebar.classList.contains('-translate-x-full')
+            ) {
                 sidebar.classList.add('-translate-x-full');
             }
         }
@@ -4176,19 +4345,19 @@
             }
 
             if (type === 'flashcards') {
-                icon.innerText = '🎴';
+                icon.src = "/static/notebook/icons/flashcard.png";
                 title.innerText = 'Tạo Flashcards';
                 subtitle.innerText = 'Nhập chủ đề học tập để hệ thống sinh thẻ nhớ thông minh';
             } else if (type === 'quiz') {
-                icon.innerText = '❓';
+                icon.src = "/static/notebook/icons/quiz.png";
                 title.innerText = 'Tạo Câu hỏi trắc nghiệm';
                 subtitle.innerText = 'Nhập chủ đề học tập để sinh câu hỏi trắc nghiệm kèm giải thích';
             } else if (type === 'report') {
-                icon.innerText = '📝';
+                icon.src = "/static/notebook/icons/report.png";
                 title.innerText = 'Tạo Báo cáo tóm tắt';
                 subtitle.innerText = 'Nhập chủ đề học tập để sinh báo cáo tóm lược học thuật';
             } else if (type === 'mindmap') {
-                icon.innerText = '🌿';
+                icon.src = "/static/notebook/icons/mindmap.png";
                 title.innerText = 'Tạo Sơ đồ tư duy';
                 subtitle.innerText = 'Nhập chủ đề học tập để sinh sơ đồ tư duy dạng cây Mermaid.js';
             }
@@ -4451,17 +4620,20 @@
 }
     </script>
     <!-- Contextual AI Toolbar -->
-    <div id="contextual-ai-toolbar" class="hidden absolute z-[90] bg-slate-900 shadow-xl rounded-lg border border-slate-700 p-1.5 flex items-center space-x-1 transition-all duration-200" style="top: 0; left: 0;">
-        <button onclick="triggerContextAction('explain')" class="flex items-center space-x-1.5 px-3 py-1.5 hover:bg-slate-800 rounded-md text-slate-200 text-xs font-semibold transition group">
-            <span>💡</span><span class="group-hover:text-white">Giải thích</span>
+    <div id="contextual-ai-toolbar" class="hidden absolute z-[90] bg-slate-900 shadow-xl rounded-lg border border-slate-700 p-2 flex items-center space-x-2 transition-all duration-200" style="top: 0; left: 0;">
+        <button onclick="triggerContextAction('explain')" class="flex items-center space-x-2 px-3 py-2 hover:bg-slate-800 rounded-md text-slate-200 text-xs font-semibold transition group">
+            <img src="{% static 'notebook/icons/greeting.png' %}" class="w-5 h-5 object-contain" alt="Explain">
+            <span class="group-hover:text-white">Giải thích</span>
         </button>
-        <div class="w-px h-4 bg-slate-700"></div>
-        <button onclick="triggerContextAction('translate')" class="flex items-center space-x-1.5 px-3 py-1.5 hover:bg-slate-800 rounded-md text-slate-200 text-xs font-semibold transition group">
-            <span>🌐</span><span class="group-hover:text-white">Dịch</span>
+        <div class="w-px h-5 bg-slate-700"></div>
+        <button onclick="triggerContextAction('translate')" class="flex items-center space-x-2 px-3 py-2 hover:bg-slate-800 rounded-md text-slate-200 text-xs font-semibold transition group">
+            <img src="{% static 'notebook/icons/material.png' %}" class="w-5 h-5 object-contain" alt="Translate">
+            <span class="group-hover:text-white">Dịch</span>
         </button>
-        <div class="w-px h-4 bg-slate-700"></div>
-        <button onclick="triggerContextAction('flashcard')" class="flex items-center space-x-1.5 px-3 py-1.5 hover:bg-brand-600 bg-brand-500/20 rounded-md text-brand-300 text-xs font-bold transition group">
-            <span>🔖</span><span class="group-hover:text-white">Lưu Flashcard</span>
+        <div class="w-px h-5 bg-slate-700"></div>
+        <button onclick="triggerContextAction('flashcard')" class="flex items-center space-x-2 px-3 py-2 hover:bg-brand-600 bg-brand-500/20 rounded-md text-brand-300 text-xs font-bold transition group">
+            <img src="{% static 'notebook/icons/flashcard.png' %}" class="w-5 h-5 object-contain" alt="Flashcard">
+            <span class="group-hover:text-white">Lưu Flashcard</span>
         </button>
     </div>
 
