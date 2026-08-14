@@ -1,0 +1,190 @@
+        // Contextual AI Logic
+        const toolbar = document.getElementById('contextual-ai-toolbar');
+        let selectedTextForAI = '';
+
+        document.addEventListener('mouseup', function(e) {
+            // Prevent hiding if clicking on the toolbar itself
+            if(toolbar.contains(e.target)) return;
+            
+            const selection = window.getSelection();
+            const text = selection.toString().trim();
+            
+            if (text.length > 1) { // Show for any selected text (useful for short words like Japanese)
+                selectedTextForAI = text;
+                const range = selection.getRangeAt(0);
+                const rect = range.getBoundingClientRect();
+                
+                // Position toolbar above the selection
+                const top = rect.top + window.scrollY - 50; 
+                // We need to calculate left but wait until toolbar has width, or estimate
+                // Since it's position absolute, we can just center it over rect
+                const left = rect.left + window.scrollX + (rect.width / 2) - 150; // estimate half width of toolbar is 150px
+                
+                toolbar.style.top = `${top > 0 ? top : 10}px`;
+                toolbar.style.left = `${left > 0 ? left : 10}px`;
+                toolbar.classList.remove('hidden');
+            } else {
+                toolbar.classList.add('hidden');
+                selectedTextForAI = '';
+            }
+        });
+
+        document.addEventListener('mousedown', function(e) {
+            if(!toolbar.contains(e.target) && !document.getElementById('contextual-result-modal').contains(e.target)) {
+                toolbar.classList.add('hidden');
+            }
+        });
+
+        async function triggerContextAction(action) {
+            toolbar.classList.add('hidden');
+            if(!selectedTextForAI) return;
+            
+            const modal = document.getElementById('contextual-result-modal');
+            const titleEl = document.getElementById('contextual-result-title');
+            const iconEl = document.getElementById('contextual-result-icon');
+            const contentEl = document.getElementById('contextual-result-content');
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            // Set titles based on action
+            const actionTitles = {
+                'explain': { title: 'Giải thích', icon: '💡' },
+                'translate': { title: 'Bản dịch', icon: '🌐' },
+                'flashcard': { title: 'Lưu Flashcard', icon: '🔖' }
+            };
+            
+            titleEl.innerText = actionTitles[action].title;
+            iconEl.innerText = actionTitles[action].icon;
+            contentEl.innerHTML = '<div class="flex flex-col items-center justify-center py-6 space-y-3"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-500"></div><p class="text-xs text-slate-500">AI đang xử lý...</p></div>';
+            
+            try {
+                // Get CSRF Token
+                let csrftoken = '';
+                const cookies = document.cookie.split(';');
+                for(let i=0; i<cookies.length; i++) {
+                    if(cookies[i].trim().startsWith('csrftoken=')) {
+                        csrftoken = cookies[i].trim().substring(10);
+                        break;
+                    }
+                }
+
+                const response = await fetch('/api/ai/context_action/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify({
+                        text: selectedTextForAI,
+                        action: action,
+                        notebook_id: window.currentContextualNotebookId || activeNotebookId || null
+                    })
+                });
+                
+                const data = await response.json();
+                if(data.result) {
+                    contentEl.innerText = data.result;
+                } else {
+                    contentEl.innerText = 'Lỗi: Không nhận được kết quả.';
+                }
+            } catch(e) {
+                console.error("Contextual AI Error:", e);
+                contentEl.innerText = 'Đã có lỗi xảy ra khi kết nối tới AI.';
+            }
+        }
+
+        function closeContextualModal() {
+            const modal = document.getElementById('contextual-result-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            // Clear selection
+            window.getSelection().removeAllRanges();
+            selectedTextForAI = '';
+        }
+
+        // View Document Modal Logic
+        window.currentContextualNotebookId = null;
+
+        function openDocumentModal(sourceId) {
+            let targetSource = null;
+            let targetNotebookName = "";
+            for (const nb of notebooks) {
+                const src = (nb.sources || []).find(s => s.id === sourceId);
+                if (src) {
+                    targetSource = src;
+                    targetNotebookName = nb.name;
+                    break;
+                }
+            }
+            if (!targetSource) return;
+            
+            window.currentContextualNotebookId = targetSource.notebookId;
+            
+            const modal = document.getElementById('document-read-modal');
+            document.getElementById('document-read-title').innerText = targetSource.title || "Tài liệu";
+            document.getElementById('document-read-notebook').innerText = "Nguồn: " + targetNotebookName;
+            
+            const contentEl = document.getElementById('document-read-content');
+            if (targetSource.source_type === 'file') {
+                contentEl.innerHTML = `<div class="flex flex-col items-center justify-center p-8 text-center space-y-4">
+                    <div class="p-4 bg-red-50 dark:bg-red-900/20 text-red-500 rounded-full">
+                        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-slate-800 dark:text-slate-200">Tài liệu PDF</h4>
+                        <p class="text-sm text-slate-500 mt-1 mb-4">Nhấn nút bên dưới để xem hoặc tải xuống tệp PDF gốc.</p>
+                        <a href="${targetSource.file_path}" target="_blank" class="inline-flex items-center space-x-2 bg-brand-500 hover:bg-brand-600 text-white font-bold py-2.5 px-6 rounded-xl transition shadow-sm">
+                            <span>📄</span>
+                            <span>Mở tệp PDF</span>
+                        </a>
+                    </div>
+                </div>`;
+            } else if (targetSource.source_type === 'link') {
+                contentEl.innerHTML = `<div class="flex flex-col items-center justify-center p-8 text-center space-y-4">
+                    <div class="p-4 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-500 rounded-full">
+                        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-slate-800 dark:text-slate-200">Liên kết Website</h4>
+                        <p class="text-sm text-slate-500 mt-1 mb-4">Tài liệu này được trích xuất từ một trang web.</p>
+                        <a href="${targetSource.content}" target="_blank" class="inline-flex items-center space-x-2 bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2.5 px-6 rounded-xl transition shadow-sm">
+                            <span>🔗</span>
+                            <span>Truy cập trang web</span>
+                        </a>
+                    </div>
+                </div>`;
+            } else {
+                contentEl.innerHTML = `<div class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-serif p-2">${targetSource.content.replace(/\n/g, '<br/>')}</div>`;
+            }
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeDocumentModal() {
+            window.currentContextualNotebookId = null;
+            const modal = document.getElementById('document-read-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function saveSettings(event) {
+            event.preventDefault();
+            const newName = document.getElementById('setting-display-name').value;
+            
+            // Update header profile
+            const profileNameEl = document.getElementById('profile-display-name');
+            if (profileNameEl) profileNameEl.innerText = newName;
+            
+            // Update welcome title
+            const welcomeTitleEl = document.getElementById('welcome-title');
+            if (welcomeTitleEl) {
+                // Extract first name (last word for Vietnamese or just use the first word if preferred, here we just use the first word to match "Linh")
+                const nameParts = newName.trim().split(' ');
+                const firstName = nameParts.length > 0 ? nameParts[0] : newName;
+                welcomeTitleEl.innerText = `Chào mừng bạn quay lại, ${firstName}!`;
+            }
+            
+            alert('Đã lưu thông tin cài đặt!');
+        }
