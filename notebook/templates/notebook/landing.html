@@ -1,0 +1,494 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduBrain - Nền tảng Học tập Thông minh & NotebookLM AI</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            200: '#c7d2fe',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            800: '#3730a3',
+                            900: '#312e81',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .hero-gradient {
+            background: radial-gradient(circle at 50% 20%, rgba(99, 102, 241, 0.12) 0%, rgba(248, 250, 252, 0) 70%);
+        }
+        .dark .hero-gradient {
+            background: radial-gradient(circle at 50% 20%, rgba(99, 102, 241, 0.18) 0%, rgba(2, 6, 23, 0) 70%);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-200 selection:bg-brand-500 selection:text-white">
+
+    <!-- Top Navigation Bar -->
+    <header class="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <!-- Brand Logo -->
+            <a href="/" class="flex items-center space-x-3 group">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-brand-500/20 group-hover:scale-105 transition transform">
+                    <span class="font-extrabold text-xl tracking-wider">EB</span>
+                </div>
+                <div>
+                    <span class="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white block">EduBrain</span>
+                    <span class="text-[10px] text-brand-600 dark:text-brand-400 font-bold uppercase tracking-wider block">NotebookLM LMS</span>
+                </div>
+            </a>
+
+            <!-- Navigation Links -->
+            <nav class="hidden md:flex items-center space-x-8 text-sm font-semibold text-slate-600 dark:text-slate-300">
+                <a href="#features" data-i18n="nav_features" class="hover:text-brand-600 dark:hover:text-brand-400 transition">Tính năng</a>
+                <a href="#how-it-works" data-i18n="nav_how" class="hover:text-brand-600 dark:hover:text-brand-400 transition">Cách hoạt động</a>
+                <a href="#study-modes" data-i18n="nav_modes" class="hover:text-brand-600 dark:hover:text-brand-400 transition">Mục đích học</a>
+                <a href="/dashboard/" data-i18n="nav_dash" class="hover:text-brand-600 dark:hover:text-brand-400 transition">Không gian Dashboard</a>
+            </nav>
+
+            <!-- Actions: Language + Dark mode + CTA -->
+            <div class="flex items-center space-x-3">
+                <!-- Language Dropdown -->
+                <div class="relative">
+                    <select 
+                        id="landing-language-select" 
+                        onchange="setLandingLanguage(this.value);" 
+                        class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl px-2.5 py-2 pr-7 focus:outline-none focus:ring-1 focus:ring-brand-500 cursor-pointer appearance-none shadow-sm transition hover:bg-slate-100 dark:hover:bg-slate-700"
+                        title="Chọn ngôn ngữ / Select language"
+                    >
+                        <option value="vi">🇻🇳 VI</option>
+                        <option value="en">🇺🇸 EN</option>
+                        <option value="jp">🇯🇵 JP</option>
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none text-slate-400">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Theme Toggle -->
+                <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition" title="Đổi giao diện Sáng/Tối">
+                    <!-- Sun Icon -->
+                    <svg id="sun-icon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+                    </svg>
+                    <!-- Moon Icon -->
+                    <svg id="moon-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
+
+                <!-- Direct Dashboard Link -->
+                <a href="/dashboard/" data-i18n="btn_header_dash" class="hidden sm:inline-flex items-center text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400 px-3 py-2.5 rounded-xl transition">
+                    Vào Dashboard
+                </a>
+
+                <!-- Primary CTA Button -->
+                <a href="/getting-started/" class="inline-flex items-center space-x-2 bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm shadow-md shadow-brand-500/25 transition transform hover:-translate-y-0.5 active:translate-y-0">
+                    <span data-i18n="btn_header_start">Bắt đầu sử dụng</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Landing Content -->
+    <main class="flex-1 hero-gradient">
+        <!-- Hero Section -->
+        <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-20 lg:pt-16 lg:pb-28">
+            <div class="text-center max-w-3xl mx-auto space-y-6">
+                <!-- Welcome & Greeting Badge -->
+                <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-brand-50/80 dark:bg-brand-950/60 border border-brand-200/80 dark:border-brand-800 text-brand-700 dark:text-brand-300 shadow-sm backdrop-blur-sm">
+                    <img src="{% static 'notebook/icon-set/greeting.png' %}" class="w-6 h-6 object-contain shrink-0" alt="Chào mừng" />
+                    <span data-i18n="badge" class="text-xs sm:text-sm font-bold">Chào mừng bạn đến với EduBrain AI Learning Platform</span>
+                </div>
+
+                <!-- Main Headline -->
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-[1.15]">
+                    <span data-i18n="headline_1">Học tập thông minh hơn, ghi nhớ sâu hơn với </span><span data-i18n="headline_highlight" class="bg-clip-text text-transparent bg-gradient-to-r from-brand-600 via-indigo-500 to-violet-500">NotebookLM AI</span>
+                </h1>
+
+                <!-- Subtitle -->
+                <p data-i18n="sub_desc" class="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
+                    Biến tài liệu học tập, sách giáo trình, ghi chú thành sơ đồ tư duy tương tác, flashcard lặp lại ngắt quãng, bài tập trắc nghiệm tự động và phản biện luận điểm 2 chiều.
+                </p>
+
+                <!-- CTA Buttons Group -->
+                <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <a href="/getting-started/" class="w-full sm:w-auto inline-flex items-center justify-center space-x-2.5 bg-gradient-to-r from-brand-600 via-indigo-600 to-indigo-700 hover:from-brand-700 hover:to-indigo-800 text-white font-extrabold px-8 py-4 rounded-2xl text-base shadow-xl shadow-brand-500/30 transition transform hover:-translate-y-1 active:translate-y-0">
+                        <img src="{% static 'notebook/icon-set/greeting.png' %}" class="w-5 h-5 object-contain" alt="Bắt đầu" />
+                        <span data-i18n="btn_hero_start">Bắt đầu sử dụng ngay</span>
+                        <svg class="w-5 h-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                    </a>
+
+                    <a href="/dashboard/" class="w-full sm:w-auto inline-flex items-center justify-center space-x-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold px-7 py-4 rounded-2xl text-base shadow-sm transition hover:shadow">
+                        <img src="{% static 'notebook/icon-set/dashboard.png' %}" class="w-5 h-5 object-contain" alt="Dashboard" />
+                        <span data-i18n="btn_hero_dash">Khám phá Dashboard</span>
+                    </a>
+                </div>
+
+                <!-- Trust indicators / Meta points -->
+                <div class="pt-4 flex flex-wrap items-center justify-center gap-6 text-xs text-slate-500 dark:text-slate-400 font-medium">
+                    <span class="flex items-center gap-1.5">
+                        <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                        <span data-i18n="trust_1">Không cần thẻ tín dụng</span>
+                    </span>
+                    <span class="flex items-center gap-1.5">
+                        <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                        <span data-i18n="trust_2">Sử dụng ngay không cần mật khẩu</span>
+                    </span>
+                    <span class="flex items-center gap-1.5">
+                        <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                        <span data-i18n="trust_3">Hỗ trợ Tiếng Việt & Đa ngôn ngữ</span>
+                    </span>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Features Details Section -->
+        <section id="features" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-slate-200/70 dark:border-slate-800/80">
+            <div class="text-center max-w-2xl mx-auto mb-16 space-y-3">
+                <span class="text-xs font-extrabold uppercase tracking-widest text-brand-600 dark:text-brand-400">Bộ Công Cụ Toàn Diện</span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                    Mọi thứ bạn cần để bứt phá kết quả học tập
+                </h2>
+                <p class="text-sm text-slate-500 dark:text-slate-400">
+                    Được tối ưu hóa cho phong cách học tập chủ động, tiết kiệm tới 70% thời gian tổng hợp kiến thức.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-7 shadow-sm hover:shadow-lg transition space-y-4">
+                    <div class="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 flex items-center justify-center">
+                        <img src="{% static 'notebook/icon-set/notebook.png' %}" class="w-7 h-7 object-contain" alt="Sổ tay thông minh" />
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">Sổ tay Thông minh (Smart Notebooks)</h3>
+                    <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                        Tổ chức từng môn học hoặc dự án theo từng Sổ tay riêng biệt. Mỗi sổ tay chứa các tài liệu, ghi chú và bài tập liên kết chặt chẽ.
+                    </p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-7 shadow-sm hover:shadow-lg transition space-y-4">
+                    <div class="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/50 flex items-center justify-center">
+                        <img src="{% static 'notebook/icon-set/quiz.png' %}" class="w-7 h-7 object-contain" alt="Trắc nghiệm thông minh" />
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">Tự động tạo Quiz & Bài tập ôn luyện</h3>
+                    <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                        Chỉ với 1 click, AI tự động quét toàn bộ giáo trình và sinh các bộ câu hỏi trắc nghiệm kèm giải thích logic sâu sắc.
+                    </p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-7 shadow-sm hover:shadow-lg transition space-y-4">
+                    <div class="w-12 h-12 rounded-2xl bg-violet-50 dark:bg-violet-950/50 flex items-center justify-center">
+                        <img src="{% static 'notebook/icon-set/mindmap.png' %}" class="w-7 h-7 object-contain" alt="Mindmap" />
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">Sơ đồ Tư duy & Báo cáo Tóm tắt</h3>
+                    <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                        Tổng hợp tài liệu thành sơ đồ Mindmap sinh động kéo thả được, và tạo báo cáo tóm tắt cấu trúc rõ ràng trong vài giây.
+                    </p>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-7 shadow-sm hover:shadow-lg transition space-y-4">
+                    <div class="w-12 h-12 rounded-2xl bg-rose-50 dark:bg-rose-950/50 flex items-center justify-center">
+                        <img src="{% static 'notebook/icon-set/report.png' %}" class="w-7 h-7 object-contain" alt="Phản biện" />
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">Trợ lý Phản biện Luận điểm AI</h3>
+                    <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                        Soạn bài viết và ý tưởng của bạn, AI sẽ tìm ra các lỗ hổng lập luận và đưa ra góc nhìn phản biện giúp bạn phát triển tư duy sắc bén.
+                    </p>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-7 shadow-sm hover:shadow-lg transition space-y-4">
+                    <div class="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-950/50 flex items-center justify-center">
+                        <img src="{% static 'notebook/icon-set/upload.png' %}" class="w-7 h-7 object-contain" alt="Đa nguồn" />
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">Hỗ trợ PDF & Nguồn Đa Định dạng</h3>
+                    <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                        Tải lên sách PDF, tài liệu nghiên cứu, link bài báo học thuật hoặc paste trực tiếp ghi chú để phân tích ngay lập tức.
+                    </p>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-7 shadow-sm hover:shadow-lg transition space-y-4">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 flex items-center justify-center">
+                        <img src="{% static 'notebook/icon-set/chart.png' %}" class="w-7 h-7 object-contain" alt="Tiến độ" />
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">Theo dõi Chuỗi & Tiến độ Học tập</h3>
+                    <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                        Bảng thống kê thời gian học hàng tuần, nhắc nhở lặp lại ngắt quãng để bạn không bao giờ bị đứt chuỗi thói quen.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section id="how-it-works" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-slate-200/70 dark:border-slate-800/80">
+            <div class="text-center max-w-2xl mx-auto mb-16 space-y-3">
+                <span data-i18n="step_tag" class="text-xs font-extrabold uppercase tracking-widest text-brand-600 dark:text-brand-400">Quy Trình Tinh Gọn</span>
+                <h2 data-i18n="step_title" class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                    Bắt đầu chỉ trong 3 bước đơn giản
+                </h2>
+                <p data-i18n="step_sub" class="text-sm text-slate-500 dark:text-slate-400">
+                    Không cần tạo mật khẩu rườm rà. Bạn chỉ cần chọn mục đích và bắt đầu học ngay.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Step 1 -->
+                <div class="relative bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-8 shadow-sm text-center space-y-4">
+                    <div class="w-12 h-12 rounded-2xl bg-brand-600 text-white font-extrabold text-lg flex items-center justify-center mx-auto shadow-md shadow-brand-500/20">
+                        1
+                    </div>
+                    <h3 data-i18n="step_1_title" class="text-base font-bold text-slate-900 dark:text-white">Chọn Mục Đích Sử Dụng</h3>
+                    <p data-i18n="step_1_desc" class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                        Truy cập trang Bắt đầu để nhập tên và chọn mục đích: Học tập, Ôn thi cấp tốc, Tập trung sâu hay Lưu trữ tài liệu.
+                    </p>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="relative bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-8 shadow-sm text-center space-y-4">
+                    <div class="w-12 h-12 rounded-2xl bg-indigo-600 text-white font-extrabold text-lg flex items-center justify-center mx-auto shadow-md shadow-indigo-500/20">
+                        2
+                    </div>
+                    <h3 data-i18n="step_2_title" class="text-base font-bold text-slate-900 dark:text-white">Tạo Sổ Tay & Nạp Tài Liệu</h3>
+                    <p data-i18n="step_2_desc" class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                        Tạo một sổ tay mới và tải lên file PDF bài giảng, link tham khảo hoặc ghi chép nội dung trọng tâm.
+                    </p>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="relative bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-8 shadow-sm text-center space-y-4">
+                    <div class="w-12 h-12 rounded-2xl bg-violet-600 text-white font-extrabold text-lg flex items-center justify-center mx-auto shadow-md shadow-violet-500/20">
+                        3
+                    </div>
+                    <h3 data-i18n="step_3_title" class="text-base font-bold text-slate-900 dark:text-white">Học & Luyện Tập Cùng AI</h3>
+                    <p data-i18n="step_3_desc" class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                        Làm trắc nghiệm, lật flashcard, xem mindmap và nhận phản biện luận điểm tức thì.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Use Cases / Study Modes Section -->
+        <section id="study-modes" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-slate-200/70 dark:border-slate-800/80">
+            <div class="bg-gradient-to-r from-brand-600 to-indigo-700 rounded-3xl p-8 sm:p-12 text-white shadow-2xl relative overflow-hidden">
+                <div class="relative z-10 max-w-2xl space-y-6">
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/20 text-xs font-bold backdrop-blur-sm">
+                        <img src="{% static 'notebook/icon-set/greeting.png' %}" class="w-4 h-4 object-contain" alt="Greeting" />
+                        <span data-i18n="cta_badge">Dành cho mọi nhu cầu tri thức</span>
+                    </div>
+                    <h2 data-i18n="cta_title" class="text-3xl sm:text-4xl font-extrabold tracking-tight">
+                        Sẵn sàng nâng tầm hiệu suất học tập của bạn?
+                    </h2>
+                    <p data-i18n="cta_desc" class="text-sm sm:text-base text-brand-100 leading-relaxed font-normal">
+                        Dù bạn là học sinh đang ôn thi cấp tốc, sinh viên nghiên cứu đề tài hay người đi làm muốn hệ thống hóa tài liệu, EduBrain luôn sẵn sàng đồng hành.
+                    </p>
+                    <div class="pt-2 flex flex-wrap items-center gap-4">
+                        <a href="/getting-started/" class="inline-flex items-center space-x-2 bg-white text-brand-700 hover:bg-slate-100 font-extrabold px-7 py-3.5 rounded-2xl text-sm shadow-lg transition transform hover:-translate-y-0.5">
+                            <span data-i18n="cta_btn">Bắt đầu ngay miễn phí</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-10 transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 rounded-xl bg-brand-600 flex items-center justify-center text-white font-bold text-xs">
+                    EB
+                </div>
+                <span class="text-xs font-bold text-slate-800 dark:text-slate-200">EduBrain &copy; 2026 - Nền tảng Học tập Thông minh</span>
+            </div>
+            <div class="flex items-center space-x-6 text-xs text-slate-500 dark:text-slate-400">
+                <a href="/getting-started/" class="hover:text-brand-600 dark:hover:text-brand-400 transition">Bắt đầu</a>
+                <a href="/dashboard/" class="hover:text-brand-600 dark:hover:text-brand-400 transition">Dashboard</a>
+                <a href="#features" class="hover:text-brand-600 dark:hover:text-brand-400 transition">Tính năng</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Theme & Multi-language Scripts -->
+    <script>
+        const LANDING_DICT = {
+            vi: {
+                nav_features: "Tính năng",
+                nav_how: "Cách hoạt động",
+                nav_modes: "Mục đích học",
+                nav_dash: "Không gian Dashboard",
+                btn_header_start: "Bắt đầu sử dụng",
+                btn_header_dash: "Vào Dashboard",
+                badge: "Chào mừng bạn đến với EduBrain AI Learning Platform",
+                headline_1: "Học tập thông minh hơn, ghi nhớ sâu hơn với ",
+                headline_highlight: "NotebookLM AI",
+                sub_desc: "Biến tài liệu học tập, sách giáo trình, ghi chú thành sơ đồ tư duy tương tác, flashcard lặp lại ngắt quãng, bài tập trắc nghiệm tự động và phản biện luận điểm 2 chiều.",
+                btn_hero_start: "Bắt đầu sử dụng ngay",
+                btn_hero_dash: "Khám phá Dashboard",
+                trust_1: "Không cần thẻ tín dụng",
+                trust_2: "Sử dụng ngay không cần mật khẩu",
+                trust_3: "Hỗ trợ Tiếng Việt & Đa ngôn ngữ",
+                step_tag: "Quy Trình Tinh Gọn",
+                step_title: "Bắt đầu chỉ trong 3 bước đơn giản",
+                step_sub: "Không cần tạo mật khẩu rườm rà. Bạn chỉ cần chọn mục đích và bắt đầu học ngay.",
+                step_1_title: "Chọn Mục Đích Sử Dụng",
+                step_1_desc: "Truy cập trang Bắt đầu để nhập tên và chọn mục đích: Học tập, Ôn thi cấp tốc, Tập trung sâu hay Lưu trữ tài liệu.",
+                step_2_title: "Tạo Sổ Tay & Nạp Tài Liệu",
+                step_2_desc: "Tạo một sổ tay mới và tải lên file PDF bài giảng, link tham khảo hoặc ghi chép nội dung trọng tâm.",
+                step_3_title: "Học & Luyện Tập Cùng AI",
+                step_3_desc: "Làm trắc nghiệm, lật flashcard, xem mindmap và nhận phản biện luận điểm tức thì.",
+                cta_badge: "Dành cho mọi nhu cầu tri thức",
+                cta_title: "Sẵn sàng nâng tầm hiệu suất học tập của bạn?",
+                cta_desc: "Dù bạn là học sinh đang ôn thi cấp tốc, sinh viên nghiên cứu đề tài hay người đi làm muốn hệ thống hóa tài liệu, EduBrain luôn sẵn sàng đồng hành.",
+                cta_btn: "Bắt đầu ngay miễn phí"
+            },
+            en: {
+                nav_features: "Features",
+                nav_how: "How it works",
+                nav_modes: "Study Goals",
+                nav_dash: "Dashboard Workspace",
+                btn_header_start: "Get Started",
+                btn_header_dash: "To Dashboard",
+                badge: "Welcome to EduBrain AI Learning Platform",
+                headline_1: "Learn smarter, retain deeper with ",
+                headline_highlight: "NotebookLM AI",
+                sub_desc: "Transform study materials, textbooks, and notes into interactive mind maps, spaced repetition flashcards, automated quizzes, and two-way argumentative logic critiques.",
+                btn_hero_start: "Get Started Now",
+                btn_hero_dash: "Explore Dashboard",
+                trust_1: "No credit card required",
+                trust_2: "Instant access without password",
+                trust_3: "Supports Vietnamese & Multi-language",
+                step_tag: "Streamlined Workflow",
+                step_title: "Get started in 3 simple steps",
+                step_sub: "No complex passwords. Just pick your purpose and start learning immediately.",
+                step_1_title: "Choose Study Purpose",
+                step_1_desc: "Visit the Getting Started page to enter your name and select your learning goal: Routine study, Exam cramming, Deep focus, or Document archiving.",
+                step_2_title: "Create Notebook & Add Sources",
+                step_2_desc: "Create a new notebook and upload lecture PDFs, reference links, or core concept notes.",
+                step_3_title: "Learn & Practice with AI",
+                step_3_desc: "Take quizzes, flip flashcards, view mind maps, and receive instant logical critique from AI.",
+                cta_badge: "For every knowledge seeker",
+                cta_title: "Ready to elevate your learning performance?",
+                cta_desc: "Whether you are cramming for exams, conducting research, or organizing knowledge, EduBrain is ready to assist you.",
+                cta_btn: "Get Started for Free"
+            },
+            jp: {
+                nav_features: "機能",
+                nav_how: "仕組み",
+                nav_modes: "学習目的",
+                nav_dash: "ダッシュボード",
+                btn_header_start: "今すぐ始める",
+                btn_header_dash: "ダッシュボードへ",
+                badge: "EduBrain AI学習プラットフォームへようこそ",
+                headline_1: "よりスマートに学び、より深く記憶する：",
+                headline_highlight: "NotebookLM AI",
+                sub_desc: "教材、教科書、ノートをインタラクティブなマインドマップ、分散学習フラッシュカード、自動クイズ、双方向の論理的フィードバックに変換します。",
+                btn_hero_start: "今すぐ始める",
+                btn_hero_dash: "ダッシュボードを見る",
+                trust_1: "クレジットカード不要",
+                trust_2: "パスワード不要ですぐ利用",
+                trust_3: "ベトナム語・多言語対応",
+                step_tag: "シンプルな流れ",
+                step_title: "わずか3つの簡単ステップで開始",
+                step_sub: "複雑なパスワードは不要です。目的を選択してすぐに学習を開始できます。",
+                step_1_title: "1. 学習目的を選択",
+                step_1_desc: "開始ページにアクセスし、名前を入力して学習目的（日常学習、試験対策、集中学習、資料保存）を選択します。",
+                step_2_title: "2. ノートブック作成と資料追加",
+                step_2_desc: "新しいノートブックを作成し、講義のPDF、参考リンク、または重要メモをアップロードします。",
+                step_3_title: "3. AIと一緒に学習・演習",
+                step_3_desc: "クイズを解き、フラッシュカードをめくり、マインドマップを確認し、AIからの論理フィードバックを受け取ります。",
+                cta_badge: "すべての学習ニーズに対応",
+                cta_title: "学習効率を次のレベルへ引き上げる準備はできましたか？",
+                cta_desc: "試験勉強、学術研究、知識の整理など、EduBrainはあなたの学習をいつでもサポートします。",
+                cta_btn: "無料で体験を始める"
+            }
+        };
+
+        function setLandingLanguage(lang) {
+            if (!lang) lang = localStorage.getItem('user_language') || 'vi';
+            localStorage.setItem('user_language', lang);
+
+            const selectEl = document.getElementById('landing-language-select');
+            if (selectEl && selectEl.value !== lang) selectEl.value = lang;
+
+            const dict = LANDING_DICT[lang] || LANDING_DICT['vi'];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) el.textContent = dict[key];
+            });
+        }
+
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+            updateThemeIcons();
+        }
+
+        function toggleDarkMode() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateThemeIcons();
+        }
+
+        function updateThemeIcons() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const sunIcon = document.getElementById('sun-icon');
+            const moonIcon = document.getElementById('moon-icon');
+            if (sunIcon && moonIcon) {
+                if (isDark) {
+                    sunIcon.classList.remove('hidden');
+                    moonIcon.classList.add('hidden');
+                } else {
+                    sunIcon.classList.add('hidden');
+                    moonIcon.classList.remove('hidden');
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            const savedLang = localStorage.getItem('user_language') || 'vi';
+            setLandingLanguage(savedLang);
+        });
+    </script>
+</body>
+</html>

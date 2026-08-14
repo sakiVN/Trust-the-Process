@@ -8,16 +8,16 @@ function filterTable() {
         if (cells.length < 5) return;
 
         const name = cells[0].innerText.toLowerCase();
-        const type = cells[1].innerText;
+        const type = cells[1].innerText.toLowerCase();
         const notebook = cells[2].innerText.toLowerCase();
 
         const matchesSearch = name.includes(query) || notebook.includes(query);
 
         let matchesType = true;
         if (typeFilter === 'source') {
-            matchesType = type.includes('Tài liệu');
+            matchesType = type.includes('tài liệu') || type.includes('related') || type.includes('関連') || type.includes('pdf') || type.includes('link');
         } else if (typeFilter === 'note') {
-            matchesType = type.includes('Ghi chú');
+            matchesType = type.includes('ghi chú') || type.includes('note') || type.includes('ノート');
         }
 
         row.style.display = (matchesSearch && matchesType) ? '' : 'none';

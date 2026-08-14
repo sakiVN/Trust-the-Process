@@ -313,3 +313,36 @@ class NotebookAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(AIGeneration.objects.count(), 0)
 
+
+class PageRoutingTests(TestCase):
+    def test_landing_page_root(self):
+        """Verify root URL (/) renders the landing page correctly."""
+        response = self.client.get('/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'EduBrain')
+        self.assertContains(response, 'Bắt đầu sử dụng')
+        self.assertContains(response, '/getting-started/')
+
+    def test_landing_page_home_alias(self):
+        """Verify /home/ alias renders the landing page."""
+        response = self.client.get('/home/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'EduBrain')
+        self.assertContains(response, 'greeting.png')
+
+    def test_getting_started_page(self):
+        """Verify /getting-started/ renders the onboarding form page."""
+        response = self.client.get('/getting-started/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Trở về trang chủ')
+        self.assertContains(response, 'Mục đích sử dụng chính')
+        self.assertContains(response, 'Tiến vào Dashboard')
+
+    def test_dashboard_page(self):
+        """Verify /dashboard/ renders the main interactive workspace."""
+        response = self.client.get('/dashboard/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'EduBrain')
+        self.assertContains(response, 'Trở về trang chủ')
+
+

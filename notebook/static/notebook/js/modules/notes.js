@@ -66,12 +66,15 @@
             if (content.length < 20) {
                 return alert("Vui lòng ghi suy nghĩ dài ít nhất 20 ký tự để AI bắt đầu phản biện.");
             }
-            
+            const lang = localStorage.getItem('user_language') || 'vi';
             try {
                 const res = await fetchWithCsrf(`${API_URL}/notes/${noteId}/unlock/`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ initial_content: content })
+                    body: JSON.stringify({ 
+                        initial_content: content,
+                        language: lang
+                    })
                 });
                 
                 if (res.ok) {

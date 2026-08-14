@@ -23,12 +23,14 @@
             activeNotebookId = id;
             renderNotebooksList();
             
+            const t = window.t || ((k, f) => f);
+
             try {
                 const res = await fetch(`${API_URL}/notebooks/${id}/`);
                 const notebook = await res.json();
                 
                 document.getElementById('active-notebook-name').innerText = notebook.name;
-                document.getElementById('active-notebook-desc').innerText = notebook.description || 'Không có mục tiêu học tập.';
+                document.getElementById('active-notebook-desc').innerText = notebook.description || t('key_29', 'Không có mục tiêu học tập.');
                 
                 document.getElementById('notebook-workspace').classList.remove('hidden');
                 document.getElementById('notebook-actions').classList.remove('hidden');
@@ -47,7 +49,7 @@
                     const catContainer = document.getElementById(`sources-list-${cat}`);
                     if (catContainer) {
                         if (catSources.length === 0) {
-                            catContainer.innerHTML = `<div class="text-[10px] text-slate-400 italic py-1">Chưa có tài liệu liên quan cho phần này.</div>`;
+                            catContainer.innerHTML = `<div class="text-[10px] text-slate-400 italic py-1">${t('key_25', 'Chưa có tài liệu liên quan cho phần này.')}</div>`;
                         } else {
                             catContainer.innerHTML = catSources.map(src => {
                                 let badge = '';
@@ -61,7 +63,7 @@
                                         <span class="font-bold text-slate-400 uppercase shrink-0">${badge}</span>
                                         <span class="font-semibold truncate" title="${src.title}">${src.title}</span>
                                     </div>
-                                    <button onclick="deleteSource(${src.id})" class="text-rose-500 hover:text-rose-700 font-bold shrink-0 ml-2" title="Xóa tài liệu">Xóa</button>
+                                    <button onclick="deleteSource(${src.id})" class="text-rose-500 hover:text-rose-700 font-bold shrink-0 ml-2" title="${t('key_btn_delete', 'Xóa tài liệu')}">${t('key_btn_delete', 'Xóa')}</button>
                                 </div>
                                 `;
                             }).join('');
@@ -113,21 +115,22 @@
 
         async function deleteActiveNotebook() {
             if (!activeNotebookId) return;
-            if (!confirm("Bạn có chắc chắn muốn xóa SỔ TAY này? Toàn bộ tài liệu, ghi chú và các câu hỏi AI đi kèm sẽ bị xóa vĩnh viễn và không thể khôi phục.")) return;
+            const t = window.t || ((k, f) => f);
+            if (!confirm(t('key_confirm_delete_nb', "Bạn có chắc chắn muốn xóa SỔ TAY này? Toàn bộ tài liệu, ghi chú và các câu hỏi AI đi kèm sẽ bị xóa vĩnh viễn và không thể khôi phục."))) return;
             
             try {
                 const res = await fetchWithCsrf(`${API_URL}/notebooks/${activeNotebookId}/`, {
                     method: 'DELETE'
                 });
                 if (res.ok) {
-                    alert("Đã xóa Sổ tay thành công!");
+                    alert(t('key_alert_deleted_nb', "Đã xóa Sổ tay thành công!"));
                     activeNotebookId = null;
                     
                     // Hide workspace
                     document.getElementById('notebook-workspace').classList.add('hidden');
                     document.getElementById('notebook-actions').classList.add('hidden');
-                    document.getElementById('active-notebook-name').innerText = "Chọn một sổ tay từ danh sách để bắt đầu học tập";
-                    document.getElementById('active-notebook-desc').innerText = "Mẹo: Bạn có thể thêm các tài liệu tham khảo (PDF, trang web) rồi gửi phản biện để AI chấm điểm.";
+                    document.getElementById('active-notebook-name').innerText = t('key_28', "Chọn một sổ tay từ danh sách để bắt đầu học tập");
+                    document.getElementById('active-notebook-desc').innerText = t('key_29', "Mẹo: Bạn có thể thêm các tài liệu tham khảo (PDF, trang web) rồi gửi phản biện để AI chấm điểm.");
                     
                     // Refresh
                     await loadNotebooks();
@@ -158,28 +161,32 @@
             const container = document.getElementById('notebooks-list');
             if (!container) return;
             
+            const t = window.t || ((k, f) => f);
+
             if (notebooks.length === 0) {
-                container.innerHTML = `<div class="text-xs text-slate-400 py-6 text-center">Không có sổ tay nào. Hãy tạo mới.</div>`;
+                container.innerHTML = `<div class="text-xs text-slate-400 py-6 text-center">${t('key_26', 'Không có sổ tay nào. Hãy tạo mới.')}</div>`;
                 return;
             }
             container.innerHTML = notebooks.map(nb => `
                 <button onclick="selectNotebook(${nb.id})" class="w-full text-left px-4 py-3 rounded-xl transition text-sm ${nb.id === activeNotebookId ? 'bg-brand-600 text-white font-medium shadow-md shadow-brand-100 dark:shadow-none' : 'hover:bg-slate-100 dark:hover:bg-slate-850 text-slate-700 dark:text-slate-300' }">
                     <div class="flex items-center justify-between gap-3">
                         <span class="truncate block font-semibold">${nb.name}</span>
-                        <span class="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-300">Sổ tay</span>
+                        <span class="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-300">${t('key_btn_view_notebook', 'Sổ tay')}</span>
                     </div>
-                    <span class="truncate text-[10px] ${nb.id === activeNotebookId ? 'text-brand-100' : 'text-slate-400'}">${nb.description || 'Không mô tả'}</span>
+                    <span class="truncate text-[10px] ${nb.id === activeNotebookId ? 'text-brand-100' : 'text-slate-400'}">${nb.description || t('key_113', 'Không mô tả')}</span>
                 </button>
             `).join('');
         }
 
         function populateNotebookSelectors() {
-            const selects = ['tool-notebook-select', 'quiz-builder-notebook'];
+            const selects = ['tool-notebook-select', 'quiz-builder-notebook', 'quick-upload-notebook'];
+            const t = window.t || ((k, f) => f);
             selects.forEach(selectId => {
                 const select = document.getElementById(selectId);
                 if (!select) return;
                 const currentValue = select.value;
-                select.innerHTML = '<option value="">Không liên kết</option>' + notebooks.map(nb => `
+                const unlinkedText = t('key_103', 'Không liên kết');
+                select.innerHTML = `<option value="">${unlinkedText}</option>` + notebooks.map(nb => `
                     <option value="${nb.id}" ${String(nb.id) === String(currentValue) ? 'selected' : ''}>${nb.name}</option>
                 `).join('');
                 if (activeNotebookId && selectId === 'quiz-builder-notebook') {
@@ -187,4 +194,3 @@
                 }
             });
         }
-

@@ -6,7 +6,7 @@
     <!-- Sub-sidebar: List of notebooks inside Notebooks view -->
     <div class="w-full lg:w-72 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4 shrink-0">
       <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
-        <h3 class="font-bold text-slate-800 dark:text-white text-sm">Chọn Sổ Tay của bạn</h3>
+        <h3 translate="key_27" class="font-bold text-slate-800 dark:text-white text-sm">Chọn Sổ Tay của bạn</h3>
       </div>
       <!-- Scrollable notebook buttons list -->
       <div id="notebooks-list" class="space-y-1.5 max-h-[350px] overflow-y-auto pr-1">
@@ -20,15 +20,15 @@
       <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
         <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
           <div>
-            <h2 id="active-notebook-name" class="text-xl font-extrabold text-slate-950 dark:text-white tracking-tight">Chọn một sổ tay từ danh sách để bắt đầu học tập</h2>
-            <p id="active-notebook-desc" class="text-sm text-slate-500 dark:text-slate-400 mt-1.5">Mẹo: Bạn có thể thêm các tài liệu tham khảo (PDF, trang web) rồi gửi phản biện để AI chấm điểm.</p>
+            <h2 id="active-notebook-name" translate="key_28" class="text-xl font-extrabold text-slate-950 dark:text-white tracking-tight">Chọn một sổ tay từ danh sách để bắt đầu học tập</h2>
+            <p id="active-notebook-desc" translate="key_29" class="text-sm text-slate-500 dark:text-slate-400 mt-1.5">Mẹo: Bạn có thể thêm các tài liệu tham khảo (PDF, trang web) rồi gửi phản biện để AI chấm điểm.</p>
           </div>
           <div id="notebook-actions" class="hidden">
             <button onclick="deleteActiveNotebook()" class="bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/20 dark:hover:bg-rose-900/30 text-rose-600 dark:text-rose-400 font-semibold px-4 py-2.5 rounded-xl text-xs transition flex items-center space-x-1.5 shadow-sm border border-rose-100 dark:border-rose-900/40">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg>
-              <span>Xóa Sổ tay này</span>
+              <span translate="key_30">Xóa Sổ tay này</span>
             </button>
           </div>
         </div>
@@ -40,11 +40,11 @@
         <div class="flex border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl p-1 shadow-sm gap-1">
           <button onclick="switchTab('sources')" id="tab-btn-sources" class="flex-1 py-2 text-center text-xs font-semibold rounded-lg transition bg-brand-50 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400 flex items-center justify-center space-x-2">
             <img src="{% static 'notebook/icon-set/upload.png' %}" class="w-5 h-5 object-contain shrink-0" alt="Tài liệu" />
-            <span>Tài liệu liên quan</span>
+            <span translate="key_31">Tài liệu liên quan</span>
           </button>
           <button onclick="switchTab('ai-gen')" id="tab-btn-ai-gen" class="flex-1 py-2 text-center text-xs font-semibold rounded-lg transition text-slate-500 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white flex items-center justify-center space-x-2">
             <img src="{% static 'notebook/icon-set/material.png' %}" class="w-5 h-5 object-contain shrink-0" alt="Tài nguyên" />
-            <span>Tài nguyên học tập</span>
+            <span translate="key_32">Tài nguyên học tập</span>
           </button>
         </div>
 
@@ -52,41 +52,41 @@
         <div id="tab-content-sources" class="space-y-6">
           <!-- Add Source Form -->
           <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
-            <h3 class="text-base font-bold text-slate-800 dark:text-white mb-4">+ Thêm tài liệu liên quan mới</h3>
+            <h3 translate="key_33" class="text-base font-bold text-slate-800 dark:text-white mb-4">+ Thêm tài liệu liên quan mới</h3>
             <form id="add-source-form" onsubmit="handleAddSource(event)" class="space-y-4">
               <div>
-                <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Tên tài liệu / Chủ đề</label>
-                <input type="text" id="source-title" required placeholder="Ví dụ: Định luật chuyển dịch dòng vốn quốc tế" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition" />
+                <label translate="key_34" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Tên tài liệu / Chủ đề</label>
+                <input type="text" id="source-title" required data-translate-placeholder="key_ph_source_title" placeholder="Ví dụ: Định luật chuyển dịch dòng vốn quốc tế" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition" />
               </div>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Loại tài nguyên</label>
+                  <label translate="key_35" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Loại tài nguyên</label>
                   <select id="source-type" onchange="toggleSourceInputs()" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 text-slate-700 dark:text-slate-300 transition">
-                    <option value="text">Văn bản (Plain Text)</option>
-                    <option value="link">Trang web (Link)</option>
-                    <option value="file">Tài liệu PDF (File PDF)</option>
+                    <option value="text" translate="key_opt_text">Văn bản (Plain Text)</option>
+                    <option value="link" translate="key_opt_link">Trang web (Link)</option>
+                    <option value="file" translate="key_opt_file">Tài liệu PDF (File PDF)</option>
                   </select>
                 </div>
                 <div id="source-url-container" class="hidden">
-                  <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">URL liên kết</label>
-                  <input type="url" id="source-url" placeholder="https://example.com/bai-viet-nghien-cuu" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition" />
+                  <label translate="key_39" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">URL liên kết</label>
+                  <input type="url" id="source-url" data-translate-placeholder="key_ph_source_url" placeholder="https://example.com/bai-viet-nghien-cuu" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition" />
                 </div>
                 <div id="source-file-container" class="hidden">
-                  <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Tải lên file PDF</label>
+                  <label translate="key_40" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Tải lên file PDF</label>
                   <input type="file" id="source-file" accept=".pdf" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 text-slate-700 dark:text-slate-300 transition" />
                 </div>
               </div>
               <div id="source-content-container">
-                <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Nội dung văn bản (Dùng làm ngữ cảnh thông minh cho AI)</label>
-                <textarea id="source-content" required rows="5" placeholder="Sao chép nội dung sách học, tài liệu, bài giảng hoặc nghiên cứu vào đây..." class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition"></textarea>
+                <label translate="key_41" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Nội dung văn bản (Dùng làm ngữ cảnh thông minh cho AI)</label>
+                <textarea id="source-content" required rows="5" data-translate-placeholder="key_ph_source_content" placeholder="Sao chép nội dung sách học, tài liệu, bài giảng hoặc nghiên cứu vào đây..." class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition"></textarea>
               </div>
-              <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl text-sm shadow transition">Lưu tài liệu liên quan</button>
+              <button type="submit" translate="key_42" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl text-sm shadow transition">Lưu tài liệu liên quan</button>
             </form>
           </div>
 
           <!-- Registered Sources List -->
           <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
-            <h3 class="text-base font-bold text-slate-800 dark:text-white mb-4">Các tài liệu liên quan đã tải lên</h3>
+            <h3 translate="key_43" class="text-base font-bold text-slate-800 dark:text-white mb-4">Các tài liệu liên quan đã tải lên</h3>
             <div id="sources-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <!-- Loaded dynamically -->
             </div>
@@ -102,13 +102,13 @@
                 <div class="flex items-center space-x-3 border-b border-slate-100 dark:border-slate-800 pb-3">
                   <img src="{% static 'notebook/icon-set/quiz.png' %}" class="w-9 h-9 object-contain shrink-0" alt="Quiz" />
                   <div>
-                    <h4 class="font-bold text-slate-850 dark:text-white text-xs">1. Trắc nghiệm ôn tập (Quiz)</h4>
-                    <p class="text-[10px] text-slate-400">Tạo bộ câu hỏi trắc nghiệm để ôn tập và kiểm tra</p>
+                    <h4 translate="key_44" class="font-bold text-slate-850 dark:text-white text-xs">1. Trắc nghiệm ôn tập (Quiz)</h4>
+                    <p translate="key_45" class="text-[10px] text-slate-400">Tạo bộ câu hỏi trắc nghiệm để ôn tập và kiểm tra</p>
                   </div>
                 </div>
               </div>
               <div class="space-y-4 pt-2">
-                <button onclick="openCreateModal('quiz')" class="w-full bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold py-2 rounded-xl text-[11px] shadow transition">+ Tạo bộ câu hỏi Trắc nghiệm</button>
+                <button onclick="openCreateModal('quiz')" translate="key_138" class="w-full bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold py-2 rounded-xl text-[11px] shadow transition">+ Tạo bộ câu hỏi Trắc nghiệm</button>
                 <div id="quiz-sets-container" class=""></div>
                 <div id="ai-generations-quiz" class="max-h-96 overflow-y-auto"></div>
               </div>
@@ -120,13 +120,13 @@
                 <div class="flex items-center space-x-3 border-b border-slate-100 dark:border-slate-800 pb-3">
                   <img src="{% static 'notebook/icon-set/flashcard.png' %}" class="w-9 h-9 object-contain shrink-0" alt="Flashcards" />
                   <div>
-                    <h4 class="font-bold text-slate-850 dark:text-white text-xs">2. Thẻ nhớ thông minh (Flashcards)</h4>
-                    <p class="text-[10px] text-slate-400">Tóm tắt thuật ngữ dưới dạng hỏi và trả lời nhanh</p>
+                    <h4 translate="key_46" class="font-bold text-slate-850 dark:text-white text-xs">2. Thẻ nhớ thông minh (Flashcards)</h4>
+                    <p translate="key_47" class="text-[10px] text-slate-400">Tóm tắt thuật ngữ dưới dạng hỏi và trả lời nhanh</p>
                   </div>
                 </div>
               </div>
               <div class="space-y-4 pt-2">
-                <button onclick="openCreateModal('flashcards')" class="w-full bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold py-2 rounded-xl text-[11px] shadow transition">+ Tạo Thẻ nhớ thông minh</button>
+                <button onclick="openCreateModal('flashcards')" translate="key_137" class="w-full bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold py-2 rounded-xl text-[11px] shadow transition">+ Tạo Thẻ nhớ thông minh</button>
               </div>
               <div class="space-y-4 pt-2">
                 <div id="ai-generations-flashcards" class="space-y-3 pt-1 border-t border-slate-100 dark:border-slate-800 max-h-96 overflow-y-auto"></div>
@@ -139,13 +139,13 @@
                 <div class="flex items-center space-x-3 border-b border-slate-100 dark:border-slate-800 pb-3">
                   <img src="{% static 'notebook/icon-set/mindmap.png' %}" class="w-9 h-9 object-contain shrink-0" alt="Mind Map" />
                   <div>
-                    <h4 class="font-bold text-slate-850 dark:text-white text-xs">3. Sơ đồ tư duy (Mind Map)</h4>
-                    <p class="text-[10px] text-slate-400">Vẽ sơ đồ tư duy liên kết trực quan bằng Mermaid</p>
+                    <h4 translate="key_48" class="font-bold text-slate-850 dark:text-white text-xs">3. Sơ đồ tư duy (Mind Map)</h4>
+                    <p translate="key_49" class="text-[10px] text-slate-400">Vẽ sơ đồ tư duy liên kết trực quan bằng Mermaid</p>
                   </div>
                 </div>
               </div>
               <div class="space-y-4 pt-2">
-                <button onclick="openCreateModal('mindmap')" class="w-full bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold py-2 rounded-xl text-[11px] shadow transition">+ Tạo Sơ đồ tư duy</button>
+                <button onclick="openCreateModal('mindmap')" translate="key_50" class="w-full bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold py-2 rounded-xl text-[11px] shadow transition">+ Tạo Sơ đồ tư duy</button>
                 <div id="ai-generations-mind_map" class="space-y-3 pt-1 border-t border-slate-100 dark:border-slate-800 max-h-96 overflow-y-auto flex flex-col justify-center"></div>
               </div>
             </div>
@@ -156,13 +156,13 @@
                 <div class="flex items-center space-x-3 border-b border-slate-100 dark:border-slate-800 pb-3">
                   <img src="{% static 'notebook/icon-set/report.png' %}" class="w-9 h-9 object-contain shrink-0" alt="Report" />
                   <div>
-                    <h4 class="font-bold text-slate-850 dark:text-white text-xs">4. Báo cáo tóm tắt (Report)</h4>
-                    <p class="text-[10px] text-slate-400">Sinh báo cáo tóm lược học thuật ngắn gọn của tài liệu</p>
+                    <h4 translate="key_51" class="font-bold text-slate-850 dark:text-white text-xs">4. Báo cáo tóm tắt (Report)</h4>
+                    <p translate="key_52" class="text-[10px] text-slate-400">Sinh báo cáo tóm lược học thuật ngắn gọn của tài liệu</p>
                   </div>
                 </div>
               </div>
               <div class="space-y-4 pt-2">
-                <button onclick="openCreateModal('report')" class="w-full bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold py-2 rounded-xl text-[11px] shadow transition">+ Tạo Báo cáo tóm tắt</button>
+                <button onclick="openCreateModal('report')" translate="key_53" class="w-full bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold py-2 rounded-xl text-[11px] shadow transition">+ Tạo Báo cáo tóm tắt</button>
                 <div id="ai-generations-report" class="space-y-3 pt-1 border-t border-slate-100 dark:border-slate-800 max-h-96 overflow-y-auto"></div>
               </div>
             </div>

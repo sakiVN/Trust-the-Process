@@ -69,19 +69,22 @@ async function triggerContextAction(action) {
         modal.classList.add('flex');
     }
     
+    const t = window.t || ((k, f) => f);
+    const lang = localStorage.getItem('user_language') || 'vi';
+
     const actionTitles = {
-        'explain': { title: 'Giải thích thuật ngữ / khái niệm', icon: '💡' },
-        'translate': { title: 'Bản dịch đa ngữ', icon: '🌐' },
-        'flashcard': { title: 'Trích xuất & Lưu Flashcard', icon: '🔖' }
+        'explain': { title: t('key_ai_explain_title', 'Giải thích thuật ngữ / khái niệm'), icon: '💡' },
+        'translate': { title: t('key_ai_translate_title', 'Bản dịch đa ngữ'), icon: '🌐' },
+        'flashcard': { title: t('key_ai_flashcard_title', 'Trích xuất & Lưu Flashcard'), icon: '🔖' }
     };
     
-    if (titleEl) titleEl.innerText = (actionTitles[action] || {}).title || 'Kết quả AI';
+    if (titleEl) titleEl.innerText = (actionTitles[action] || {}).title || t('key_ai_result_title', 'Kết quả AI');
     if (iconEl) iconEl.innerText = (actionTitles[action] || {}).icon || '✨';
     if (contentEl) {
         contentEl.innerHTML = `
             <div class="flex flex-col items-center justify-center py-6 space-y-3">
                 <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-500"></div>
-                <p class="text-xs text-slate-500">Hệ thống AI đang phân tích dữ liệu...</p>
+                <p class="text-xs text-slate-500">${t('key_ai_analyzing', 'Hệ thống AI đang phân tích dữ liệu...')}</p>
             </div>
         `;
     }
@@ -93,7 +96,8 @@ async function triggerContextAction(action) {
             body: JSON.stringify({
                 text: selectedTextForAI,
                 action: action,
-                notebook_id: window.currentContextualNotebookId || activeNotebookId || null
+                notebook_id: window.currentContextualNotebookId || activeNotebookId || null,
+                language: lang
             })
         });
         
@@ -102,12 +106,12 @@ async function triggerContextAction(action) {
             if (data.result) {
                 let extraNotice = '';
                 if (data.saved_to_notebook) {
-                    extraNotice = '\n\n✅ Đã tự động lưu thẻ này vào Flashcards của Sổ tay!';
+                    extraNotice = lang === 'en' ? '\n\n✅ Automatically saved to Notebook Flashcards!' : (lang === 'jp' ? '\n\n✅ ノートブックの単語カードに自動保存しました！' : '\n\n✅ Đã tự động lưu thẻ này vào Flashcards của Sổ tay!');
                     if (typeof loadNotebooks === 'function') loadNotebooks();
                 }
                 contentEl.innerText = data.result + extraNotice;
             } else {
-                contentEl.innerText = data.error || 'Lỗi: Không nhận được kết quả từ hệ thống.';
+                contentEl.innerText = data.error || 'Error: No result received from system.';
             }
         }
     } catch (e) {

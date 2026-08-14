@@ -23,7 +23,10 @@ from django.views.generic import TemplateView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('notebook.urls')),
-    path('', TemplateView.as_view(template_name='notebook/index.html'), name='home'),
+    path('', TemplateView.as_view(template_name='notebook/landing.html'), name='home'),
+    path('home/', TemplateView.as_view(template_name='notebook/landing.html'), name='landing'),
+    path('getting-started/', TemplateView.as_view(template_name='notebook/getting_started.html'), name='getting_started'),
+    path('dashboard/', TemplateView.as_view(template_name='notebook/index.html'), name='dashboard'),
 ]
 
 if settings.DEBUG:

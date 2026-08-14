@@ -1,10 +1,14 @@
         async function triggerAIGeneration(type) {
             if (!activeNotebookId) return alert("Vui lòng chọn một sổ tay trước.");
+            const lang = localStorage.getItem('user_language') || 'vi';
             try {
                 const res = await fetchWithCsrf(`${API_URL}/notebooks/${activeNotebookId}/generate/`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ generation_type: type })
+                    body: JSON.stringify({ 
+                        generation_type: type,
+                        language: lang
+                    })
                 });
                 
                 if (res.ok) {
@@ -19,6 +23,7 @@
         }
 
         function renderAIGenerations(generations, quizzes = []) {
+            const t = window.t || ((k, f) => f);
             const categories = ['quiz', 'flashcards', 'mind_map', 'report'];
             const allStudyMaterials = [...(generations || []), ...(quizzes || []).map(q => ({
                 ...q,
@@ -46,10 +51,10 @@
 
             if (genericContainer) {
                 const labelMap = {
-                    quiz: 'Bài tập trắc nghiệm',
-                    flashcards: 'Flashcards',
-                    mind_map: 'Mind Map',
-                    report: 'Báo cáo',
+                    quiz: t('key_44', 'Bài tập trắc nghiệm'),
+                    flashcards: t('key_46', 'Flashcards'),
+                    mind_map: t('key_48', 'Mind Map'),
+                    report: t('key_51', 'Báo cáo'),
                     audio_overview: 'Audio Overview',
                     presentation: 'Presentation',
                     video_overview: 'Video Overview',
@@ -57,9 +62,13 @@
                     data_table: 'Data Table'
                 };
 
+                const deleteText = t('key_btn_delete', 'Xóa');
+                const lang = localStorage.getItem('user_language') || 'vi';
+                const localeStr = lang === 'en' ? 'en-US' : (lang === 'jp' ? 'ja-JP' : 'vi-VN');
+
                 genericContainer.innerHTML = allStudyMaterials.slice().reverse().map(gen => {
-                    const label = labelMap[gen.generation_type] || 'Tài liệu học tập';
-                    let preview = 'Tài liệu học tập đã lưu.';
+                    const label = labelMap[gen.generation_type] || t('key_32', 'Tài liệu học tập');
+                    let preview = t('key_ph_quiz_desc', 'Tài liệu học tập đã lưu.');
                     try {
                         const raw = String(gen.content || '').trim();
                         if (raw) {
@@ -67,17 +76,17 @@
                             preview = contentPreview.length > 120 ? `${contentPreview.slice(0, 120)}...` : contentPreview;
                         }
                     } catch (err) {
-                        preview = 'Tài liệu học tập đã lưu.';
+                        preview = t('key_ph_quiz_desc', 'Tài liệu học tập đã lưu.');
                     }
 
                     return `
                         <div class="border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm space-y-3">
                             <div class="flex justify-between items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-2">
                                 <span class="text-[9px] uppercase tracking-wider font-bold text-slate-500">${label}</span>
-                                <button onclick="deleteGeneration(${gen.id})" class="text-[10px] text-rose-500 hover:text-rose-700 font-bold hover:underline" title="Xóa kết quả">Xóa</button>
+                                <button onclick="deleteGeneration(${gen.id})" class="text-[10px] text-rose-500 hover:text-rose-700 font-bold hover:underline" title="${deleteText}">${deleteText}</button>
                             </div>
                             <p class="text-xs text-slate-700 dark:text-slate-300 line-clamp-4">${preview}</p>
-                            <div class="text-[10px] text-slate-400">${new Date(gen.created_at).toLocaleString('vi-VN')}</div>
+                            <div class="text-[10px] text-slate-400">${new Date(gen.created_at).toLocaleString(localeStr)}</div>
                         </div>
                     `;
                 }).join('');

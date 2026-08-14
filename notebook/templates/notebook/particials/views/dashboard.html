@@ -6,10 +6,22 @@
     <div class="flex items-center space-x-3.5">
       <img src="{% static 'notebook/icon-set/greeting.png' %}" class="w-12 h-12 object-contain shrink-0" alt="Chào mừng" />
       <div>
-        <h2 translate="key_0" class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Chào mừng bạn quay lại, Linh!</h2>
-        <p translate="key_1" class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Dưới đây là tóm tắt tiến độ và các tài liệu học tập của bạn.</p>
+        <div class="flex items-center gap-2">
+          <h2 id="dashboard-welcome-heading" translate="key_0" class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Chào mừng bạn quay lại, Linh!</h2>
+          <span id="dashboard-user-purpose-badge" class="hidden sm:inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-brand-50 text-brand-700 dark:bg-brand-950/60 dark:text-brand-300 border border-brand-200/60 dark:border-brand-800">
+            Học tập
+          </span>
+        </div>
+        <p id="dashboard-welcome-sub" translate="key_1" class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Dưới đây là tóm tắt tiến độ và các tài liệu học tập của bạn.</p>
       </div>
     </div>
+    <!-- Quick Settings Link -->
+    <button type="button" onclick="switchView('settings')" class="inline-flex items-center space-x-1.5 text-xs font-semibold text-brand-600 dark:text-brand-400 bg-brand-50/60 dark:bg-brand-950/40 hover:bg-brand-100 dark:hover:bg-brand-900/40 px-3.5 py-2 rounded-xl border border-brand-200/60 dark:border-brand-800 transition cursor-pointer">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+      </svg>
+      <span translate="key_custom_goal">Tùy chỉnh mục tiêu học</span>
+    </button>
   </div>
 
   <!-- Stat Cards -->
@@ -22,12 +34,12 @@
         </svg>
       </div>
       <div>
-        <span class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Thời gian học</span>
-        <span class="block text-2xl font-extrabold text-slate-800 dark:text-white mt-0.5">145 phút</span>
+        <span translate="key_2" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Thời gian học</span>
+        <span translate="key_3" class="block text-2xl font-extrabold text-slate-800 dark:text-white mt-0.5">145 phút</span>
         <span class="text-[11px] font-bold text-emerald-500 flex items-center mt-0.5">
           <svg class="w-3.5 h-3.5 mr-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-          </svg>+12.4% tuần này
+          </svg><span translate="key_4">+12.4% tuần này</span>
         </span>
       </div>
     </div>
@@ -37,9 +49,9 @@
         <img src="{% static 'notebook/icon-set/notebook.png' %}" class="w-8 h-8 object-contain shrink-0" alt="Số Sổ tay" />
       </div>
       <div>
-        <span class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Số Sổ tay (Notebooks)</span>
+        <span translate="key_5" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Số Sổ tay (Notebooks)</span>
         <span id="stat-notebooks-count" class="block text-2xl font-extrabold text-slate-800 dark:text-white mt-0.5">0</span>
-        <span class="text-[11px] text-slate-400 font-medium block mt-1">Đang quản lý</span>
+        <span translate="key_6" class="text-[11px] text-slate-400 font-medium block mt-1">Đang quản lý</span>
       </div>
     </div>
     <!-- Stat Card 3 -->
@@ -48,9 +60,9 @@
         <img src="{% static 'notebook/icon-set/upload.png' %}" class="w-8 h-8 object-contain shrink-0" alt="Tài liệu tải lên" />
       </div>
       <div>
-        <span class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Tài liệu tải lên</span>
+        <span translate="key_7" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Tài liệu tải lên</span>
         <span id="stat-documents-count" class="block text-2xl font-extrabold text-slate-800 dark:text-white mt-0.5">0</span>
-        <span class="text-[11px] text-slate-400 font-medium block mt-1">PDF, Links & Text</span>
+        <span translate="key_8" class="text-[11px] text-slate-400 font-medium block mt-1">PDF, Links & Text</span>
       </div>
     </div>
     <!-- Stat Card 4 -->
@@ -61,7 +73,7 @@
         </svg>
       </div>
       <div>
-        <span class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Hoàn thành bài tập</span>
+        <span translate="key_9" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Hoàn thành bài tập</span>
         <span class="block text-2xl font-extrabold text-slate-800 dark:text-white mt-0.5">68%</span>
         <div class="w-24 bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
           <div class="bg-amber-500 h-full" style="width: 68%"></div>
@@ -75,8 +87,8 @@
     <!-- Hours Chart -->
     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm lg:col-span-2">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="font-bold text-slate-800 dark:text-white text-base">Thời lượng tự học hàng tuần</h3>
-        <span class="text-xs text-slate-400">7 ngày gần nhất</span>
+        <h3 translate="key_10" class="font-bold text-slate-800 dark:text-white text-base">Thời lượng tự học hàng tuần</h3>
+        <span translate="key_11" class="text-xs text-slate-400">7 ngày gần nhất</span>
       </div>
       <div class="h-64 relative">
         <canvas id="hoursChart"></canvas>
@@ -85,8 +97,8 @@
     <!-- Type Distribution -->
     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="font-bold text-slate-800 dark:text-white text-base">Phân bổ loại tài liệu</h3>
-        <span class="text-xs text-slate-400">Tổng tài liệu</span>
+        <h3 translate="key_12" class="font-bold text-slate-800 dark:text-white text-base">Phân bổ loại tài liệu</h3>
+        <span translate="key_13" class="text-xs text-slate-400">Tổng tài liệu</span>
       </div>
       <div class="h-64 relative flex items-center justify-center">
         <canvas id="distributionChart"></canvas>
@@ -98,16 +110,16 @@
   <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
       <div>
-        <h3 class="font-bold text-slate-800 dark:text-white text-base">Tài liệu & Ghi chú gần đây</h3>
-        <p class="text-xs text-slate-400 mt-1">Danh sách tổng hợp tài nguyên của các Sổ tay</p>
+        <h3 translate="key_14" class="font-bold text-slate-800 dark:text-white text-base">Tài liệu & Ghi chú gần đây</h3>
+        <p translate="key_15" class="text-xs text-slate-400 mt-1">Danh sách tổng hợp tài nguyên của các Sổ tay</p>
       </div>
       <!-- Table Filter and search -->
       <div class="flex flex-wrap items-center gap-3">
-        <input type="text" id="table-search" oninput="filterTable()" placeholder="Lọc nhanh tại bảng..." class="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand-500" />
+        <input type="text" id="table-search" oninput="filterTable()" data-translate-placeholder="key_search_placeholder" placeholder="Lọc nhanh tại bảng..." class="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand-500" />
         <select id="table-filter-type" onchange="filterTable()" class="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs focus:outline-none text-slate-600 dark:text-slate-400">
-          <option value="all">Tất cả loại</option>
-          <option value="source">Tài liệu liên quan</option>
-          <option value="note">Ghi chú (Note)</option>
+          <option value="all" translate="key_16">Tất cả loại</option>
+          <option value="source" translate="key_17">Tài liệu liên quan</option>
+          <option value="note" translate="key_18">Ghi chú (Note)</option>
         </select>
       </div>
     </div>
@@ -117,12 +129,12 @@
       <table class="w-full text-left text-sm border-collapse">
         <thead>
           <tr class="border-b border-slate-100 dark:border-slate-800 text-slate-400 text-xs font-bold uppercase tracking-wider">
-            <th class="py-3.5 px-4">Tên tài liệu / ghi chú</th>
-            <th class="py-3.5 px-4">Loại</th>
-            <th class="py-3.5 px-4">Thuộc Sổ tay</th>
-            <th class="py-3.5 px-4">Ngày tạo</th>
-            <th class="py-3.5 px-4">Trạng thái</th>
-            <th class="py-3.5 px-4 text-right">Thao tác</th>
+            <th translate="key_19" class="py-3.5 px-4">Tên tài liệu / ghi chú</th>
+            <th translate="key_20" class="py-3.5 px-4">Loại</th>
+            <th translate="key_21" class="py-3.5 px-4">Thuộc Sổ tay</th>
+            <th translate="key_22" class="py-3.5 px-4">Ngày tạo</th>
+            <th translate="key_23" class="py-3.5 px-4">Trạng thái</th>
+            <th translate="key_24" class="py-3.5 px-4 text-right">Thao tác</th>
           </tr>
         </thead>
         <tbody id="recent-activity-table-body" class="divide-y divide-slate-100 dark:divide-slate-800/50">
@@ -139,8 +151,8 @@
         </svg>
       </div>
       <div>
-        <p class="font-bold text-slate-700 dark:text-slate-300 text-sm">Chưa có hoạt động nào</p>
-        <p class="text-xs text-slate-400 mt-1">Hãy tạo một Sổ tay và thêm tài nguyên tài liệu để bắt đầu.</p>
+        <p translate="key_25" class="font-bold text-slate-700 dark:text-slate-300 text-sm">Chưa có hoạt động nào</p>
+        <p translate="key_26" class="text-xs text-slate-400 mt-1">Hãy tạo một Sổ tay và thêm tài nguyên tài liệu để bắt đầu.</p>
       </div>
     </div>
   </div>
