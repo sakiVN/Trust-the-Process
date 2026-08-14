@@ -1,0 +1,69 @@
+<!-- 6. VIEW: PROGRESS & ANALYTICS -->
+<section id="view-progress" class="hidden space-y-6">
+  <div>
+    <h2 class="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">Thống kê tiến độ tự học</h2>
+    <p class="text-xs text-slate-400 mt-1">Theo dõi tiến trình hoàn thiện tài nguyên học tập của bạn.</p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+      <div>
+        <h3 class="font-bold text-slate-800 dark:text-white text-sm mb-4">Các chỉ số nỗ lực học tập</h3>
+        <div class="space-y-4">
+          <div class="flex justify-between items-center">
+            <span class="text-xs text-slate-500">Điểm chuyên cần:</span>
+            <span class="text-xs font-bold text-brand-600 dark:text-brand-400">Rất Cao (92/100)</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-xs text-slate-500">Tổng bộ Flashcard / Quiz đã tạo:</span>
+            <span id="progress-quiz-flashcard-count" class="text-xs font-bold">0 bộ</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-xs text-slate-500">Tổng tài liệu tham chiếu:</span>
+            <span id="progress-sources-count" class="text-xs font-bold">0 tài liệu</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-xs text-slate-500">Tổng Sơ đồ tư duy & Report:</span>
+            <span id="progress-mindmap-report-count" class="text-xs font-bold">0 tài liệu</span>
+          </div>
+        </div>
+      </div>
+      <div class="border-t border-slate-100 dark:border-slate-800 pt-4 mt-6">
+        <span class="text-[11px] text-slate-400">Cập nhật tự động dựa trên toàn bộ dữ liệu lưu trên tài khoản.</span>
+      </div>
+    </div>
+
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+      <h3 class="font-bold text-slate-800 dark:text-white text-sm mb-4">Tiến độ xây dựng Tài nguyên</h3>
+      <div class="space-y-4">
+        <div>
+          <div class="flex justify-between text-xs mb-1">
+            <span>Hoàn thiện Tài liệu đọc</span>
+            <span class="font-semibold">75%</span>
+          </div>
+          <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+            <div class="bg-indigo-500 h-full" style="width: 75%"></div>
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between text-xs mb-1">
+            <span>Hoàn thiện Bộ câu hỏi ôn tập</span>
+            <span class="font-semibold">88%</span>
+          </div>
+          <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+            <div class="bg-teal-500 h-full" style="width: 88%"></div>
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between text-xs mb-1">
+            <span>Hoàn thiện Sơ đồ tổng kết</span>
+            <span class="font-semibold">60%</span>
+          </div>
+          <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+            <div class="bg-amber-500 h-full" style="width: 60%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
