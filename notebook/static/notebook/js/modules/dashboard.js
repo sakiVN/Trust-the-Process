@@ -67,7 +67,7 @@ function updateDashboardStats() {
         }
     }
 
-    // 2. Stat Card 2: Weekly Goal Completion % with Color Tiers & Glowing MAX
+    // 2. Stat Card 2: Weekly Goal Completion % with Multi-layered Stacking Progress Bar & Glowing MAX
     const dailyGoalMinutes = typeof getDailyGoalMinutes === 'function' ? getDailyGoalMinutes() : 30;
     const weeklyTargetMinutes = dailyGoalMinutes * 7;
     const rolling7Days = typeof getRolling7DaysStudyData === 'function' ? getRolling7DaysStudyData() : [];
@@ -78,6 +78,7 @@ function updateDashboardStats() {
     const goalCardEl = document.getElementById('stat-weekly-goal-card');
     const goalIconWrapEl = document.getElementById('stat-weekly-goal-icon-wrap');
     const goalPctEl = document.getElementById('stat-weekly-goal-pct');
+    const goalBaseBarEl = document.getElementById('stat-weekly-goal-base-bar');
     const goalBarEl = document.getElementById('stat-weekly-goal-bar');
     const goalBadgeEl = document.getElementById('stat-weekly-goal-badge');
 
@@ -87,44 +88,55 @@ function updateDashboardStats() {
         goalPctEl.classList.remove('stat-max-purple-text');
         goalBarEl.classList.remove('stat-max-purple-bar');
         if (goalBadgeEl) goalBadgeEl.classList.add('hidden');
-
-        let barWidth = Math.min(100, weeklyGoalPct);
+        if (goalBaseBarEl) goalBaseBarEl.className = "absolute inset-0 h-full w-full transition-colors duration-500 hidden";
 
         if (weeklyGoalPct === 0) {
             // Tier 0: 0% -> Xám (Gray)
             goalPctEl.innerText = `0%`;
             goalPctEl.className = "block text-2xl font-extrabold text-slate-400 dark:text-slate-500 mt-0.5";
-            goalBarEl.className = "bg-slate-400 dark:bg-slate-600 h-full transition-all duration-500";
+            goalBarEl.className = "relative h-full bg-slate-400 dark:bg-slate-600 transition-all duration-500 rounded-full";
             goalBarEl.style.width = `0%`;
             goalIconWrapEl.className = "p-3.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 shrink-0";
         } else if (weeklyGoalPct <= 100) {
-            // Tier 1: 1 - 100% -> Vàng (Amber/Yellow)
+            // Tier 1: 1 - 100% -> Vàng (Amber/Yellow) trên nền xám
             goalPctEl.innerText = `${weeklyGoalPct}%`;
             goalPctEl.className = "block text-2xl font-extrabold text-amber-500 dark:text-amber-400 mt-0.5";
-            goalBarEl.className = "bg-amber-500 h-full transition-all duration-500";
-            goalBarEl.style.width = `${barWidth}%`;
+            goalBarEl.className = "relative h-full bg-amber-500 transition-all duration-500 rounded-full";
+            goalBarEl.style.width = `${weeklyGoalPct}%`;
             goalIconWrapEl.className = "p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 shrink-0";
         } else if (weeklyGoalPct <= 200) {
-            // Tier 2: 101 - 200% -> Xanh lá (Emerald/Green)
+            // Tier 2: 101 - 200% -> Xanh lá (Emerald/Green) đè lên 100% Vàng (Amber)
+            const tierPct = weeklyGoalPct - 100;
             goalPctEl.innerText = `${weeklyGoalPct}%`;
             goalPctEl.className = "block text-2xl font-extrabold text-emerald-500 dark:text-emerald-400 mt-0.5";
-            goalBarEl.className = "bg-emerald-500 h-full transition-all duration-500";
-            goalBarEl.style.width = `100%`;
+            if (goalBaseBarEl) {
+                goalBaseBarEl.className = "absolute inset-0 h-full w-full bg-amber-500 transition-colors duration-500";
+            }
+            goalBarEl.className = "relative h-full bg-emerald-500 transition-all duration-500 rounded-full shadow-sm";
+            goalBarEl.style.width = `${tierPct}%`;
             goalIconWrapEl.className = "p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 shrink-0";
         } else if (weeklyGoalPct <= 300) {
-            // Tier 3: 201 - 300% -> Xanh dương (Blue/Indigo)
+            // Tier 3: 201 - 300% -> Xanh dương (Blue/Indigo) đè lên 100% Xanh lá (Emerald)
+            const tierPct = weeklyGoalPct - 200;
             goalPctEl.innerText = `${weeklyGoalPct}%`;
             goalPctEl.className = "block text-2xl font-extrabold text-blue-500 dark:text-blue-400 mt-0.5";
-            goalBarEl.className = "bg-blue-500 h-full transition-all duration-500";
-            goalBarEl.style.width = `100%`;
+            if (goalBaseBarEl) {
+                goalBaseBarEl.className = "absolute inset-0 h-full w-full bg-emerald-500 transition-colors duration-500";
+            }
+            goalBarEl.className = "relative h-full bg-blue-500 transition-all duration-500 rounded-full shadow-sm";
+            goalBarEl.style.width = `${tierPct}%`;
             goalIconWrapEl.className = "p-3.5 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 shrink-0";
         } else {
-            // Tier 4: > 300% -> MAX & Tím phát sáng (Purple Neon Glow Aura)
+            // Tier 4: > 300% -> Tím phát sáng (Purple Neon Glow) đè lên 100% Xanh dương (Blue) & MAX
+            const tierPct = Math.min(100, Math.max(10, weeklyGoalPct - 300));
             goalCardEl.classList.add('stat-max-purple-card');
             goalPctEl.classList.add('stat-max-purple-text');
-            goalBarEl.classList.add('stat-max-purple-bar');
             goalPctEl.innerText = `MAX (${weeklyGoalPct}%)`;
-            goalBarEl.style.width = `100%`;
+            if (goalBaseBarEl) {
+                goalBaseBarEl.className = "absolute inset-0 h-full w-full bg-blue-500 transition-colors duration-500";
+            }
+            goalBarEl.className = "relative h-full stat-max-purple-bar transition-all duration-500 rounded-full";
+            goalBarEl.style.width = `${tierPct}%`;
             goalIconWrapEl.className = "p-3.5 rounded-xl bg-purple-100 dark:bg-purple-950/80 text-purple-500 dark:text-purple-300 shrink-0";
             if (goalBadgeEl) {
                 goalBadgeEl.classList.remove('hidden');

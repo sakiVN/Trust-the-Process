@@ -58,8 +58,11 @@
           <span id="stat-weekly-goal-badge" class="hidden text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-purple-100 text-purple-700 dark:bg-purple-900/60 dark:text-purple-300">MAX</span>
         </div>
         <span id="stat-weekly-goal-pct" class="block text-2xl font-extrabold text-slate-800 dark:text-white mt-0.5">0%</span>
-        <div class="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
-          <div id="stat-weekly-goal-bar" class="bg-amber-500 h-full transition-all duration-500" style="width: 0%"></div>
+        <div id="stat-weekly-goal-track" class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full mt-2 overflow-hidden relative">
+          <!-- Base background tier layer (e.g. 100% Vàng or 100% Xanh lá or 100% Xanh dương) -->
+          <div id="stat-weekly-goal-base-bar" class="absolute inset-0 h-full w-full transition-colors duration-500 hidden"></div>
+          <!-- Overlay tier layer (e.g. 30% Xanh lá đè lên Vàng) -->
+          <div id="stat-weekly-goal-bar" class="relative h-full transition-all duration-500 rounded-full" style="width: 0%"></div>
         </div>
       </div>
     </div>
