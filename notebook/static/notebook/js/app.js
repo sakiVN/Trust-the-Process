@@ -1067,7 +1067,7 @@ function escapeHtml(value) {
 
 function normalizeQuizOption(option) {
     const value = String(option ?? '').trim();
-    return value.replace(/^[A-D]\.\s*/i, '').trim();
+    return value.replace(/^[A-D][\.\)\:\-\s]\s*/i, '').trim();
 }
 
 function formatQuizOption(option, optIdx) {
@@ -3093,6 +3093,15 @@ function openCreateModal(type) {
     const title = document.getElementById('modal-title');
     const subtitle = document.getElementById('modal-subtitle');
 
+    const labelTitle = document.getElementById('tool-label-title');
+    const labelText = document.getElementById('tool-label-text');
+    const labelNotebook = document.getElementById('tool-label-notebook');
+
+    // Reset default labels
+    if (labelTitle) labelTitle.innerText = "Chủ đề học tập";
+    if (labelText) labelText.innerText = "Nội dung chi tiết";
+    if (labelNotebook) labelNotebook.innerText = "Lưu vào Sổ tay (tùy chọn)";
+
     // Reset modal state
     document.getElementById('tool-form').reset();
     document.getElementById('tool-form').classList.remove('hidden');
@@ -3102,11 +3111,26 @@ function openCreateModal(type) {
     // Configure modal details based on selected tool
     const titleInput = document.getElementById('tool-input-title');
     const textInput = document.getElementById('tool-input-text');
+    
+    // Clear placeholders
+    titleInput.placeholder = "";
+    textInput.placeholder = "";
+
     if (type === 'quiz') {
         titleInput.classList.remove('hidden');
         textInput.classList.remove('hidden');
-        titleInput.placeholder = "Nhập chủ đề Quiz (Ví dụ: Lập trình Python, Lịch sử...)...";
-        textInput.placeholder = "Dán nội dung tài liệu hoặc ghi chú bổ sung (Tùy chọn)...";
+        
+        if (labelTitle) {
+            labelTitle.innerHTML = `
+                1. Chủ đề / テーマ / Topic <span class="text-slate-400 font-normal">(Nhập chủ đề bạn muốn kiểm tra - VD: Lập trình Python / テストしたいテーマを入力 - 例: Python基礎)</span>
+            `;
+        }
+        if (labelText) {
+            labelText.innerHTML = `
+                2. Tài liệu hoặc yêu cầu / 詳細・参考テキスト / Reference Text <span class="text-slate-400 font-normal">(Dán nội dung tài liệu học tập hoặc các yêu cầu cụ thể - Tùy chọn / クイズ作成の基となる参考テキストや指示を自由に入力 - 任意)</span>
+            `;
+        }
+        
         titleInput.value = '';
         textInput.value = '';
         titleInput.required = false;
@@ -3114,7 +3138,6 @@ function openCreateModal(type) {
     } else if (type === 'report') {
         titleInput.classList.add('hidden');
         textInput.classList.remove('hidden');
-        textInput.placeholder = "Dán nội dung tài liệu dài vào đây để hệ thống tự động tóm tắt...";
         textInput.value = '';
         titleInput.required = false;
         textInput.required = true;
@@ -3132,8 +3155,8 @@ function openCreateModal(type) {
         subtitle.innerText = 'Nhập chủ đề học tập để hệ thống sinh thẻ nhớ thông minh';
     } else if (type === 'quiz') {
         icon.innerText = '❓';
-        title.innerText = 'Tạo Câu hỏi trắc nghiệm (Gemini 3.6 Flash)';
-        subtitle.innerText = 'Nhập chủ đề hoặc tài liệu để AI Gemini sinh bộ câu hỏi trắc nghiệm kèm giải thích';
+        title.innerText = 'Tạo Câu hỏi trắc nghiệm';
+        subtitle.innerText = 'Nhập chủ đề hoặc tài liệu để AI sinh bộ câu hỏi trắc nghiệm kèm giải thích';
     } else if (type === 'report') {
         icon.innerText = '📝';
         title.innerText = 'Tạo Báo cáo tóm tắt';
@@ -3279,7 +3302,7 @@ function renderQuizJSONToHTML(contentStr, title) {
 
     let html = `<div class="text-left font-sans space-y-4 w-full max-w-2xl mx-auto">
         <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
-            <span class="text-xs font-bold text-brand-600 dark:text-brand-400">✨ Bộ câu hỏi Quiz (Gemini 3.6 Flash)</span>
+            <span class="text-xs font-bold text-brand-600 dark:text-brand-400">✨ Bộ câu hỏi Quiz</span>
             <span class="text-[10px] text-slate-400">Chủ đề: ${escapeHtml(title)}</span>
         </div>`;
 

@@ -9,18 +9,12 @@ GEMINI_API_KEY = getattr(settings, "GEMINI_API_KEY", "")
 
 def call_gemini_api(prompt, system_instruction="") -> str:
     """
-    Call Gemini API using urllib to avoid heavy library dependencies.
-    Tries gemini-3.6-flash first, with fallbacks if rate limits (HTTP 429) occur.
+    Call Gemini API using urllib with gemini-3.5-flash.
     """
     if not GEMINI_API_KEY:
         return ""
         
-    models_to_try = [
-        "gemini-3.6-flash",
-        "gemini-3.5-flash",
-        "gemini-3.5-flash-lite",
-        "gemini-flash-latest"
-    ]
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key={GEMINI_API_KEY}"
     
     payload = {
         "contents": [{
@@ -34,35 +28,25 @@ def call_gemini_api(prompt, system_instruction="") -> str:
         }
 
     headers = {"Content-Type": "application/json"}
-    last_error = ""
-
-    for model in models_to_try:
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={GEMINI_API_KEY}"
-        req = urllib.request.Request(url, data=json.dumps(payload).encode('utf-8'), headers=headers, method='POST')
-        
+    req = urllib.request.Request(url, data=json.dumps(payload).encode('utf-8'), headers=headers, method='POST')
+    
+    try:
+        with urllib.request.urlopen(req) as response:
+            res_data = json.loads(response.read().decode('utf-8'))
+            text = res_data['candidates'][0]['content']['parts'][0]['text']
+            return text
+    except urllib.error.HTTPError as e:
         try:
-            with urllib.request.urlopen(req) as response:
-                res_data = json.loads(response.read().decode('utf-8'))
-                text = res_data['candidates'][0]['content']['parts'][0]['text']
-                return text
-        except urllib.error.HTTPError as e:
-            try:
-                err_body = e.read().decode('utf-8')
-                err_json = json.loads(err_body)
-                err_msg = err_json.get('error', {}).get('message', str(e))
-                last_error = f"Gemini API Error: {err_msg}"
-                if e.code in [429, 404, 503]:
-                    continue
-                return last_error
-            except Exception:
-                last_error = f"Gemini API Error: {str(e)}"
-                continue
-        except urllib.error.URLError as e:
-            return f"Gemini API Connection Error: {str(e)}"
-        except Exception as e:
-            return f"Gemini API General Error: {str(e)}"
-
-    return last_error
+            err_body = e.read().decode('utf-8')
+            err_json = json.loads(err_body)
+            err_msg = err_json.get('error', {}).get('message', str(e))
+            return f"Gemini API Error: {err_msg}"
+        except Exception:
+            return f"Gemini API Error: {str(e)}"
+    except urllib.error.URLError as e:
+        return f"Gemini API Connection Error: {str(e)}"
+    except Exception as e:
+        return f"Gemini API General Error: {str(e)}"
 
 def generate_rebuttal(initial_content):
     """

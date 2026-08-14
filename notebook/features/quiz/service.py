@@ -3,13 +3,32 @@ import json
 
 def generate(sources_text, source_title=''):
     """
-    Generates a Quiz JSON array using Gemini 3.6 Flash API based on sources_text.
+    Generates a Quiz JSON array using Gemini 3.5 Flash API based on sources_text.
     Falls back to offline Q/A text regex parser or structured default if Gemini is unavailable or parsing fails.
     """
     from notebook.ai_service import call_gemini_api
 
+    # Detect language of the input to match Vietnamese, Japanese, or English
+    is_japanese = any(ord(char) >= 0x3000 and ord(char) <= 0x9FFF for char in (sources_text + source_title))
+    
+    # Simple check for English (mostly ASCII letters, ignoring standard punctuation and spacing)
+    # If it contains Vietnamese tonal marks or CJK characters, it's not English
+    has_vietnamese_marks = any(ord(char) in range(0x00C0, 0x1EF9) for char in (sources_text + source_title))
+    is_english = not is_japanese and not has_vietnamese_marks
+
+    if is_japanese:
+        lang_instruction = "BẮT BUỘC tạo câu hỏi và lời giải thích bằng Tiếng Nhật (Japanese)."
+        lang_prompt = "Hãy tạo 3 đến 5 câu hỏi trắc nghiệm (Quiz) chất lượng cao bằng Tiếng Nhật để giúp người học ôn tập."
+    elif is_english:
+        lang_instruction = "BẮT BUỘC tạo câu hỏi và lời giải thích bằng Tiếng Anh (English)."
+        lang_prompt = "Hãy tạo 3 đến 5 câu hỏi trắc nghiệm (Quiz) chất lượng cao bằng Tiếng Anh để giúp người học ôn tập."
+    else:
+        lang_instruction = "BẮT BUỘC tạo câu hỏi và lời giải thích bằng Tiếng Việt (Vietnamese)."
+        lang_prompt = "Hãy tạo 3 đến 5 câu hỏi trắc nghiệm (Quiz) chất lượng cao bằng Tiếng Việt để giúp người học ôn tập."
+
     system_instruction = (
         "Bạn là một chuyên gia thiết kế câu hỏi trắc nghiệm ôn tập (Quiz) từ tài liệu học tập. "
+        f"{lang_instruction} "
         "Hãy tạo các câu hỏi trắc nghiệm dưới dạng duy nhất một JSON array, không viết thêm bất kỳ lời chào hay giải thích nào."
     )
 
@@ -17,7 +36,7 @@ def generate(sources_text, source_title=''):
 
 {sources_text}
 
-Hãy tạo 3 đến 5 câu hỏi trắc nghiệm (Quiz) chất lượng cao bằng Tiếng Việt để giúp người học củng cố kiến thức.
+{lang_prompt}
 Yêu cầu cấu trúc từng câu hỏi:
 - "question": Câu hỏi rõ ràng, chính xác.
 - "options": Mảng 4 lựa chọn (A, B, C, D).
@@ -28,8 +47,8 @@ Yêu cầu cấu trúc từng câu hỏi:
 Định dạng JSON trả về BẮT BUỘC:
 [
   {{
-    "question": "Câu hỏi?",
-    "options": ["A. Lựa chọn 1", "B. Lựa chọn 2", "C. Lựa chọn 3", "D. Lựa chọn 4"],
+    "question": "Nội dung câu hỏi?",
+    "options": ["A. Lựa chọn A", "B. Lựa chọn B", "C. Lựa chọn C", "D. Lựa chọn D"],
     "correct_index": 0,
     "answer": "A",
     "explanation": "Giải thích..."
@@ -57,15 +76,15 @@ Chỉ trả về duy nhất chuỗi JSON Array."""
                     if not q_text or not isinstance(raw_opts, list) or len(raw_opts) < 2:
                         continue
                     
-                    # Ensure 4 options
+                    # Ensure 4 options and remove any leading option labels like "A.", "B.", "A)", etc.
                     clean_options = []
                     for idx, opt in enumerate(raw_opts[:4]):
                         opt_str = str(opt).strip()
                         letter = chr(65 + idx)
-                        if not opt_str.startswith(f"{letter}."):
-                            opt_str = re.sub(r'^[A-D]\.\s*', '', opt_str)
-                            opt_str = f"{letter}. {opt_str}"
-                        clean_options.append(opt_str)
+                        # Clean any existing prefixes: e.g. "A. Option", "A) Option", "A: Option"
+                        opt_str = re.sub(r'^[A-D][\.\)\:\-\s]\s*', '', opt_str)
+                        # Consistently prefix with letter
+                        clean_options.append(f"{letter}. {opt_str}")
                     
                     while len(clean_options) < 4:
                         letter = chr(65 + len(clean_options))
@@ -96,10 +115,10 @@ Chỉ trả về duy nhất chuỗi JSON Array."""
             print("Gemini Quiz parsing error:", e)
 
     # Fallback to offline regex parsing or default quiz
-    return _parse_offline_quiz_text(sources_text, source_title)
+    return _parse_offline_quiz_text(sources_text, source_title, is_japanese, is_english)
 
 
-def _parse_offline_quiz_text(sources_text, source_title=''):
+def _parse_offline_quiz_text(sources_text, source_title='', is_japanese=False, is_english=False):
     questions = []
     blocks = re.split(r'\nQ:\s+', '\n' + sources_text)
     
@@ -128,6 +147,8 @@ def _parse_offline_quiz_text(sources_text, source_title=''):
                 correct_index = i
                 opt = opt.replace('(*)', '').strip()
             letter = chr(65 + i)
+            # Strip potential leading letter label
+            opt = re.sub(r'^[A-D][\.\)\:\-\s]\s*', '', opt)
             clean_options.append(f"{letter}. {opt}")
             
         exp_match = re.search(r'\nEXP:\s*(.*)', block, re.DOTALL)
@@ -143,17 +164,44 @@ def _parse_offline_quiz_text(sources_text, source_title=''):
     
     if not questions:
         title_str = source_title or "Tài liệu học tập"
-        questions = [{
-            "question": f"Đâu là đặc trưng cơ bản nhất của chủ đề {title_str}?",
-            "options": [
-                "A. Nội dung phong phú, đa dạng",
-                "B. Xử lý tự động bằng AI Gemini 3.6 Flash",
-                "C. Hỗ trợ ghi nhớ và ôn tập kiến thức",
-                "D. Tất cả các phương án trên"
-            ],
-            "correct_index": 3,
-            "answer": "D",
-            "explanation": "Hệ thống AI Gemini 3.6 Flash tự động phân tích tài liệu để tạo các câu hỏi trắc nghiệm ôn tập kiến thức hiệu quả."
-        }]
+        if is_japanese:
+            questions = [{
+                "question": f"Đâu là đặc trưng cơ bản nhất của chủ đề {title_str}?",
+                "options": [
+                    "A. Nội dung phong phú, đa dạng",
+                    "B. Xử lý tự động bằng AI",
+                    "C. Hỗ trợ ghi nhớ và ôn tập kiến thức",
+                    "D. Tất cả các phương án trên"
+                ],
+                "correct_index": 3,
+                "answer": "D",
+                "explanation": "Hệ thống AI tự động phân tích tài liệu để tạo các câu hỏi trắc nghiệm ôn tập kiến thức hiệu quả."
+            }]
+        elif is_english:
+            questions = [{
+                "question": f"What is the most fundamental characteristic of {title_str}?",
+                "options": [
+                    "A. Rich and diverse content",
+                    "B. Automated AI processing",
+                    "C. Support for learning and review",
+                    "D. All of the above"
+                ],
+                "correct_index": 3,
+                "answer": "D",
+                "explanation": "The AI system automatically analyzes the materials to create effective quiz questions for review."
+            }]
+        else:
+            questions = [{
+                "question": f"Đâu là đặc trưng cơ bản nhất của chủ đề {title_str}?",
+                "options": [
+                    "A. Nội dung phong phú, đa dạng",
+                    "B. Xử lý tự động bằng AI",
+                    "C. Hỗ trợ ghi nhớ và ôn tập kiến thức",
+                    "D. Tất cả các phương án trên"
+                ],
+                "correct_index": 3,
+                "answer": "D",
+                "explanation": "Hệ thống AI tự động phân tích tài liệu để tạo các câu hỏi trắc nghiệm ôn tập kiến thức hiệu quả."
+            }]
         
     return json.dumps(questions, ensure_ascii=False)
