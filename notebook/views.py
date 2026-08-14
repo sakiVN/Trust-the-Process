@@ -88,10 +88,12 @@ class NotebookViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'], url_path='generate')
     def generate_material(self, request, pk=None):
         """
-        Generate study materials (quiz, flashcards, mind_map, etc.) based on all sources.
+        Generate study materials (quiz, flashcards, mind_map, etc.) based on notebook sources or user prompt.
         """
         notebook = self.get_object()
         generation_type = request.data.get('generation_type')
+        custom_text = request.data.get('custom_text', '').strip()
+        custom_title = request.data.get('custom_title', '').strip()
         
         valid_types = [t[0] for t in AIGeneration.GENERATION_TYPES]
         if not generation_type or generation_type not in valid_types:
@@ -100,21 +102,29 @@ class NotebookViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
             
-        # Collect sources specific to the requested generation type/category
+        sources_text = ""
+        first_title = custom_title or notebook.name
+        
+        if custom_title or custom_text:
+            sources_text += f"--- YÊU CẦU / CHỦ ĐỀ CỦA NGƯỜI DÙNG: {custom_title or 'Tổng hợp'} ---\nContent:\n{custom_text or custom_title}\n\n"
+            
+        # Collect sources specific to the requested generation type/category, falling back to all sources
         sources = notebook.sources.filter(category=generation_type)
         if not sources.exists():
+            sources = notebook.sources.all()
+            
+        for src in sources:
+            sources_text += f"--- SOURCE TITLE: {src.title} ---\nType: {src.source_type}\nContent:\n{src.content}\n\n"
+            if not custom_title and sources.first():
+                first_title = sources.first().title
+                
+        if not sources_text.strip():
             return Response(
-                {"error": f"Không tìm thấy tài liệu liên quan nào cho phần ôn tập này. Vui lòng tải tài liệu lên trước khi yêu cầu sinh nội dung!"},
+                {"error": f"Không tìm thấy tài liệu hay chủ đề nào trong Sổ tay này. Vui lòng nhập chủ đề hoặc tải tài liệu lên trước khi yêu cầu sinh nội dung!"},
                 status=status.HTTP_400_BAD_REQUEST
             )
             
-        # Build prompt context from filtered sources
-        sources_text = ""
-        for src in sources:
-            sources_text += f"--- SOURCE TITLE: {src.title} ---\nType: {src.source_type}\nContent:\n{src.content}\n\n"
-            
-        # Call AI generation service with source title for dynamic mock data
-        first_title = sources.first().title
+        # Call AI generation service
         ai_content = ai_service.generate_notebook_materials(sources_text, generation_type, first_title)
         
         # Save generation to DB

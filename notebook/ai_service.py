@@ -9,7 +9,7 @@ GEMINI_API_KEY = getattr(settings, "GEMINI_API_KEY", "")
 
 def call_gemini_api(prompt, system_instruction="") -> str:
     """
-    Call Gemini API using urllib to avoid heavy library dependencies.
+    Call Gemini API using urllib with gemini-3.5-flash.
     """
     if not GEMINI_API_KEY:
         return ""
