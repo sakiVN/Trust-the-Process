@@ -240,78 +240,193 @@
             `).join('');
         }
 
-        function selectQuizSet(quizId) {
-            if (!quizId) return;
-            openQuizPlayModal(quizId);
+        let currentQuizPlaying = null;
+        let currentQuizIsGeneration = false;
+        let currentQuizQuestionsList = [];
+        let currentQuizAnswers = {};
+
+        function safeEscapeHtml(value) {
+            if (typeof escapeHtml === 'function') {
+                try {
+                    return escapeHtml(value);
+                } catch (e) {}
+            }
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
         }
 
-        function openQuizPlayModal(quizId) {
+        function extractCorrectOption(rawAnswer, options = []) {
+            if (rawAnswer === undefined || rawAnswer === null) return 'A';
+            if (typeof rawAnswer === 'number') {
+                if (rawAnswer >= 0 && rawAnswer < 26) {
+                    return String.fromCharCode(65 + rawAnswer);
+                }
+                return 'A';
+            }
+            const str = String(rawAnswer).trim();
+            const letterMatch = str.match(/^(?:đáp án\s*)?([A-D])(?:\.|\:|\s|$)/i);
+            if (letterMatch) {
+                return letterMatch[1].toUpperCase();
+            }
+            if (Array.isArray(options) && options.length > 0) {
+                const cleanStr = normalizeQuizOption(str).toLowerCase();
+                for (let i = 0; i < options.length; i++) {
+                    if (normalizeQuizOption(options[i]).toLowerCase() === cleanStr) {
+                        return String.fromCharCode(65 + i);
+                    }
+                }
+            }
+            const firstChar = str.charAt(0).toUpperCase();
+            if (['A', 'B', 'C', 'D'].includes(firstChar)) {
+                return firstChar;
+            }
+            return 'A';
+        }
+
+        function selectQuizSet(quizId) {
             if (!quizId) return;
+            openQuizReviewModal(quizId);
+        }
+
+        async function openQuizPlayModal(quizId, isGeneration = false) {
+            if (!quizId) return;
+            if (typeof closeQuizReviewModal === 'function') closeQuizReviewModal();
+            if (typeof closeQuizBuilderModal === 'function') closeQuizBuilderModal();
+            if (typeof closeQuizGenerationEditorModal === 'function') closeQuizGenerationEditorModal();
+
             currentQuizPlaying = quizId;
             currentQuizAnswers = {};
+            currentQuizQuestionsList = [];
+
             const modal = document.getElementById('quiz-play-modal');
             const title = document.getElementById('quiz-play-title');
-            title.innerText = 'Làm bài trắc nghiệm';
+            if (title) title.innerText = 'Làm bài trắc nghiệm';
             const content = document.getElementById('quiz-play-content');
-            content.innerHTML = `
-                <div class="text-center py-12 text-slate-500 dark:text-slate-400 text-xs">Đang tải bài tập...</div>
-            `;
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+            if (content) {
+                content.innerHTML = `
+                    <div class="text-center py-12 text-slate-500 dark:text-slate-400 text-xs">Đang tải bài tập...</div>
+                `;
+            }
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
 
-            fetchWithCsrf(`${API_URL}/quizzes/${quizId}/shuffle/`, { method: 'POST' })
-                .then(async res => {
-                    if (!res.ok) {
-                        throw new Error('Không thể tải bài tập.');
+            let isGen = !!isGeneration;
+            let inMemoryGen = null;
+            if (typeof notebooks !== 'undefined' && Array.isArray(notebooks)) {
+                for (const nb of notebooks) {
+                    const found = (nb.generations || []).find(g => String(g.id) === String(quizId) && g.generation_type === 'quiz');
+                    if (found) {
+                        isGen = true;
+                        inMemoryGen = found;
+                        break;
                     }
-                    return res.json();
-                })
-                .then(questions => {
-                    if (!Array.isArray(questions) || questions.length === 0) {
+                }
+            }
+            currentQuizIsGeneration = isGen;
+
+            const loadGenerationQuiz = async (genId, genObj = null) => {
+                try {
+                    let generation = genObj;
+                    if (!generation) {
+                        const res = await fetch(`${API_URL}/generations/${genId}/`);
+                        if (!res.ok) throw new Error('Không thể tải bài tập AI.');
+                        generation = await res.json();
+                    }
+                    const parsed = parseQuizGenerationContent(generation.content);
+                    if (!parsed || !Array.isArray(parsed.questions) || parsed.questions.length === 0) {
                         content.innerHTML = `<div class="text-center py-12 text-slate-500 dark:text-slate-400 text-xs">Bài tập chưa có câu hỏi nào.</div>`;
                         return;
                     }
-                    currentQuizAnswers = {};
-                    renderQuizPlayContent(quizId, questions);
-                })
-                .catch(err => {
-                    console.error('Quiz play error:', err);
+                    currentQuizIsGeneration = true;
+                    const questions = parsed.questions;
+                    const shuffled = [...questions].sort(() => Math.random() - 0.5);
+                    currentQuizQuestionsList = shuffled;
+                    renderQuizPlayContent(genId, shuffled, parsed.title || 'Làm bài trắc nghiệm');
+                } catch (err) {
+                    console.error('Quiz play generation error:', err);
                     content.innerHTML = `<div class="text-center py-12 text-rose-500 dark:text-rose-400 text-xs">Không thể tải bài tập. Vui lòng thử lại.</div>`;
-                });
+                }
+            };
+
+            if (isGen) {
+                await loadGenerationQuiz(quizId, inMemoryGen);
+                return;
+            }
+
+            try {
+                const res = await fetchWithCsrf(`${API_URL}/quizzes/${quizId}/shuffle/`, { method: 'POST' });
+                if (!res.ok) {
+                    await loadGenerationQuiz(quizId);
+                    return;
+                }
+                const questions = await res.json();
+                if (!Array.isArray(questions) || questions.length === 0) {
+                    content.innerHTML = `<div class="text-center py-12 text-slate-500 dark:text-slate-400 text-xs">Bài tập chưa có câu hỏi nào.</div>`;
+                    return;
+                }
+                currentQuizQuestionsList = questions;
+                renderQuizPlayContent(quizId, questions);
+            } catch (err) {
+                console.error('Quiz play error, trying fallback:', err);
+                await loadGenerationQuiz(quizId);
+            }
         }
 
         function closeQuizPlayModal() {
             const modal = document.getElementById('quiz-play-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
             currentQuizPlaying = null;
+            currentQuizIsGeneration = false;
             currentQuizAnswers = {};
-            document.getElementById('quiz-play-content').innerHTML = '';
+            currentQuizQuestionsList = [];
+            const content = document.getElementById('quiz-play-content');
+            if (content) content.innerHTML = '';
         }
 
-        function renderQuizPlayContent(quizId, questions) {
+        function renderQuizPlayContent(quizId, questions, quizTitle = '') {
             const content = document.getElementById('quiz-play-content');
             if (!content) return;
+            const title = document.getElementById('quiz-play-title');
+            if (title && quizTitle) {
+                title.innerText = quizTitle;
+            }
+            currentQuizAnswers = {};
+
             const quizBlocks = questions.map((question, idx) => {
-                const qId = `quiz-play-${question.id}`;
-                const optionsHtml = question.options.map((opt, optIdx) => {
+                const qItemId = question.id !== undefined && question.id !== null ? question.id : (idx + 1);
+                const qId = `quiz-play-${qItemId}`;
+                const options = Array.isArray(question.options) ? question.options : [];
+                const correctOpt = (question.correct_option || 'A').toString().toUpperCase();
+                const explanationText = question.explanation || '';
+                
+                const optionsHtml = options.map((opt, optIdx) => {
                     const letter = String.fromCharCode(65 + optIdx);
                     return `
-                        <button type="button" onclick="selectQuizOption(${question.id}, '${letter}', '${question.correct_option.toUpperCase()}')" id="${qId}-opt-${optIdx}" class="w-full text-left bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3.5 py-2.5 rounded-xl text-[11px] text-slate-650 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition font-medium">
+                        <button type="button" onclick="selectQuizOption('${qItemId}', '${letter}', '${correctOpt}')" id="${qId}-opt-${optIdx}" class="w-full text-left bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3.5 py-2.5 rounded-xl text-[11px] text-slate-650 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition font-medium">
                             ${formatQuizOption(opt, optIdx)}
                         </button>
                     `;
                 }).join('');
+
                 return `
-                    <div class="quiz-question-card bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-3xl p-4 space-y-3">
+                    <div class="quiz-question-card bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-3xl p-4 space-y-3" data-question-id="${qItemId}" data-correct="${correctOpt}" data-explanation="${safeEscapeHtml(explanationText)}">
                         <div class="flex items-center justify-between gap-4">
                             <div>
                                 <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Câu ${idx + 1}</span>
-                                <p class="mt-2 text-sm font-semibold text-slate-900 dark:text-white">${question.question_text}</p>
+                                <p class="mt-2 text-sm font-semibold text-slate-900 dark:text-white">${safeEscapeHtml(question.question_text || '')}</p>
                             </div>
                             <span id="${qId}-status" class="text-[10px] font-bold uppercase tracking-wide text-slate-400"></span>
                         </div>
-                        <div id="${qId}-options" class="grid grid-cols-1 gap-2">${optionsHtml}</div>
+                        <div id="${qId}-options" class="grid grid-cols-1 sm:grid-cols-2 gap-2">${optionsHtml}</div>
                         <div id="${qId}-result" class="hidden text-[11px] font-bold p-3 rounded-xl"></div>
                         <div id="${qId}-explanation" class="hidden text-[10px] text-slate-500 dark:text-slate-400 italic bg-slate-100 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800"></div>
                     </div>
@@ -324,10 +439,13 @@
                     <div id="quiz-play-footer" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-4 text-sm text-slate-700 dark:text-slate-300">
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                             <div>
-                                <p class="font-semibold text-slate-900 dark:text-white">Chưa hoàn thành</p>
-                                <p class="text-[10px] text-slate-500 dark:text-slate-400">Hãy trả lời tất cả các câu hỏi để lưu lần làm bài.</p>
+                                <p id="quiz-play-status-label" class="font-semibold text-slate-900 dark:text-white">Chưa hoàn thành</p>
+                                <p id="quiz-play-status-desc" class="text-[10px] text-slate-500 dark:text-slate-400">Hãy trả lời tất cả các câu hỏi để lưu lần làm bài.</p>
                             </div>
-                            <button type="button" onclick="submitQuizAttempt()" class="inline-flex items-center justify-center bg-brand-600 hover:bg-brand-700 text-white font-semibold px-4 py-2 rounded-xl text-xs transition">Nộp bài và lưu kết quả</button>
+                            <div class="flex items-center gap-2">
+                                <button type="button" onclick="openQuizPlayModal(currentQuizPlaying, currentQuizIsGeneration)" class="px-3.5 py-2 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-semibold transition">Làm lại từ đầu</button>
+                                <button type="button" id="btn-submit-quiz-attempt" onclick="submitQuizAttempt()" class="inline-flex items-center justify-center bg-brand-600 hover:bg-brand-700 text-white font-semibold px-4 py-2 rounded-xl text-xs transition shadow-sm">Nộp bài và lưu kết quả</button>
+                            </div>
                         </div>
                         <div id="quiz-play-summary" class="mt-4 text-[10px] text-slate-500 dark:text-slate-400"></div>
                     </div>
@@ -337,6 +455,7 @@
 
         function selectQuizOption(questionId, selectedLetter, correctOption) {
             const qId = `quiz-play-${questionId}`;
+            const card = document.querySelector(`.quiz-question-card[data-question-id="${questionId}"]`);
             const buttons = document.querySelectorAll(`#${qId}-options button`);
             buttons.forEach(btn => {
                 btn.disabled = true;
@@ -346,10 +465,14 @@
             const selectedIdx = selectedLetter.charCodeAt(0) - 65;
             const selectedBtn = document.getElementById(`${qId}-opt-${selectedIdx}`);
             const isCorrect = selectedLetter.toUpperCase() === correctOption.toUpperCase();
-            if (isCorrect) {
-                selectedBtn.classList.add('bg-emerald-500/10', 'dark:bg-emerald-500/20', 'border-emerald-500', 'text-emerald-700', 'dark:text-emerald-400');
-            } else {
-                selectedBtn.classList.add('bg-rose-500/10', 'dark:bg-rose-500/20', 'border-rose-500', 'text-rose-700', 'dark:text-rose-400');
+            if (selectedBtn) {
+                if (isCorrect) {
+                    selectedBtn.classList.add('bg-emerald-500/10', 'dark:bg-emerald-500/20', 'border-emerald-500', 'text-emerald-700', 'dark:text-emerald-400');
+                } else {
+                    selectedBtn.classList.add('bg-rose-500/10', 'dark:bg-rose-500/20', 'border-rose-500', 'text-rose-700', 'dark:text-rose-400');
+                }
+            }
+            if (!isCorrect) {
                 buttons.forEach((btn, idx) => {
                     const letter = String.fromCharCode(65 + idx);
                     if (letter === correctOption.toUpperCase()) {
@@ -358,19 +481,30 @@
                 });
             }
 
+            const statusSpan = document.getElementById(`${qId}-status`);
+            if (statusSpan) {
+                statusSpan.innerText = isCorrect ? 'Đúng' : 'Sai';
+                statusSpan.className = `text-[10px] font-bold uppercase tracking-wide ${isCorrect ? 'text-emerald-600' : 'text-rose-500'}`;
+            }
+
             const resultDiv = document.getElementById(`${qId}-result`);
-            resultDiv.classList.remove('hidden');
-            if (isCorrect) {
-                resultDiv.className = 'text-[11px] font-bold p-3 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20';
-                resultDiv.innerText = '✓ Chính xác!';
-            } else {
-                resultDiv.className = 'text-[11px] font-bold p-3 rounded-xl bg-rose-500/10 dark:bg-rose-500/20 text-rose-700 dark:text-rose-400 border border-rose-500/20';
-                resultDiv.innerText = `✗ Chưa chính xác. Đáp án đúng là ${correctOption}.`;
+            if (resultDiv) {
+                resultDiv.classList.remove('hidden');
+                if (isCorrect) {
+                    resultDiv.className = 'text-[11px] font-bold p-3 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20';
+                    resultDiv.innerText = '✓ Chính xác!';
+                } else {
+                    resultDiv.className = 'text-[11px] font-bold p-3 rounded-xl bg-rose-500/10 dark:bg-rose-500/20 text-rose-700 dark:text-rose-400 border border-rose-500/20';
+                    resultDiv.innerText = `✗ Chưa chính xác. Đáp án đúng là ${correctOption}.`;
+                }
             }
 
             const explanationDiv = document.getElementById(`${qId}-explanation`);
-            explanationDiv.classList.remove('hidden');
-            explanationDiv.innerText = `Giải thích: ${isCorrect ? 'Bạn đã chọn đúng!' : 'Hãy đọc kỹ và thử lại ở bài tiếp theo.'}`;
+            const customExplanation = card?.dataset?.explanation;
+            if (explanationDiv) {
+                explanationDiv.classList.remove('hidden');
+                explanationDiv.innerText = customExplanation ? `Giải thích: ${customExplanation}` : `Giải thích: ${isCorrect ? 'Bạn đã chọn đúng đáp án!' : `Đáp án đúng là ${correctOption}. Hãy đọc kỹ và thử lại.`}`;
+            }
 
             currentQuizAnswers[String(questionId)] = selectedLetter.toUpperCase();
             const answeredCount = Object.keys(currentQuizAnswers).length;
@@ -379,6 +513,12 @@
             if (summary) {
                 summary.innerText = `Đã trả lời ${answeredCount} trong tổng số ${questionCount} câu hỏi.`;
             }
+            const statusLabel = document.getElementById('quiz-play-status-label');
+            const statusDesc = document.getElementById('quiz-play-status-desc');
+            if (statusLabel && statusDesc && answeredCount === questionCount) {
+                statusLabel.innerText = 'Đã trả lời xong';
+                statusDesc.innerText = 'Nhấn "Nộp bài và lưu kết quả" để xem điểm tổng kết.';
+            }
         }
 
         async function submitQuizAttempt() {
@@ -386,7 +526,48 @@
             const totalQuestions = document.querySelectorAll('#quiz-play-content .quiz-question-card').length;
             const answeredCount = Object.keys(currentQuizAnswers).length;
             if (answeredCount < totalQuestions) {
-                return alert('Vui lòng trả lời tất cả câu hỏi trước khi nộp bài.');
+                return alert('Vui lòng trả lời tất cả các câu hỏi trước khi nộp bài.');
+            }
+
+            const submitBtn = document.getElementById('btn-submit-quiz-attempt');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                submitBtn.innerText = 'Đang lưu kết quả...';
+            }
+
+            if (currentQuizIsGeneration) {
+                let score = 0;
+                const cards = document.querySelectorAll('#quiz-play-content .quiz-question-card');
+                cards.forEach(card => {
+                    const qId = card.getAttribute('data-question-id');
+                    const correct = (card.getAttribute('data-correct') || '').toUpperCase();
+                    const userAns = (currentQuizAnswers[String(qId)] || '').toUpperCase();
+                    if (userAns && userAns === correct) {
+                        score++;
+                    }
+                });
+                const total = totalQuestions;
+                const percentage = total > 0 ? Math.round((score / total) * 100) : 0;
+                
+                const footer = document.getElementById('quiz-play-footer');
+                if (footer) {
+                    footer.innerHTML = `
+                        <div class="space-y-4">
+                            <div class="p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-2xl">
+                                <p class="text-sm font-bold text-slate-900 dark:text-white">Kết quả: ${score}/${total} câu đúng</p>
+                                <p class="text-xs text-emerald-600 dark:text-emerald-400 font-semibold mt-1">Tỷ lệ chính xác: ${percentage}%</p>
+                                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Lần làm bài từ bộ câu hỏi AI đã hoàn tất.</p>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <button type="button" onclick="openQuizPlayModal(${currentQuizPlaying}, true)" class="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-4 py-2 rounded-xl text-xs transition shadow-sm">Làm lại bài này</button>
+                                <button type="button" onclick="closeQuizPlayModal(); openQuizReviewModal(${currentQuizPlaying});" class="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold px-4 py-2 rounded-xl text-xs transition">Xem lại tất cả đáp án</button>
+                                <button type="button" onclick="closeQuizPlayModal()" class="border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold px-4 py-2 rounded-xl text-xs transition">Đóng</button>
+                            </div>
+                        </div>
+                    `;
+                }
+                return;
             }
 
             try {
@@ -397,16 +578,28 @@
                 });
                 if (!res.ok) {
                     const err = await res.json();
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                        submitBtn.innerText = 'Nộp bài và lưu kết quả';
+                    }
                     return alert('Lỗi khi lưu kết quả: ' + JSON.stringify(err));
                 }
                 const data = await res.json();
-                const summary = document.getElementById('quiz-play-summary');
-                if (summary) {
-                    summary.innerHTML = `
-                        <div class="space-y-2">
-                            <p class="text-sm font-semibold text-slate-900 dark:text-white">Kết quả: ${data.score}/${data.total}</p>
-                            <p class="text-[11px] text-slate-500 dark:text-slate-400">Tỷ lệ chính xác: ${data.percentage}%</p>
-                            <p class="text-[10px] text-slate-500 dark:text-slate-400">Lần làm bài đã được lưu.</p>
+                const footer = document.getElementById('quiz-play-footer');
+                if (footer) {
+                    footer.innerHTML = `
+                        <div class="space-y-4">
+                            <div class="p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-2xl">
+                                <p class="text-sm font-bold text-slate-900 dark:text-white">Kết quả: ${data.score}/${data.total} câu đúng</p>
+                                <p class="text-xs text-emerald-600 dark:text-emerald-400 font-semibold mt-1">Tỷ lệ chính xác: ${data.percentage}%</p>
+                                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Lần làm bài đã được ghi nhận vào tiến trình học tập.</p>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <button type="button" onclick="openQuizPlayModal(${currentQuizPlaying}, false)" class="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-4 py-2 rounded-xl text-xs transition shadow-sm">Làm lại bài này</button>
+                                <button type="button" onclick="closeQuizPlayModal(); openQuizReviewModal(${currentQuizPlaying});" class="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold px-4 py-2 rounded-xl text-xs transition">Xem lại chi tiết</button>
+                                <button type="button" onclick="closeQuizPlayModal()" class="border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold px-4 py-2 rounded-xl text-xs transition">Đóng</button>
+                            </div>
                         </div>
                     `;
                 }
@@ -416,6 +609,11 @@
                 }
             } catch (err) {
                 console.error('Lỗi khi nộp quiz:', err);
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    submitBtn.innerText = 'Nộp bài và lưu kết quả';
+                }
                 alert('Đã xảy ra lỗi khi gửi kết quả.');
             }
         }
@@ -750,45 +948,107 @@
         function parseQuizGenerationContent(content) {
             if (!content) return null;
 
-            let raw = String(content).trim();
-            if (!raw) return null;
+            let parsed = null;
+            if (typeof content === 'object') {
+                parsed = content;
+            } else {
+                let raw = String(content).trim();
+                if (!raw) return null;
 
-            // Try parse JSON content first, including fenced code blocks.
-            try {
                 if (raw.startsWith('```')) {
-                    raw = raw.replace(/^```(?:json)?\s*/, '').replace(/```$/, '').trim();
+                    raw = raw.replace(/^```(?:json)?\s*/i, '').replace(/```$/i, '').trim();
                 }
-                const parsed = JSON.parse(raw);
-                if (Array.isArray(parsed) && parsed.length) {
-                    const questions = parsed.map((item) => ({
-                        question_text: item.question_text || item.question || '',
-                        options: Array.isArray(item.options) ? item.options : [],
-                        correct_option: (item.correct_option || item.answer || (typeof item.correct_index === 'number' ? String.fromCharCode(65 + item.correct_index) : 'A')).toString().toUpperCase(),
-                        explanation: item.explanation || item.explanation || ''
-                    }));
+
+                try {
+                    parsed = JSON.parse(raw);
+                } catch (err) {
+                    const jsonMatch = raw.match(/(\[[\s\S]*\]|\{[\s\S]*\})/);
+                    if (jsonMatch) {
+                        try {
+                            parsed = JSON.parse(jsonMatch[1]);
+                        } catch (e2) {
+                            parsed = null;
+                        }
+                    }
+                }
+            }
+
+            let rawQuestions = [];
+            let quizTitle = 'Bộ câu hỏi đã lưu';
+            let quizDesc = 'Đã lưu từ tài nguyên học tập.';
+
+            if (parsed) {
+                if (Array.isArray(parsed)) {
+                    rawQuestions = parsed;
+                } else if (typeof parsed === 'object') {
+                    if (parsed.title || parsed.topic) quizTitle = parsed.title || parsed.topic;
+                    if (parsed.description) quizDesc = parsed.description;
+
+                    if (Array.isArray(parsed.questions)) {
+                        rawQuestions = parsed.questions;
+                    } else if (Array.isArray(parsed.quiz)) {
+                        rawQuestions = parsed.quiz;
+                    } else if (Array.isArray(parsed.items)) {
+                        rawQuestions = parsed.items;
+                    } else if (Array.isArray(parsed.cards)) {
+                        rawQuestions = parsed.cards;
+                    }
+                }
+            }
+
+            if (rawQuestions && rawQuestions.length > 0) {
+                const questions = rawQuestions.map((item, idx) => {
+                    const qText = item.question_text || item.question || item.title || `Câu hỏi ${idx + 1}`;
+                    let opts = [];
+                    if (Array.isArray(item.options)) {
+                        opts = item.options.map(opt => normalizeQuizOption(opt));
+                    } else if (typeof item.options === 'object' && item.options !== null) {
+                        opts = ['A', 'B', 'C', 'D'].map(k => normalizeQuizOption(item.options[k] || ''));
+                    }
+                    opts = opts.filter(Boolean);
+                    if (opts.length === 0) {
+                        opts = ['Đáp án A', 'Đáp án B', 'Đáp án C', 'Đáp án D'];
+                    }
+
+                    const rawAns = item.correct_option !== undefined ? item.correct_option : (item.answer !== undefined ? item.answer : (item.correctAnswer !== undefined ? item.correctAnswer : (item.correct_index !== undefined ? item.correct_index : 'A')));
+                    const correctOpt = extractCorrectOption(rawAns, opts);
+                    const expl = item.explanation || item.explain || item.desc || '';
+
                     return {
-                        title: 'Bộ câu hỏi đã lưu',
-                        description: 'Đã lưu từ tài nguyên học tập.',
+                        id: idx + 1,
+                        question_text: qText,
+                        options: opts,
+                        correct_option: correctOpt,
+                        explanation: expl
+                    };
+                }).filter(q => q.question_text && q.options.length > 0);
+
+                if (questions.length > 0) {
+                    return {
+                        title: quizTitle,
+                        description: quizDesc,
                         questions
                     };
                 }
-            } catch (err) {
-                // Ignore JSON parse errors and fall back to plain text parsing.
             }
 
-            const text = raw.replace(/\r\n/g, '\n');
+            const text = String(content).replace(/\r\n/g, '\n');
             const cleaned = text.replace(/^\s*🏷️\s*Chủ đề:\s*.*?\n?/i, '').trim();
-            if (!cleaned) return null;
-            return {
-                title: 'Bộ câu hỏi đã lưu',
-                description: 'Đã lưu từ tài nguyên học tập.',
-                questions: [{
-                    question_text: cleaned,
-                    options: ['A. Xem thêm nội dung', 'B. Xem thêm nội dung', 'C. Xem thêm nội dung', 'D. Xem thêm nội dung'],
-                    correct_option: 'A',
-                    explanation: cleaned
-                }]
-            };
+            if (cleaned) {
+                return {
+                    title: quizTitle,
+                    description: quizDesc,
+                    questions: [{
+                        id: 1,
+                        question_text: cleaned,
+                        options: ['Xem thêm nội dung', 'Tùy chọn B', 'Tùy chọn C', 'Tùy chọn D'],
+                        correct_option: 'A',
+                        explanation: cleaned
+                    }]
+                };
+            }
+
+            return null;
         }
 
         function renderQuizGenerationEditorForm(questions) {
@@ -934,13 +1194,19 @@
 
         async function openQuizReviewModal(quizId) {
             if (!quizId) return;
+            if (typeof closeQuizPlayModal === 'function') closeQuizPlayModal();
+            if (typeof closeQuizBuilderModal === 'function') closeQuizBuilderModal();
+            if (typeof closeQuizGenerationEditorModal === 'function') closeQuizGenerationEditorModal();
+
             const modal = document.getElementById('quiz-review-modal');
             const content = document.getElementById('quiz-review-content');
             const title = document.getElementById('quiz-review-title');
-            title.innerText = 'Xem lại bộ câu hỏi';
-            content.innerHTML = '<div class="text-center py-12 text-slate-500 dark:text-slate-400 text-xs">Đang tải nội dung câu hỏi...</div>';
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+            if (title) title.innerText = 'Xem lại bộ câu hỏi';
+            if (content) content.innerHTML = '<div class="text-center py-12 text-slate-500 dark:text-slate-400 text-xs">Đang tải nội dung câu hỏi...</div>';
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
 
             try {
                 let quiz = null;
@@ -956,16 +1222,19 @@
                         content.innerHTML = '<div class="text-center py-12 text-slate-500 dark:text-slate-400 text-xs">Bộ câu hỏi này chưa có nội dung nào.</div>';
                         return;
                     }
-                    title.innerText = generation.generation_type === 'quiz' ? 'Xem lại bộ câu hỏi đã lưu' : 'Xem lại tài liệu';
+                    if (title) title.innerText = generation.generation_type === 'quiz' ? 'Xem lại bộ câu hỏi đã lưu' : 'Xem lại tài liệu';
                     content.innerHTML = `
                         <div class="space-y-4">
                             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-4">
                                 <div>
-                                    <p class="text-[10px] uppercase tracking-wider font-bold text-slate-500">Bộ câu hỏi</p>
+                                    <p class="text-[10px] uppercase tracking-wider font-bold text-slate-500">Bộ câu hỏi AI</p>
                                     <h4 class="font-bold text-slate-900 dark:text-white text-base mt-1">${fallback.title}</h4>
                                     <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1">${fallback.description}</p>
                                 </div>
-                                <button onclick="openQuizGenerationEditorModal(${quizId})" class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-3 py-2 rounded-xl text-[10px] font-semibold transition hover:bg-slate-200 dark:hover:bg-slate-700">Sửa câu hỏi</button>
+                                <div class="flex items-center gap-2">
+                                    <button onclick="closeQuizReviewModal(); openQuizPlayModal(${quizId}, true);" class="bg-brand-600 hover:bg-brand-700 text-white px-3.5 py-2 rounded-xl text-xs font-semibold transition shadow-sm">Làm bài lại</button>
+                                    <button onclick="closeQuizReviewModal(); openQuizGenerationEditorModal(${quizId});" class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-3.5 py-2 rounded-xl text-xs font-semibold transition hover:bg-slate-200 dark:hover:bg-slate-700">Sửa câu hỏi</button>
+                                </div>
                             </div>
                             ${fallback.questions.map((question, idx) => {
                                 const options = Array.isArray(question.options) ? question.options : [];
@@ -1000,7 +1269,7 @@
                     return;
                 }
 
-                title.innerText = quiz.name || 'Xem lại bộ câu hỏi';
+                if (title) title.innerText = quiz.name || 'Xem lại bộ câu hỏi';
                 content.innerHTML = `
                     <div class="space-y-4">
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-4">
@@ -1009,9 +1278,9 @@
                                 <h4 class="font-bold text-slate-900 dark:text-white text-base mt-1">${quiz.name || 'Bộ câu hỏi'}</h4>
                                 <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1">${quiz.description || 'Không có mô tả'}</p>
                             </div>
-                            <div class="flex gap-2">
-                                <button onclick="openQuizPlayModal(${quiz.id})" class="bg-brand-600 hover:bg-brand-700 text-white px-3 py-2 rounded-xl text-[10px] font-semibold transition">Làm lại</button>
-                                <button onclick="openQuizBuilderModal(${quiz.id})" class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-3 py-2 rounded-xl text-[10px] font-semibold transition hover:bg-slate-200 dark:hover:bg-slate-700">Sửa câu hỏi</button>
+                            <div class="flex items-center gap-2">
+                                <button onclick="closeQuizReviewModal(); openQuizPlayModal(${quiz.id}, false);" class="bg-brand-600 hover:bg-brand-700 text-white px-3.5 py-2 rounded-xl text-xs font-semibold transition shadow-sm">Làm bài lại</button>
+                                <button onclick="closeQuizReviewModal(); openQuizBuilderModal(${quiz.id});" class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-3.5 py-2 rounded-xl text-xs font-semibold transition hover:bg-slate-200 dark:hover:bg-slate-700">Sửa câu hỏi</button>
                             </div>
                         </div>
                         ${questions.map((question, idx) => {
@@ -1046,9 +1315,16 @@
 
         function closeQuizReviewModal() {
             const modal = document.getElementById('quiz-review-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            document.getElementById('quiz-review-content').innerHTML = '';
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+            const content = document.getElementById('quiz-review-content');
+            if (content) content.innerHTML = '';
+        }
+
+        function openQuizGenerationReviewModal(materialId) {
+            openQuizReviewModal(materialId);
         }
 
         function normalizeQuizOption(option) {
@@ -1061,4 +1337,20 @@
             const letter = String.fromCharCode(65 + optIdx);
             return `${letter}. ${cleanText}`;
         }
+
+        // Global exports for inline HTML event handlers
+        window.openQuizPlayModal = openQuizPlayModal;
+        window.closeQuizPlayModal = closeQuizPlayModal;
+        window.openQuizReviewModal = openQuizReviewModal;
+        window.closeQuizReviewModal = closeQuizReviewModal;
+        window.openQuizGenerationReviewModal = openQuizGenerationReviewModal;
+        window.openQuizBuilderModal = openQuizBuilderModal;
+        window.closeQuizBuilderModal = closeQuizBuilderModal;
+        window.openQuizGenerationEditorModal = openQuizGenerationEditorModal;
+        window.closeQuizGenerationEditorModal = closeQuizGenerationEditorModal;
+        window.selectQuizSet = selectQuizSet;
+        window.selectQuizOption = selectQuizOption;
+        window.selectQuizReviewOption = selectQuizReviewOption;
+        window.submitQuizAttempt = submitQuizAttempt;
+
 

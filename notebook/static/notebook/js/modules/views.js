@@ -120,8 +120,8 @@ function renderStudyMaterialsView() {
         if (isQuiz) {
             actionButton = `
                 <div class="flex items-center gap-2">
-                    <button onclick="openQuizBuilderModal(${item.id})" class="text-xs bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold px-3 py-1.5 rounded-xl transition">${t('key_btn_view_edit', 'Xem & Sửa')}</button>
-                    <button onclick="openQuizPlayModal(${item.id})" class="text-xs bg-brand-600 hover:bg-brand-700 text-white font-semibold px-3.5 py-1.5 rounded-xl transition shadow-sm">${t('key_btn_practice', 'Làm bài')}</button>
+                    <button onclick="openQuizReviewModal(${item.id})" class="text-xs bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold px-3 py-1.5 rounded-xl transition">${t('key_btn_view_edit', 'Xem & Sửa')}</button>
+                    <button onclick="openQuizPlayModal(${item.id}, false)" class="text-xs bg-brand-600 hover:bg-brand-700 text-white font-semibold px-3.5 py-1.5 rounded-xl transition shadow-sm">${t('key_btn_practice', 'Làm bài')}</button>
                 </div>
             `;
         } else if (item.generation_type === 'flashcards') {
@@ -135,7 +135,7 @@ function renderStudyMaterialsView() {
             actionButton = `
                 <div class="flex items-center gap-2">
                     <button onclick="openQuizGenerationEditorModal(${item.id})" class="text-xs bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold px-3 py-1.5 rounded-xl transition">${t('key_btn_view_edit', 'Xem & Sửa')}</button>
-                    <button onclick="openQuizGenerationReviewModal(${item.id})" class="text-xs bg-brand-600 hover:bg-brand-700 text-white font-semibold px-3.5 py-1.5 rounded-xl transition shadow-sm">${t('key_btn_practice', 'Thực hành')}</button>
+                    <button onclick="openQuizPlayModal(${item.id}, true)" class="text-xs bg-brand-600 hover:bg-brand-700 text-white font-semibold px-3.5 py-1.5 rounded-xl transition shadow-sm">${t('key_btn_practice', 'Làm bài')}</button>
                 </div>
             `;
         } else if (item.generation_type === 'mind_map') {

@@ -108,70 +108,99 @@
                     let renderedContent = '';
                     if (gen.generation_type === 'quiz' || gen.generation_type === 'flashcards') {
                         try {
-                            let cleanContent = gen.content.trim();
-                            if (cleanContent.startsWith("```")) {
-                                cleanContent = cleanContent.replace(/^```(?:json)?/, "");
-                                cleanContent = cleanContent.replace(/```$/, "");
-                                cleanContent = cleanContent.trim();
-                            }
-                            const items = JSON.parse(cleanContent);
-                            if (gen.generation_type === 'quiz') {
-                                renderedContent = items.map((q, idx) => {
+                            if (gen.isQuizSet && Array.isArray(gen.questions)) {
+                                renderedContent = gen.questions.map((q, idx) => {
                                     const qId = `quiz-${gen.id}-${idx}`;
+                                    const options = Array.isArray(q.options) ? q.options : [];
+                                    const correctOpt = (q.correct_option || 'A').toUpperCase();
                                     return `
                                     <div class="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-xl p-4 space-y-3 text-left">
-                                        <div class="font-bold text-slate-850 dark:text-slate-200 text-xs">Câu ${idx + 1}: ${q.question}</div>
+                                        <div class="font-bold text-slate-850 dark:text-slate-200 text-xs">Câu ${idx + 1}: ${q.question_text || ''}</div>
                                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2" id="${qId}-options">
-                                            ${q.options.map((opt, optIdx) => {
-                                                const letter = String.fromCharCode(65 + optIdx); // A, B, C, D
+                                            ${options.map((opt, optIdx) => {
+                                                const letter = String.fromCharCode(65 + optIdx);
                                                 return `
-                                                <button onclick="checkQuizAnswer('${qId}', '${letter}', '${q.answer}', ${optIdx})" id="${qId}-opt-${optIdx}" class="w-full text-left bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3.5 py-2.5 rounded-xl text-[11px] text-slate-650 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition font-medium">
-                                                    ${opt}
+                                                <button onclick="checkQuizAnswer('${qId}', '${letter}', '${correctOpt}', ${optIdx})" id="${qId}-opt-${optIdx}" class="w-full text-left bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3.5 py-2.5 rounded-xl text-[11px] text-slate-650 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition font-medium">
+                                                    ${typeof formatQuizOption === 'function' ? formatQuizOption(opt, optIdx) : opt}
                                                 </button>
                                                 `;
                                             }).join('')}
                                         </div>
                                         <div id="${qId}-result" class="hidden text-[11px] font-bold p-3 rounded-xl"></div>
                                         <div id="${qId}-explanation" class="hidden text-[10px] text-slate-500 dark:text-slate-400 italic bg-slate-100 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
-                                            Giải thích: ${q.explanation}
+                                            Giải thích: ${q.explanation || 'Không có giải thích'}
                                         </div>
                                     </div>
                                     `;
                                 }).join('');
-                            } else {
-                                renderedContent = items.map((f,idx) =>`
-                                    <div class="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-xl p-6 text-center">
-                                        <div id="front-${gen.id}-${idx}">
-                                            <div class = "text-[10px] font-bold text-slate-400 uppercase mb-3">
-                                                Question
+                            } else if (gen.content) {
+                                let cleanContent = String(gen.content).trim();
+                                if (cleanContent.startsWith("```")) {
+                                    cleanContent = cleanContent.replace(/^```(?:json)?/, "");
+                                    cleanContent = cleanContent.replace(/```$/, "");
+                                    cleanContent = cleanContent.trim();
+                                }
+                                const items = JSON.parse(cleanContent);
+                                if (gen.generation_type === 'quiz') {
+                                    renderedContent = items.map((q, idx) => {
+                                        const qId = `quiz-${gen.id}-${idx}`;
+                                        const options = Array.isArray(q.options) ? q.options : [];
+                                        const correctOpt = (q.answer || q.correct_option || 'A').toUpperCase();
+                                        return `
+                                        <div class="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-xl p-4 space-y-3 text-left">
+                                            <div class="font-bold text-slate-850 dark:text-slate-200 text-xs">Câu ${idx + 1}: ${q.question || q.question_text || ''}</div>
+                                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2" id="${qId}-options">
+                                                ${options.map((opt, optIdx) => {
+                                                    const letter = String.fromCharCode(65 + optIdx);
+                                                    return `
+                                                    <button onclick="checkQuizAnswer('${qId}', '${letter}', '${correctOpt}', ${optIdx})" id="${qId}-opt-${optIdx}" class="w-full text-left bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3.5 py-2.5 rounded-xl text-[11px] text-slate-650 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition font-medium">
+                                                        ${typeof formatQuizOption === 'function' ? formatQuizOption(opt, optIdx) : opt}
+                                                    </button>
+                                                    `;
+                                                }).join('')}
                                             </div>
-                                        
-                                            <div class = "text-sm font-bold text-slate-800 dark:text-slate-200">
-                                                ${f.question}
+                                            <div id="${qId}-result" class="hidden text-[11px] font-bold p-3 rounded-xl"></div>
+                                            <div id="${qId}-explanation" class="hidden text-[10px] text-slate-500 dark:text-slate-400 italic bg-slate-100 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
+                                                Giải thích: ${q.explanation || 'Không có giải thích'}
                                             </div>
                                         </div>
-
-                                        <div id = "back-${gen.id}-${idx}" class ="hidden">
-                                            <div class = "text-[10px] font-bold text-brand-500 uppercase mb-3">
-                                                Answer
+                                        `;
+                                    }).join('');
+                                } else {
+                                    renderedContent = items.map((f,idx) =>`
+                                        <div class="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-xl p-6 text-center">
+                                            <div id="front-${gen.id}-${idx}">
+                                                <div class = "text-[10px] font-bold text-slate-400 uppercase mb-3">
+                                                    Question
+                                                </div>
+                                            
+                                                <div class = "text-sm font-bold text-slate-800 dark:text-slate-200">
+                                                    ${f.question}
+                                                </div>
                                             </div>
 
-                                            <div class = "text-sm text-slate-700 dark:text-slate-300">
-                                                ${f.answer}
+                                            <div id = "back-${gen.id}-${idx}" class ="hidden">
+                                                <div class = "text-[10px] font-bold text-brand-500 uppercase mb-3">
+                                                    Answer
+                                                </div>
+
+                                                <div class = "text-sm text-slate-700 dark:text-slate-300">
+                                                    ${f.answer}
+                                                </div>
                                             </div>
+
+                                            <button
+                                                onclick="flipCard('${gen.id}-${idx}')"
+                                                class = "mt-4 bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-xl text-xs font-bold"
+                                            >
+                                                flip
+                                            </button>
                                         </div>
-
-                                        <button
-                                            onclick="flipCard('${gen.id}-${idx}')"
-                                            class = "mt-4 bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-xl text-xs font-bold"
-                                        >
-                                            flip
-                                        </button>
-                                    </div>
-                                `).join('');
+                                    `).join('');
+                                }
                             }
                         } catch (e) {
-                            renderedContent = `<pre class="text-[11px] bg-slate-900 text-brand-400 p-4 rounded-xl overflow-auto whitespace-pre-wrap text-left">${gen.content}</pre>`;
+                            renderedContent = `<pre class="text-[11px] bg-slate-900 text-brand-400 p-4 rounded-xl overflow-auto whitespace-pre-wrap text-left">${gen.content || ''}</pre>`;
                         }
                     } else {
                         if (gen.generation_type === 'mind_map' && gen.content.includes("mindmap")) {
