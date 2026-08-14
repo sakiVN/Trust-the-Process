@@ -22,8 +22,10 @@
             container.innerHTML = allSources.map(src => {
                 const docIcon = src.type === 'quiz' ? '/static/notebook/icon-set/quiz.png' : '/static/notebook/icon-set/upload.png';
                 const labelText = src.type === 'quiz' ? 'Bài tập trắc nghiệm' : (src.source_type === 'file' ? 'File PDF' : (src.source_type === 'link' ? 'Link' : 'Văn bản'));
+                const clickHandler = src.type === 'quiz' ? `openQuizPlayModal(${src.id})` : `openDocumentModal(${src.id})`;
+                
                 return `
-                <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-3 hover:scale-[1.01] hover:shadow-md transition">
+                <div onclick="${clickHandler}" class="cursor-pointer bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-3 hover:scale-[1.01] hover:shadow-md transition hover:border-brand-300 dark:hover:border-brand-700">
                     <div class="flex justify-between items-start gap-3">
                         <div class="min-w-0">
                             <span class="inline-flex items-center gap-1.5 text-[9px] uppercase tracking-wider font-bold px-2.5 py-0.5 rounded-full ${src.type === 'quiz' ? 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' : (src.source_type === 'link' ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300')}">
@@ -33,13 +35,14 @@
                             <h4 class="font-bold text-slate-850 dark:text-white text-sm mt-2 truncate">${src.type === 'quiz' ? src.name : src.title}</h4>
                         </div>
                         <div class="flex items-center space-x-2 shrink-0">
-                            <button onclick="switchView('notebooks'); selectNotebook(${src.notebookId});" class="text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-slate-600 dark:text-slate-350 hover:bg-slate-100 font-semibold">Xem Sổ tay</button>
-                            ${src.type === 'quiz' ? `<button onclick="openQuizPlayModal(${src.id})" class="text-xs bg-brand-600 hover:bg-brand-700 text-white px-2.5 py-1.5 rounded-xl font-semibold transition">Làm bài</button>` : `<button onclick="deleteSource(${src.id})" class="p-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-500 transition" title="Xóa tài liệu">
+                            ${src.type !== 'quiz' ? `<button onclick="event.stopPropagation(); openDocumentModal(${src.id});" class="text-xs bg-brand-500 hover:bg-brand-600 text-white rounded-xl px-3 py-1.5 font-bold transition shadow-sm flex items-center space-x-1"><span>📖</span> <span>Đọc ngay</span></button>` : ''}
+                            <button onclick="event.stopPropagation(); switchView('notebooks'); selectNotebook(${src.notebookId});" class="text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-slate-600 dark:text-slate-350 hover:bg-slate-100 font-semibold transition opacity-80 hover:opacity-100">Sổ tay</button>
+                            ${src.type === 'quiz' ? `<button onclick="event.stopPropagation(); openQuizPlayModal(${src.id})" class="text-xs bg-brand-600 hover:bg-brand-700 text-white px-2.5 py-1.5 rounded-xl font-semibold transition">Làm bài</button>` : `<button onclick="event.stopPropagation(); deleteSource(${src.id})" class="p-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-500 transition opacity-80 hover:opacity-100" title="Xóa tài liệu">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                             </button>`}
                         </div>
                     </div>
-                    ${src.type === 'quiz' ? `<p class="text-[10px] text-slate-500 dark:text-slate-400 line-clamp-3 bg-slate-50 dark:bg-slate-900/40 p-3 rounded-xl border border-slate-100 dark:border-slate-800">${src.description || 'Bộ câu hỏi trắc nghiệm đã lưu.'}</p>` : `${src.file_path ? `<a href="${src.file_path}" target="_blank" class="text-[10px] text-brand-500 hover:underline truncate block mt-1 flex items-center space-x-1"><img src="/static/notebook/icon-set/upload.png" class="w-3.5 h-3.5 object-contain" /><span>Tải xuống file PDF</span></a>` : ''}
+                    ${src.type === 'quiz' ? `<p class="text-[10px] text-slate-500 dark:text-slate-400 line-clamp-3 bg-slate-50 dark:bg-slate-900/40 p-3 rounded-xl border border-slate-100 dark:border-slate-800">${src.description || 'Bộ câu hỏi trắc nghiệm đã lưu.'}</p>` : `${src.file_path ? `<a href="${src.file_path}" target="_blank" onclick="event.stopPropagation()" class="text-[10px] text-brand-500 hover:underline truncate block mt-1 flex items-center space-x-1"><img src="/static/notebook/icon-set/upload.png" class="w-3.5 h-3.5 object-contain" /><span>Tải xuống file PDF</span></a>` : ''}
                     <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-3 bg-slate-50 dark:bg-slate-900/40 p-3 rounded-xl border border-slate-100 dark:border-slate-800">${src.content}</p>`}
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center text-[10px] text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-800 gap-2">
                         <span>Sổ tay: <strong>${src.notebookName}</strong></span>
@@ -109,7 +112,9 @@
                             summary = 'Tài liệu học tập đã lưu.';
                         }
                     } else if (item.generation_type === 'mind_map') {
-                        summary = 'Sơ đồ tư duy trực quan (Mermaid).';
+                        summary = 'Sơ đồ tư duy trực quan (Mermaid). Nhấn "Xem Mindmap" để mở và chỉnh sửa.';
+                    } else if (item.generation_type === 'report') {
+                        summary = String(item.content).replace(/<[^>]*>/g, '').replace(/&quot;/g, '"').replace(/&#39;/g, "'").slice(0, 180) + '...';
                     } else {
                         summary = String(item.content).replace(/<[^>]*>/g, '').slice(0, 180);
                     }
@@ -138,6 +143,12 @@
                                     <button onclick="openQuizReviewModal(${item.id})" class="text-xs bg-brand-600 hover:bg-brand-700 text-white px-2.5 py-1.5 rounded-xl font-semibold transition">Xem lại</button>
                                     <button onclick="openQuizGenerationEditorModal(${item.id})" class="text-xs bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1.5 rounded-xl font-semibold transition">Sửa</button>
                                 ` : ``}
+                                ${!isQuiz && item.generation_type === 'report' ? `
+                                    <button onclick="openReportReviewModal(${item.id})" class="text-xs bg-brand-600 hover:bg-brand-700 text-white px-3 py-1.5 rounded-xl font-semibold transition flex items-center space-x-1"><span>📑</span> <span>Xem báo cáo</span></button>
+                                ` : ``}
+                                ${!isQuiz && item.generation_type === 'mind_map' ? `
+                                    <button onclick="openMindmapReviewModal(${item.id})" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-xl font-semibold transition flex items-center space-x-1"><span>🧠</span> <span>Xem Mindmap</span></button>
+                                ` : ``}
                                 ${item.notebookId ? `<button onclick="switchView('notebooks'); selectNotebook(${item.notebookId});" class="text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-slate-600 dark:text-slate-350 hover:bg-slate-100 font-semibold">Xem Sổ tay</button>` : ''}
                             </div>
                         </div>
@@ -154,6 +165,7 @@
                 `;
             }).join('');
         }
+
 
         function renderAllNotesView() {
             const container = document.getElementById('all-notes-list');

@@ -24,4 +24,7 @@
         let currentFlashcardEditorCards = [];
         let currentQuizGenerationEditingId = null;
         let currentQuizGenerationEditorQuestions = [];
+        let jmInstances = {};
+        let activeToolType = 'flashcards';
         // CSRF Token helper function
+

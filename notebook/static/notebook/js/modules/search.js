@@ -97,21 +97,77 @@ function renderGlobalSearchResults(query) {
         popup.innerHTML = '';
         return;
     }
+
+    const normalizedQuery = query.toLowerCase();
+    const items = getGlobalSearchItems().filter(item => {
+        return (item.title && item.title.toLowerCase().includes(normalizedQuery))
+            || (item.subtitle && item.subtitle.toLowerCase().includes(normalizedQuery))
+            || (item.tag && item.tag.toLowerCase().includes(normalizedQuery))
+            || (item.notebookName && item.notebookName.toLowerCase().includes(normalizedQuery));
+    });
+
+    if (items.length === 0) {
+        popup.innerHTML = `<div class="p-4 text-xs text-slate-500 dark:text-slate-400 text-center">Không tìm thấy kết quả nào cho "${escapeHtml(query)}"</div>`;
+        popup.classList.remove('hidden');
+        return;
+    }
+
+    const maxResults = 8;
+    popup.innerHTML = items.slice(0, maxResults).map(item => `
+        <button type="button" onclick="navigateSearchResult('${item.type}', '${item.id}', '${item.notebookId || ''}')" class="w-full text-left px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition border-b border-slate-100 dark:border-slate-800/50 last:border-0">
+            <div class="flex items-center justify-between gap-3">
+                <div class="min-w-0 flex-1">
+                    <div class="flex items-center gap-2">
+                        <span class="font-semibold text-slate-900 dark:text-slate-100 text-xs truncate">${escapeHtml(item.title)}</span>
+                        <span class="text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-300 font-bold shrink-0">${escapeHtml(item.tag)}</span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-1">${escapeHtml(item.subtitle)}</p>
+                </div>
+                ${item.notebookName ? `<span class="text-[10px] text-slate-400 dark:text-slate-500 shrink-0 max-w-[120px] truncate">${escapeHtml(item.notebookName)}</span>` : ''}
+            </div>
+        </button>
+    `).join('');
+    popup.classList.remove('hidden');
 }
 
 function navigateSearchResult(type, id, notebookId) {
+    const popup = document.getElementById('search-results-popup');
+    if (popup) popup.classList.add('hidden');
+    const searchInput = document.getElementById('global-search');
+    if (searchInput) searchInput.value = '';
+
     if (type === 'notebook') {
         switchView('notebooks');
         selectNotebook(Number(id));
     } else if (type === 'source') {
-        switchView('documents');
-    } else if (type === 'quiz' || type === 'generation') {
-        switchView('study-materials');
+        if (typeof openDocumentModal === 'function') {
+            openDocumentModal(Number(id));
+        } else {
+            switchView('documents');
+        }
+    } else if (type === 'quiz') {
+        if (typeof openQuizPlayModal === 'function') {
+            openQuizPlayModal(Number(id));
+        } else {
+            switchView('study-materials');
+        }
+    } else if (type === 'generation' || type === 'flashcards' || type === 'mind_map' || type === 'report') {
+        const item = getGlobalSearchItems().find(i => String(i.id) === String(id));
+        const genType = item?.generation_type || type;
+        if (genType === 'flashcards' && typeof openFlashcardReviewModal === 'function') {
+            openFlashcardReviewModal(Number(id));
+        } else if (genType === 'mind_map' && typeof openMindmapReviewModal === 'function') {
+            openMindmapReviewModal(Number(id));
+        } else if (genType === 'report' && typeof openReportReviewModal === 'function') {
+            openReportReviewModal(Number(id));
+        } else if (genType === 'quiz' && typeof openQuizReviewModal === 'function') {
+            openQuizReviewModal(Number(id));
+        } else {
+            switchView('study-materials');
+        }
     } else if (type === 'note') {
         switchView('notes');
     }
-    const popup = document.getElementById('search-results-popup');
-    if (popup) popup.classList.add('hidden');
 }
 
 function getGlobalSearchItems() {
@@ -181,6 +237,7 @@ function getGlobalSearchItems() {
             items.push({
                 id: String(gen.id),
                 type: 'generation',
+                generation_type: gen.generation_type,
                 title: label,
                 subtitle: (gen.content || '').slice(0, 120),
                 tag: label,
@@ -191,3 +248,13 @@ function getGlobalSearchItems() {
     });
     return items;
 }
+
+document.addEventListener('click', event => {
+    const wrapper = document.querySelector('.search-dropdown-wrapper');
+    const popup = document.getElementById('search-results-popup');
+    if (!wrapper || !popup) return;
+    if (!wrapper.contains(event.target)) {
+        popup.classList.add('hidden');
+    }
+});
+

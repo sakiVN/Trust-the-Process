@@ -177,17 +177,20 @@
                             const wsCleanCode = cleanCode;
                             renderedContent = `
                                 <div class="space-y-3 text-left w-full mt-2">
-                                    <div class="flex flex-wrap items-center gap-2 bg-slate-100/60 dark:bg-slate-900/40 p-2.5 rounded-2xl border border-slate-200 dark:border-slate-800/80">
-                                        <button onclick="addJsMindChildNode('ws-${gen.id}')" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-1 px-3 rounded-lg text-[9px] transition shadow">➕ Nhánh con</button>
-                                        <button onclick="editJsMindNodeName('ws-${gen.id}')" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-1 px-3 rounded-lg text-[9px] transition shadow">✏️ Sửa tên</button>
-                                        <button onclick="removeJsMindNode('ws-${gen.id}')" class="bg-rose-500 hover:bg-rose-600 text-white font-bold py-1 px-3 rounded-lg text-[9px] transition shadow">🗑️ Xóa</button>
-                                        <button onclick="updateSavedMindmap(${gen.id})" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1 px-3 rounded-lg text-[9px] transition shadow">💾 Lưu</button>
-                                        <div class="flex items-center space-x-1 ml-2 border-l border-slate-200 dark:border-slate-700 pl-2">
+                                    <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-100/60 dark:bg-slate-900/40 p-2.5 rounded-2xl border border-slate-200 dark:border-slate-800/80">
+                                        <div class="flex flex-wrap items-center gap-1.5">
+                                            <button onclick="addJsMindChildNode('ws-${gen.id}')" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-1 px-2.5 rounded-lg text-[9px] transition shadow">➕ Nhánh con</button>
+                                            <button onclick="editJsMindNodeName('ws-${gen.id}')" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-1 px-2.5 rounded-lg text-[9px] transition shadow">✏️ Sửa tên</button>
+                                            <button onclick="removeJsMindNode('ws-${gen.id}')" class="bg-rose-500 hover:bg-rose-600 text-white font-bold py-1 px-2.5 rounded-lg text-[9px] transition shadow">🗑️ Xóa</button>
+                                            <button onclick="updateSavedMindmap(${gen.id})" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1 px-2.5 rounded-lg text-[9px] transition shadow">💾 Lưu</button>
+                                            <button onclick="openMindmapReviewModal(${gen.id})" class="bg-brand-600 hover:bg-brand-700 text-white font-bold py-1 px-2.5 rounded-lg text-[9px] transition shadow flex items-center space-x-1"><span>🔍</span> <span>Phóng to</span></button>
+                                        </div>
+                                        <div class="flex items-center space-x-1 border-l border-slate-200 dark:border-slate-700 pl-2">
                                             <span class="text-[8px] font-bold text-slate-400 uppercase">Màu:</span>
-                                            <button onclick="changeJsMindNodeColor('ws-${gen.id}', '#6366f1')" class="w-4 h-4 rounded-full bg-[#6366f1] hover:scale-110 transition"></button>
-                                            <button onclick="changeJsMindNodeColor('ws-${gen.id}', '#10b981')" class="w-4 h-4 rounded-full bg-[#10b981] hover:scale-110 transition"></button>
-                                            <button onclick="changeJsMindNodeColor('ws-${gen.id}', '#f43f5e')" class="w-4 h-4 rounded-full bg-[#f43f5e] hover:scale-110 transition"></button>
-                                            <button onclick="changeJsMindNodeColor('ws-${gen.id}', '#f59e0b')" class="w-4 h-4 rounded-full bg-[#f59e0b] hover:scale-110 transition"></button>
+                                            <button onclick="changeJsMindNodeColor('ws-${gen.id}', '#6366f1')" class="w-4 h-4 rounded-full bg-[#6366f1] hover:scale-110 transition ring-1 ring-white/50"></button>
+                                            <button onclick="changeJsMindNodeColor('ws-${gen.id}', '#10b981')" class="w-4 h-4 rounded-full bg-[#10b981] hover:scale-110 transition ring-1 ring-white/50"></button>
+                                            <button onclick="changeJsMindNodeColor('ws-${gen.id}', '#f43f5e')" class="w-4 h-4 rounded-full bg-[#f43f5e] hover:scale-110 transition ring-1 ring-white/50"></button>
+                                            <button onclick="changeJsMindNodeColor('ws-${gen.id}', '#f59e0b')" class="w-4 h-4 rounded-full bg-[#f59e0b] hover:scale-110 transition ring-1 ring-white/50"></button>
                                         </div>
                                     </div>
                                     <div class="relative w-full border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-950">
@@ -203,10 +206,23 @@
                                     initJsMindInstance(captKey, captId, parsedTree);
                                 }, 200);
                             })(wsUniqueId, 'ws-' + wsGenId, wsCleanCode);
+                        } else if (gen.generation_type === 'report') {
+                            renderedContent = `
+                                <div class="space-y-3 text-left">
+                                    <div class="flex justify-between items-center bg-slate-100/60 dark:bg-slate-900/40 p-2 rounded-xl border border-slate-200 dark:border-slate-800/80">
+                                        <span class="text-[10px] font-bold text-slate-500 uppercase">Báo cáo tóm tắt</span>
+                                        <button onclick="openReportReviewModal(${gen.id})" class="text-[10px] bg-brand-600 hover:bg-brand-700 text-white font-semibold px-2.5 py-1 rounded-lg transition flex items-center space-x-1">
+                                            <span>📑</span> <span>Xem toàn bộ báo cáo</span>
+                                        </button>
+                                    </div>
+                                    <div class="whitespace-pre-wrap text-xs text-slate-700 dark:text-slate-350 bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-100 dark:border-slate-800 font-mono leading-relaxed text-left max-h-60 overflow-y-auto">${escapeHtml(gen.content)}</div>
+                                </div>
+                            `;
                         } else {
-                            renderedContent = `<div class="whitespace-pre-wrap text-xs text-slate-700 dark:text-slate-350 bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-100 dark:border-slate-800 font-mono leading-relaxed text-left">${gen.content}</div>`;
+                            renderedContent = `<div class="whitespace-pre-wrap text-xs text-slate-700 dark:text-slate-350 bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-100 dark:border-slate-800 font-mono leading-relaxed text-left">${escapeHtml(gen.content)}</div>`;
                         }
                     }
+
                     
                     return `
                         <div class="border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-3">

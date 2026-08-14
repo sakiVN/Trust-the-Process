@@ -226,9 +226,7 @@
         <p class="text-[10px] text-slate-400">Sửa câu hỏi, đáp án và giải thích theo giao diện trực quan, thêm hoặc xóa câu hỏi khi cần.</p>
       </div>
       <button onclick="closeQuizGenerationEditorModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
       </button>
     </div>
     <div class="flex justify-end">
@@ -239,5 +237,186 @@
       <button onclick="closeQuizGenerationEditorModal()" class="px-4 py-2 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition">Hủy</button>
       <button onclick="saveQuizGenerationEdit()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-semibold transition">Lưu chỉnh sửa</button>
     </div>
+  </div>
+</div>
+
+<!-- Report Review Modal -->
+<div id="report-review-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4 overflow-y-auto">
+  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-4xl p-6 shadow-2xl space-y-4 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+      <div class="flex items-center space-x-3">
+        <img src="/static/notebook/icon-set/report.png" class="w-8 h-8 object-contain shrink-0" alt="Report" />
+        <div>
+          <h3 id="report-review-title" class="font-extrabold text-slate-900 dark:text-white text-base">Xem Báo cáo tóm tắt</h3>
+          <p id="report-review-subtitle" class="text-[10px] text-slate-400">Báo cáo tóm tắt học thuật trích xuất từ tài liệu học tập</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-2">
+        <button onclick="copyReportReviewContent()" class="text-xs bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-xl font-semibold transition flex items-center space-x-1">
+          <span>📋</span> <span>Sao chép</span>
+        </button>
+        <button onclick="closeReportReviewModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
+      </div>
+    </div>
+    <div id="report-review-content" class="space-y-4 p-2">
+      <!-- Report content injected here -->
+    </div>
+  </div>
+</div>
+
+<!-- Mindmap Review Modal -->
+<div id="mindmap-review-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4 overflow-y-auto">
+  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-5xl p-6 shadow-2xl space-y-4 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+      <div class="flex items-center space-x-3">
+        <img src="/static/notebook/icon-set/mindmap.png" class="w-8 h-8 object-contain shrink-0" alt="Mindmap" />
+        <div>
+          <h3 id="mindmap-review-title" class="font-extrabold text-slate-900 dark:text-white text-base">Xem & Chỉnh sửa Sơ đồ tư duy</h3>
+          <p class="text-[10px] text-slate-400">Tương tác trực quan: kéo thả, thêm nhánh con, sửa tên, đổi màu và lưu lại</p>
+        </div>
+      </div>
+      <button onclick="closeMindmapReviewModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+      </button>
+    </div>
+    <div class="space-y-3 text-left w-full">
+      <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-100/60 dark:bg-slate-900/40 p-2.5 rounded-2xl border border-slate-200 dark:border-slate-800/80">
+        <div class="flex items-center space-x-2">
+          <button onclick="addJsMindChildNode('review-modal')" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-1.5 px-3 rounded-lg text-[10px] transition shadow flex items-center space-x-1">
+            <span>➕</span> <span>Nhánh con</span>
+          </button>
+          <button onclick="editJsMindNodeName('review-modal')" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-1.5 px-3 rounded-lg text-[10px] transition shadow flex items-center space-x-1">
+            <span>✏️</span> <span>Sửa tên</span>
+          </button>
+          <button onclick="removeJsMindNode('review-modal')" class="bg-rose-500 hover:bg-rose-600 text-white font-bold py-1.5 px-3 rounded-lg text-[10px] transition shadow flex items-center space-x-1">
+            <span>🗑️</span> <span>Xóa nhánh</span>
+          </button>
+          <button onclick="saveMindmapReviewEdit()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 px-3.5 rounded-lg text-[10px] transition shadow flex items-center space-x-1">
+            <span>💾</span> <span>Lưu thay đổi</span>
+          </button>
+        </div>
+        <div class="flex items-center space-x-1.5 pl-2 border-l border-slate-200 dark:border-slate-700">
+          <span class="text-[9px] font-bold text-slate-400 uppercase">Màu:</span>
+          <button onclick="changeJsMindNodeColor('review-modal', '#6366f1')" class="w-4 h-4 rounded-full bg-[#6366f1] hover:scale-110 transition ring-1 ring-white/50"></button>
+          <button onclick="changeJsMindNodeColor('review-modal', '#10b981')" class="w-4 h-4 rounded-full bg-[#10b981] hover:scale-110 transition ring-1 ring-white/50"></button>
+          <button onclick="changeJsMindNodeColor('review-modal', '#f43f5e')" class="w-4 h-4 rounded-full bg-[#f43f5e] hover:scale-110 transition ring-1 ring-white/50"></button>
+          <button onclick="changeJsMindNodeColor('review-modal', '#f59e0b')" class="w-4 h-4 rounded-full bg-[#f59e0b] hover:scale-110 transition ring-1 ring-white/50"></button>
+          <button onclick="changeJsMindNodeColor('review-modal', '#1e293b')" class="w-4 h-4 rounded-full bg-[#1e293b] hover:scale-110 transition ring-1 ring-white/50"></button>
+        </div>
+      </div>
+      <div class="relative w-full border border-slate-200 dark:border-slate-800 rounded-3xl overflow-hidden bg-slate-50 dark:bg-slate-950">
+        <div class="absolute top-2.5 left-3 text-[9px] font-bold text-slate-400 z-10 select-none">Đúp chuột để sửa chữ, kéo rê để di chuyển</div>
+        <div id="mindmap-review-canvas" style="width:100%;height:450px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Contextual AI Toolbar -->
+<div id="contextual-ai-toolbar" class="hidden absolute z-[90] bg-slate-900 shadow-2xl rounded-xl border border-slate-700 p-1.5 flex items-center space-x-1.5 transition-all duration-200 select-none" style="top: 0; left: 0;">
+  <button onclick="triggerContextAction('explain')" class="flex items-center space-x-1.5 px-2.5 py-1.5 hover:bg-slate-800 rounded-lg text-slate-200 text-xs font-semibold transition group">
+    <span>💡</span>
+    <span class="group-hover:text-white">Giải thích</span>
+  </button>
+  <div class="w-px h-4 bg-slate-700"></div>
+  <button onclick="triggerContextAction('translate')" class="flex items-center space-x-1.5 px-2.5 py-1.5 hover:bg-slate-800 rounded-lg text-slate-200 text-xs font-semibold transition group">
+    <span>🌐</span>
+    <span class="group-hover:text-white">Dịch</span>
+  </button>
+  <div class="w-px h-4 bg-slate-700"></div>
+  <button onclick="triggerContextAction('flashcard')" class="flex items-center space-x-1.5 px-2.5 py-1.5 hover:bg-brand-600 bg-brand-500/20 rounded-lg text-brand-300 text-xs font-bold transition group">
+    <span>🔖</span>
+    <span class="group-hover:text-white">Lưu Flashcard</span>
+  </button>
+</div>
+
+<!-- Contextual AI Result Modal -->
+<div id="contextual-result-modal" class="hidden fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm items-center justify-center p-4">
+  <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden flex flex-col border border-slate-200 dark:border-slate-800 animate-[fadeIn_0.2s_ease-out]">
+    <div class="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-900/50">
+      <h3 class="font-bold text-slate-800 dark:text-slate-100 flex items-center space-x-2 text-sm">
+        <span id="contextual-result-icon">✨</span>
+        <span id="contextual-result-title">Kết quả AI</span>
+      </h3>
+      <button onclick="closeContextualModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition bg-slate-200/50 dark:bg-slate-800 p-1.5 rounded-lg">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+      </button>
+    </div>
+    <div class="p-5 overflow-y-auto max-h-[60vh]">
+      <div id="contextual-result-content" class="text-xs text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">
+        <!-- Content here -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Document Read Modal -->
+<div id="document-read-modal" class="hidden fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm items-center justify-center p-4 sm:p-6">
+  <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-4xl w-full h-full max-h-[85vh] shadow-2xl flex flex-col border border-slate-200 dark:border-slate-800 animate-[fadeIn_0.2s_ease-out]">
+    <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-900/80 rounded-t-3xl shrink-0">
+      <div class="min-w-0 pr-4">
+        <h3 id="document-read-title" class="font-bold text-slate-800 dark:text-slate-100 text-base truncate">Tiêu đề tài liệu</h3>
+        <p id="document-read-notebook" class="text-xs text-brand-500 font-semibold mt-0.5 truncate">Sổ tay</p>
+      </div>
+      <button onclick="closeDocumentModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-2 rounded-xl shrink-0">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+      </button>
+    </div>
+    <div class="p-6 sm:p-8 overflow-y-auto flex-1 custom-scrollbar bg-white dark:bg-slate-950">
+      <div id="document-read-content" class="w-full">
+        <!-- Content injected here -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Upload Source Quick Modal (From All Documents View) -->
+<div id="quick-upload-source-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4 overflow-y-auto">
+  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-lg p-6 shadow-2xl space-y-4 transform transition-all duration-300">
+    <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+      <div class="flex items-center space-x-2.5">
+        <img src="/static/notebook/icon-set/upload.png" class="w-7 h-7 object-contain shrink-0" alt="Upload" />
+        <h3 class="font-extrabold text-slate-900 dark:text-white text-base">Tải lên tài liệu liên quan</h3>
+      </div>
+      <button onclick="closeQuickUploadModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+      </button>
+    </div>
+    <form id="quick-upload-form" onsubmit="handleQuickUploadSource(event)" class="space-y-4">
+      <div>
+        <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Chọn Sổ tay</label>
+        <select id="quick-upload-notebook" required class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 text-slate-700 dark:text-slate-300 transition"></select>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Tên tài liệu / Chủ đề</label>
+        <input type="text" id="quick-upload-title" required placeholder="Ví dụ: Tài liệu ôn thi Đại số" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 transition text-slate-700 dark:text-slate-300" />
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Loại tài nguyên</label>
+        <select id="quick-upload-type" onchange="toggleQuickUploadInputs()" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 text-slate-700 dark:text-slate-300 transition">
+          <option value="text">Văn bản (Plain Text)</option>
+          <option value="link">Trang web (Link)</option>
+          <option value="file">Tài liệu PDF (File PDF)</option>
+        </select>
+      </div>
+      <div id="quick-upload-url-container" class="hidden">
+        <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">URL liên kết</label>
+        <input type="url" id="quick-upload-url" placeholder="https://example.com/tai-lieu" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 transition text-slate-700 dark:text-slate-300" />
+      </div>
+      <div id="quick-upload-file-container" class="hidden">
+        <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Tải lên file PDF</label>
+        <input type="file" id="quick-upload-file" accept=".pdf" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 text-slate-700 dark:text-slate-300 transition" />
+      </div>
+      <div id="quick-upload-content-container">
+        <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Nội dung văn bản</label>
+        <textarea id="quick-upload-content" rows="4" placeholder="Sao chép nội dung văn bản học tập vào đây..." class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 transition text-slate-700 dark:text-slate-300"></textarea>
+      </div>
+      <div class="flex justify-end gap-3 pt-2">
+        <button type="button" onclick="closeQuickUploadModal()" class="px-4 py-2 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition">Hủy</button>
+        <button type="submit" class="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-semibold transition shadow-md shadow-brand-100 dark:shadow-none">Lưu tài liệu</button>
+      </div>
+    </form>
   </div>
 </div>

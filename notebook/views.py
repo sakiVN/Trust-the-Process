@@ -381,3 +381,49 @@ def get_dashboard_notifications(request):
         })
 
     return Response(notifications)
+
+
+@api_view(['POST'])
+def context_action(request):
+    """
+    Handle Contextual AI toolbar actions (explain, translate, flashcard)
+    from highlighted text in documents.
+    """
+    text = request.data.get('text', '').strip()
+    action_type = request.data.get('action', 'explain')
+    notebook_id = request.data.get('notebook_id')
+
+    if not text:
+        return Response({'error': 'No text provided.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    result_data = ai_service.process_context_action(text, action_type)
+
+    # If action is flashcard and notebook_id is provided, optionally save to database
+    if action_type == 'flashcard' and result_data.get('flashcard') and notebook_id:
+        try:
+            notebook = Notebook.objects.filter(pk=notebook_id).first()
+            if notebook:
+                card = result_data['flashcard']
+                # Check existing flashcards generation
+                existing_gen = AIGeneration.objects.filter(notebook=notebook, generation_type='flashcards').first()
+                if existing_gen:
+                    try:
+                        cards = json.loads(existing_gen.content)
+                        if isinstance(cards, list):
+                            cards.append(card)
+                            existing_gen.content = json.dumps(cards, ensure_ascii=False)
+                            existing_gen.save()
+                    except Exception:
+                        pass
+                else:
+                    AIGeneration.objects.create(
+                        notebook=notebook,
+                        generation_type='flashcards',
+                        content=json.dumps([card], ensure_ascii=False)
+                    )
+                result_data['saved_to_notebook'] = True
+        except Exception as e:
+            result_data['save_error'] = str(e)
+
+    return Response(result_data, status=status.HTTP_200_OK)
+

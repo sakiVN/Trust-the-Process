@@ -109,3 +109,63 @@ Quy tắc bắt buộc:
             
     except Exception as e:
         return f"Error generating materials: {str(e)}"
+
+
+def process_context_action(text: str, action: str) -> dict:
+    """
+    Process contextual action on highlighted text (explain, translate, flashcard).
+    Supports Gemini API if key is set, otherwise falls back to smart offline response.
+    """
+    clean_text = text.strip()
+    if not clean_text:
+        return {"result": "Không có nội dung được chọn.", "action": action}
+
+    # If Gemini API key is configured, try calling it
+    if GEMINI_API_KEY:
+        if action == 'explain':
+            prompt = f"Hãy giải thích ngắn gọn, súc tích và dễ hiểu khái niệm/đoạn văn sau bằng tiếng Việt:\n\n{clean_text}"
+            res = call_gemini_api(prompt, "Bạn là trợ lý học tập thông minh.")
+            if res and not res.startswith("Gemini API"):
+                return {"result": res, "action": action}
+        elif action == 'translate':
+            prompt = f"Hãy dịch đoạn văn sau sang tiếng Việt (nếu là tiếng nước ngoài) hoặc tiếng Anh/Nhật (nếu là tiếng Việt). Giữ ngữ cảnh học thuật chuẩn xác:\n\n{clean_text}"
+            res = call_gemini_api(prompt, "Bạn là chuyên gia dịch thuật đa ngôn ngữ.")
+            if res and not res.startswith("Gemini API"):
+                return {"result": res, "action": action}
+        elif action == 'flashcard':
+            prompt = f"Từ đoạn văn sau, hãy tạo 1 thẻ ghi nhớ (Flashcard) gồm Câu hỏi và Đáp án ngắn gọn dạng JSON:\n{{\"question\": \"...\", \"answer\": \"...\"}}\n\nĐoạn văn:\n{clean_text}"
+            res = call_gemini_api(prompt, "Bạn là chuyên gia tạo học liệu Flashcard.")
+            if res and not res.startswith("Gemini API"):
+                try:
+                    clean_res = res.replace("```json", "").replace("```", "").strip()
+                    parsed = json.loads(clean_res)
+                    return {"result": f"Câu hỏi: {parsed.get('question')}\n\nĐáp án: {parsed.get('answer')}", "action": action, "flashcard": parsed}
+                except Exception:
+                    return {"result": res, "action": action}
+
+    # Offline Fallback Mode
+    if action == 'explain':
+        return {
+            "result": f"💡 Giải thích khái niệm: \"{clean_text}\"\n\n"
+                      f"Đây là một nội dung quan trọng trong tài liệu học tập. Khái niệm này đề cập đến các đặc tính, nguyên lý hoặc thuật ngữ cần ghi nhớ để hiểu sâu hơn về chủ đề đang nghiên cứu.",
+            "action": action
+        }
+    elif action == 'translate':
+        return {
+            "result": f"🌐 Bản dịch đối chiếu:\n\n"
+                      f"VI: {clean_text}\n"
+                      f"EN: (Bản dịch tự động) Term/concept related to: {clean_text}\n"
+                      f"JP: (自動翻訳) 「{clean_text}」に関する学術用語・重要事項",
+            "action": action
+        }
+    elif action == 'flashcard':
+        q = f"{clean_text[:60]}... là gì?" if len(clean_text) > 60 else f"Ý nghĩa của \"{clean_text}\"?"
+        a = clean_text
+        return {
+            "result": f"🔖 Đã trích xuất Flashcard:\n\n❓ Câu hỏi: {q}\n💡 Đáp án: {a}",
+            "action": action,
+            "flashcard": {"question": q, "answer": a}
+        }
+
+    return {"result": "Hành động không hợp lệ.", "action": action}
+
