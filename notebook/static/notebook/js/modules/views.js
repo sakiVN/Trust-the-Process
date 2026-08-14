@@ -25,14 +25,14 @@ function renderAllDocumentsView() {
 
     container.innerHTML = allSources.map(src => {
         const docIcon = src.type === 'quiz' ? '/static/notebook/icon-set/quiz.png' : '/static/notebook/icon-set/upload.png';
-        const labelText = src.type === 'quiz' ? t('key_44', 'Bài tập trắc nghiệm') : (src.source_type === 'file' ? t('key_opt_file', 'File PDF') : (src.source_type === 'link' ? t('key_opt_link', 'Trang web') : t('key_opt_text', 'Văn bản')));
+        const labelText = src.type === 'quiz' ? t('key_tag_quiz', 'Trắc nghiệm') : (src.source_type === 'file' ? t('key_tag_pdf', 'File PDF') : (src.source_type === 'link' ? t('key_tag_link', 'Trang web') : t('key_tag_text', 'Văn bản')));
         const clickHandler = src.type === 'quiz' ? `openQuizPlayModal(${src.id})` : `openDocumentModal(${src.id})`;
         
         return `
         <div onclick="${clickHandler}" class="cursor-pointer bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-3 hover:scale-[1.01] hover:shadow-md transition hover:border-brand-300 dark:hover:border-brand-700">
             <div class="flex justify-between items-start gap-3">
                 <div class="min-w-0">
-                    <span class="inline-flex items-center gap-1.5 text-[9px] uppercase tracking-wider font-bold px-2.5 py-0.5 rounded-full ${src.type === 'quiz' ? 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' : (src.source_type === 'link' ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300')}">
+                    <span class="inline-flex items-center gap-1.5 text-[9px] uppercase tracking-wider font-bold px-2.5 py-0.5 rounded-full ${src.type === 'quiz' ? 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' : (src.source_type === 'link' ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : (src.source_type === 'file' ? 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' : 'bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300'))}">
                         <img src="${docIcon}" class="w-3.5 h-3.5 object-contain shrink-0" alt="Icon" />
                         <span>${labelText}</span>
                     </span>
@@ -81,15 +81,15 @@ function renderStudyMaterialsView() {
     }
 
     const generationLabel = {
-        quiz: t('key_44', 'Bài tập trắc nghiệm'),
-        flashcards: t('key_46', 'Flashcards'),
-        mind_map: t('key_48', 'Mind Map'),
-        report: t('key_51', 'Báo cáo'),
-        audio_overview: 'Audio Overview',
-        presentation: 'Presentation',
-        video_overview: 'Video Overview',
-        infographics: 'Infographics',
-        data_table: 'Data Table'
+        quiz: t('key_tag_quiz', 'Trắc nghiệm'),
+        flashcards: t('key_tag_flashcards', 'Flashcards'),
+        mind_map: t('key_tag_mindmap', 'Mind Map'),
+        report: t('key_tag_report', 'Báo cáo'),
+        audio_overview: t('key_tag_audio', 'Audio Overview'),
+        presentation: t('key_tag_presentation', 'Presentation'),
+        video_overview: t('key_tag_video', 'Video Overview'),
+        infographics: t('key_tag_infographic', 'Infographics'),
+        data_table: t('key_tag_data_table', 'Data Table')
     };
 
     const typeIconMap = {
@@ -101,7 +101,7 @@ function renderStudyMaterialsView() {
 
     container.innerHTML = allMaterials.map(item => {
         const isQuiz = item.materialType === 'quiz';
-        const label = isQuiz ? t('key_44', 'Bài tập trắc nghiệm') : (generationLabel[item.generation_type] || t('key_32', 'Tài liệu học tập'));
+        const label = isQuiz ? t('key_tag_quiz', 'Trắc nghiệm') : (generationLabel[item.generation_type] || t('key_32', 'Tài liệu học tập'));
         const title = isQuiz ? item.name : `${item.generation_type ? (generationLabel[item.generation_type] || item.generation_type) : t('key_32', 'Tài liệu học tập')}`;
         const iconSrc = isQuiz ? typeIconMap.quiz : (typeIconMap[item.generation_type] || '/static/notebook/icon-set/material.png');
         let summary = t('key_113', 'Không có mô tả nội dung.');

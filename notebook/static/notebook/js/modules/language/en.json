@@ -217,5 +217,22 @@
   "key_opt_goal_90": "90 mins / day (Advanced)",
   "key_opt_goal_120": "2+ hours / day (Exam Prep)",
   "key_pause": "Pause",
-  "key_resume": "Resume"
+  "key_resume": "Resume",
+  "key_tag_notebook": "Notebook",
+  "key_tag_source": "Related Document",
+  "key_tag_pdf": "PDF Document",
+  "key_tag_link": "Web Link",
+  "key_tag_text": "Plain Text",
+  "key_tag_note": "Note",
+  "key_tag_quiz": "Quiz",
+  "key_tag_flashcards": "Flashcards",
+  "key_tag_mindmap": "Mind Map",
+  "key_tag_report": "Report",
+  "key_tag_audio": "Audio Overview",
+  "key_tag_presentation": "Presentation",
+  "key_tag_video": "Video Overview",
+  "key_tag_infographic": "Infographics",
+  "key_tag_data_table": "Data Table",
+  "key_search_no_results": "No results found for",
+  "key_table_filter_quiz": "Quiz"
 }

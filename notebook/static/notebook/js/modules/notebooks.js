@@ -53,9 +53,9 @@
                         } else {
                             catContainer.innerHTML = catSources.map(src => {
                                 let badge = '';
-                                if (src.source_type === 'file') badge = '📁 File';
-                                else if (src.source_type === 'link') badge = '🔗 Link';
-                                else badge = '✏️ Text';
+                                if (src.source_type === 'file') badge = `📁 ${t('key_tag_pdf', 'PDF')}`;
+                                else if (src.source_type === 'link') badge = `🔗 ${t('key_tag_link', 'Link')}`;
+                                else badge = `✏️ ${t('key_tag_text', 'Text')}`;
                                 
                                 return `
                                 <div class="flex items-center justify-between bg-white dark:bg-slate-900 border border-slate-150 dark:border-slate-800/60 p-2.5 rounded-xl text-[10px] text-slate-700 dark:text-slate-350">

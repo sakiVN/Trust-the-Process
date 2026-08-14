@@ -53,16 +53,19 @@
         </svg>
       </div>
       <div class="min-w-0 flex-1">
-        <div class="flex items-center justify-between">
-          <span translate="key_weekly_goal_completion" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">Mục tiêu tuần</span>
-          <span id="stat-weekly-goal-badge" class="hidden text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-purple-100 text-purple-700 dark:bg-purple-900/60 dark:text-purple-300">MAX</span>
-        </div>
+        <span translate="key_weekly_goal_completion" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">Mục tiêu tuần</span>
         <span id="stat-weekly-goal-pct" class="block text-2xl font-extrabold text-slate-800 dark:text-white mt-0.5">0%</span>
-        <div id="stat-weekly-goal-track" class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full mt-2 overflow-hidden relative">
-          <!-- Base background tier layer (e.g. 100% Vàng or 100% Xanh lá or 100% Xanh dương) -->
-          <div id="stat-weekly-goal-base-bar" class="absolute inset-0 h-full w-full transition-colors duration-500 hidden"></div>
-          <!-- Overlay tier layer (e.g. 30% Xanh lá đè lên Vàng) -->
-          <div id="stat-weekly-goal-bar" class="relative h-full transition-all duration-500 rounded-full" style="width: 0%"></div>
+        <div id="stat-weekly-goal-track" class="w-full bg-slate-100 dark:bg-slate-800 h-2.5 rounded-full mt-2 overflow-hidden relative">
+          <!-- Layer 1: Vàng (0 - 100%) -->
+          <div id="stat-goal-layer-1" class="absolute inset-y-0 left-0 h-full stat-tier-yellow-bar rounded-full transition-all duration-300" style="width: 0%; z-index: 1;"></div>
+          <!-- Layer 2: Xanh lá (101 - 200%) -->
+          <div id="stat-goal-layer-2" class="absolute inset-y-0 left-0 h-full stat-tier-green-bar rounded-full transition-all duration-300" style="width: 0%; z-index: 2;"></div>
+          <!-- Layer 3: Xanh dương (201 - 300%) -->
+          <div id="stat-goal-layer-3" class="absolute inset-y-0 left-0 h-full stat-tier-blue-bar rounded-full transition-all duration-300" style="width: 0%; z-index: 3;"></div>
+          <!-- Layer 4: Tím Gradient Neon (> 300% & MAX) -->
+          <div id="stat-goal-layer-4" class="absolute inset-y-0 left-0 h-full stat-max-purple-bar rounded-full transition-all duration-300 flex items-center justify-center" style="width: 0%; z-index: 4;">
+            <span id="stat-weekly-goal-bar-text" class="hidden text-[8px] font-black tracking-widest text-white uppercase select-none leading-none drop-shadow">MAX</span>
+          </div>
         </div>
       </div>
     </div>
@@ -98,7 +101,12 @@
     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm lg:col-span-2">
       <div class="flex items-center justify-between mb-4">
         <h3 translate="key_10" class="font-bold text-slate-800 dark:text-white text-base">Thời lượng tự học hàng tuần</h3>
-        <span translate="key_11" class="text-xs text-slate-400">7 ngày gần nhất</span>
+        <div class="flex items-center space-x-2">
+          <span translate="key_11" class="text-xs text-slate-400">7 ngày gần nhất</span>
+          <button type="button" onclick="openDebugTimeModal()" class="inline-flex items-center text-[11px] font-bold text-slate-400 hover:text-brand-600 dark:hover:text-brand-400 bg-slate-100/80 dark:bg-slate-800/80 hover:bg-brand-50 dark:hover:bg-brand-950/40 px-2 py-1 rounded-lg border border-slate-200/60 dark:border-slate-700/60 transition cursor-pointer" title="Debug / Chỉnh sửa thời gian học 7 ngày">
+            <span>🛠️ Debug</span>
+          </button>
+        </div>
       </div>
       <div class="h-64 relative">
         <canvas id="hoursChart"></canvas>
@@ -130,6 +138,7 @@
           <option value="all" translate="key_16">Tất cả loại</option>
           <option value="source" translate="key_17">Tài liệu liên quan</option>
           <option value="note" translate="key_18">Ghi chú (Note)</option>
+          <option value="quiz" translate="key_table_filter_quiz">Bài tập (Quiz)</option>
         </select>
       </div>
     </div>

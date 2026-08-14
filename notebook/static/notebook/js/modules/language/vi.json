@@ -217,5 +217,22 @@
   "key_opt_goal_90": "90 phút / ngày (Nâng cao)",
   "key_opt_goal_120": "2+ giờ / ngày (Ôn thi cao độ)",
   "key_pause": "Tạm dừng",
-  "key_resume": "Tiếp tục"
+  "key_resume": "Tiếp tục",
+  "key_tag_notebook": "Sổ tay",
+  "key_tag_source": "Tài liệu liên quan",
+  "key_tag_pdf": "File PDF",
+  "key_tag_link": "Trang web",
+  "key_tag_text": "Văn bản",
+  "key_tag_note": "Ghi chú",
+  "key_tag_quiz": "Trắc nghiệm",
+  "key_tag_flashcards": "Flashcards",
+  "key_tag_mindmap": "Mind Map",
+  "key_tag_report": "Báo cáo",
+  "key_tag_audio": "Audio Overview",
+  "key_tag_presentation": "Presentation",
+  "key_tag_video": "Video Overview",
+  "key_tag_infographic": "Infographics",
+  "key_tag_data_table": "Data Table",
+  "key_search_no_results": "Không tìm thấy kết quả nào cho",
+  "key_table_filter_quiz": "Bài tập (Quiz)"
 }

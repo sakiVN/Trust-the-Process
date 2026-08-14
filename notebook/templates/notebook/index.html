@@ -71,6 +71,98 @@
         }
     </script>
     <link rel="stylesheet" href="{% static 'notebook/css/base.css' %}">
+    <style>
+      /* Tier 1: Vàng (1-100%) */
+      .stat-tier-yellow-bar {
+          background: linear-gradient(90deg, #d97706 0%, #f59e0b 60%, #fbbf24 100%) !important;
+      }
+
+      /* Tier 2: Xanh lá Soft Glow & Gradient (101-200%) */
+      .stat-tier-green-card {
+          border-color: rgba(16, 185, 129, 0.45) !important;
+          box-shadow: 0 0 22px rgba(16, 185, 129, 0.18), inset 0 0 10px rgba(16, 185, 129, 0.06) !important;
+      }
+      .stat-tier-green-text {
+          background: linear-gradient(135deg, #10b981 0%, #34d399 50%, #6ee7b7 100%) !important;
+          -webkit-background-clip: text !important;
+          -webkit-text-fill-color: transparent !important;
+          background-clip: text !important;
+          color: transparent !important;
+          filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.5));
+          letter-spacing: 0.02em;
+      }
+      .stat-tier-green-bar {
+          background: linear-gradient(90deg, #059669 0%, #10b981 50%, #34d399 100%) !important;
+          box-shadow: 0 0 10px rgba(16, 185, 129, 0.65), 0 0 4px rgba(52, 211, 153, 0.4) !important;
+      }
+
+      /* Tier 3: Xanh dương Soft Glow & Gradient (201-300%) */
+      .stat-tier-blue-card {
+          border-color: rgba(59, 130, 246, 0.55) !important;
+          box-shadow: 0 0 25px rgba(59, 130, 246, 0.22), inset 0 0 12px rgba(59, 130, 246, 0.08) !important;
+      }
+      .stat-tier-blue-text {
+          background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 50%, #38bdf8 100%) !important;
+          -webkit-background-clip: text !important;
+          -webkit-text-fill-color: transparent !important;
+          background-clip: text !important;
+          color: transparent !important;
+          filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.55));
+          letter-spacing: 0.02em;
+      }
+      .stat-tier-blue-bar {
+          background: linear-gradient(90deg, #2563eb 0%, #3b82f6 50%, #38bdf8 100%) !important;
+          box-shadow: 0 0 12px rgba(59, 130, 246, 0.75), 0 0 5px rgba(56, 189, 248, 0.5) !important;
+      }
+
+      /* Tier 4: MAX Tím Neon Glow & Gradient (> 300%) */
+      .stat-max-purple-card {
+          border-color: rgba(168, 85, 247, 0.7) !important;
+          box-shadow: 0 0 30px rgba(168, 85, 247, 0.35), inset 0 0 15px rgba(168, 85, 247, 0.12) !important;
+          animation: purpleCardAura 3s infinite ease-in-out;
+      }
+      .stat-max-purple-text {
+          background: linear-gradient(135deg, #c084fc 0%, #e879f9 45%, #f472b6 100%) !important;
+          -webkit-background-clip: text !important;
+          -webkit-text-fill-color: transparent !important;
+          background-clip: text !important;
+          color: transparent !important;
+          filter: drop-shadow(0 0 10px rgba(192, 132, 252, 0.75));
+          letter-spacing: 0.03em;
+      }
+      .stat-max-purple-bar {
+          background: linear-gradient(90deg, #7c3aed 0%, #a855f7 35%, #ec4899 75%, #f43f5e 100%) !important;
+          box-shadow: 0 0 18px rgba(236, 72, 153, 0.95), 0 0 10px rgba(168, 85, 247, 0.9) !important;
+      }
+      #stat-weekly-goal-bar-text {
+          font-size: 8px;
+          font-weight: 900;
+          letter-spacing: 0.18em;
+          color: #ffffff !important;
+          text-shadow: 0 1px 3px rgba(0,0,0,0.8), 0 0 6px rgba(255,255,255,0.6);
+      }
+      @keyframes purpleCardAura {
+          0%, 100% {
+              box-shadow: 0 0 20px rgba(168, 85, 247, 0.3), inset 0 0 10px rgba(168, 85, 247, 0.08);
+          }
+          50% {
+              box-shadow: 0 0 35px rgba(168, 85, 247, 0.55), inset 0 0 22px rgba(236, 72, 153, 0.2);
+          }
+      }
+      /* FAB Glow */
+      .fab-glow {
+          box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.5), 0 8px 10px -6px rgba(99, 102, 241, 0.3);
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .fab-glow:hover {
+          transform: translateY(-4px) scale(1.03);
+          box-shadow: 0 20px 30px -10px rgba(99, 102, 241, 0.6), 0 10px 15px -5px rgba(99, 102, 241, 0.4);
+      }
+      .fab-glow.focus-active-glow {
+          animation: fabPulse 2s infinite ease-in-out;
+          background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #ec4899 100%) !important;
+      }
+    </style>
 </head>
 <body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-200">
 

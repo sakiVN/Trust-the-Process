@@ -423,3 +423,63 @@
     </form>
   </div>
 </div>
+
+<!-- Debug Study Time Modal -->
+<div id="debug-time-modal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4">
+  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-lg p-6 shadow-2xl space-y-5 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+      <div class="flex items-center space-x-3">
+        <div class="p-2.5 rounded-xl bg-amber-500/10 text-amber-500 text-lg">
+          🛠️
+        </div>
+        <div>
+          <h3 class="font-extrabold text-slate-900 dark:text-white text-base">Debug Thời Gian Tự Học (7 Ngày)</h3>
+          <p class="text-xs text-slate-400">Chỉnh sửa số phút tự học theo từng ngày để kiểm tra các mốc tiến độ</p>
+        </div>
+      </div>
+      <button onclick="closeDebugTimeModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+      </button>
+    </div>
+
+    <!-- Quick Presets -->
+    <div class="space-y-2">
+      <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">⚡ Chọn nhanh các mốc tiến độ tuần:</span>
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        <button type="button" onclick="applyDebugPreset('0')" class="px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-slate-400 text-xs font-semibold text-slate-600 dark:text-slate-300 transition cursor-pointer">
+          ⚪ 0% (Xám)
+        </button>
+        <button type="button" onclick="applyDebugPreset('75')" class="px-2.5 py-1.5 rounded-xl border border-amber-300 dark:border-amber-700 bg-amber-50/50 dark:bg-amber-950/20 text-xs font-semibold text-amber-600 dark:text-amber-400 transition cursor-pointer">
+          🟡 75% (Vàng)
+        </button>
+        <button type="button" onclick="applyDebugPreset('130')" class="px-2.5 py-1.5 rounded-xl border border-emerald-300 dark:border-emerald-700 bg-emerald-50/50 dark:bg-emerald-950/20 text-xs font-semibold text-emerald-600 dark:text-emerald-400 transition cursor-pointer">
+          🟢 130% (Xanh lá)
+        </button>
+        <button type="button" onclick="applyDebugPreset('230')" class="px-2.5 py-1.5 rounded-xl border border-blue-300 dark:border-blue-700 bg-blue-50/50 dark:bg-blue-950/20 text-xs font-semibold text-blue-600 dark:text-blue-400 transition cursor-pointer">
+          🔵 230% (Xanh dương)
+        </button>
+        <button type="button" onclick="applyDebugPreset('340')" class="px-2.5 py-1.5 rounded-xl border border-purple-300 dark:border-purple-700 bg-purple-50/50 dark:bg-purple-950/20 text-xs font-semibold text-purple-600 dark:text-purple-300 transition cursor-pointer">
+          🟣 340% (MAX Tím)
+        </button>
+        <button type="button" onclick="applyDebugPreset('reset_default')" class="px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold text-slate-500 dark:text-slate-400 transition cursor-pointer">
+          🔄 Mặc định
+        </button>
+      </div>
+    </div>
+
+    <!-- 7 Day Inputs Form -->
+    <form id="debug-time-form" onsubmit="saveDebugTimeModal(event)" class="space-y-3">
+      <div id="debug-days-input-list" class="space-y-2.5 max-h-60 overflow-y-auto pr-1">
+        <!-- Dynamic Day Rows will be rendered here by openDebugTimeModal() -->
+      </div>
+
+      <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center">
+        <span id="debug-preview-total" class="text-xs font-bold text-brand-600 dark:text-brand-400">Tổng: 0 phút (0%)</span>
+        <div class="flex gap-2">
+          <button type="button" onclick="closeDebugTimeModal()" class="px-4 py-2 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer">Hủy</button>
+          <button type="submit" class="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-semibold transition shadow-md shadow-brand-500/20 cursor-pointer">Lưu & Cập nhật</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

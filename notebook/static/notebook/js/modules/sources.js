@@ -67,7 +67,7 @@
                         <span class="font-bold text-slate-800 dark:text-slate-200 text-xs">${src.title}</span>
                         <div class="flex items-center space-x-1.5 shrink-0">
                             <span class="text-[9px] uppercase font-bold px-2 py-0.5 rounded-full ${src.source_type === 'file' ? 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' : (src.source_type === 'link' ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300')}">
-                                ${src.source_type === 'file' ? 'File PDF' : (src.source_type === 'link' ? 'Link' : 'Văn bản')}
+                                ${src.source_type === 'file' ? (window.t ? t('key_tag_pdf', 'File PDF') : 'File PDF') : (src.source_type === 'link' ? (window.t ? t('key_tag_link', 'Link') : 'Link') : (window.t ? t('key_tag_text', 'Văn bản') : 'Văn bản'))}
                             </span>
                             <button onclick="deleteSource(${src.id})" class="p-1 rounded hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-500 transition" title="Xóa tài liệu">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>

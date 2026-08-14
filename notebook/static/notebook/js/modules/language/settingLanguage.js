@@ -128,6 +128,12 @@ async function loadLanguage(lang) {
     if (typeof fetchNotifications === 'function') {
       fetchNotifications();
     }
+    if (typeof handleGlobalSearch === 'function') {
+      const gInput = document.getElementById('global-search');
+      if (gInput && gInput.value.trim()) {
+        handleGlobalSearch();
+      }
+    }
 
   } catch (error) {
     console.error("Lỗi chuyển đổi ngôn ngữ:", error);

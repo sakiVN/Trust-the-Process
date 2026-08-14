@@ -10,6 +10,11 @@ let isFocusModeActive = false;
 let isFocusTimerPaused = false;
 let focusLastTickTime = null;
 
+// High-Precision In-Memory Cache to prevent integer truncation glitches
+let inMemoryStudyHistory = null;
+let inMemoryTodaySeconds = null;
+let inMemoryCurrentDateStr = null;
+
 /**
  * Format seconds to HH:MM:SS
  */
@@ -78,19 +83,25 @@ function getLocalDateString(dateObj = new Date()) {
  * Load all study records from localStorage: { "YYYY-MM-DD": seconds }
  */
 function getStudyHistory() {
-    try {
-        const data = localStorage.getItem('edubrain_daily_focus_seconds');
-        if (data) {
-            return JSON.parse(data);
+    const todayStr = getLocalDateString();
+    if (!inMemoryStudyHistory || inMemoryCurrentDateStr !== todayStr) {
+        inMemoryCurrentDateStr = todayStr;
+        try {
+            const data = localStorage.getItem('edubrain_daily_focus_seconds');
+            if (data) {
+                inMemoryStudyHistory = JSON.parse(data);
+            }
+        } catch (e) {
+            console.error("Error loading study history:", e);
         }
-    } catch (e) {
-        console.error("Error loading study history:", e);
+        
+        if (!inMemoryStudyHistory) {
+            inMemoryStudyHistory = seedInitialStudyHistory();
+            saveStudyHistory(inMemoryStudyHistory);
+        }
+        inMemoryTodaySeconds = inMemoryStudyHistory[todayStr] || 0;
     }
-    
-    // Seed initial realistic data for previous 6 days if completely empty
-    const initialHistory = seedInitialStudyHistory();
-    localStorage.setItem('edubrain_daily_focus_seconds', JSON.stringify(initialHistory));
-    return initialHistory;
+    return inMemoryStudyHistory;
 }
 
 /**
@@ -99,7 +110,6 @@ function getStudyHistory() {
 function seedInitialStudyHistory() {
     const history = {};
     const today = new Date();
-    // Default past 6 days study minutes: e.g. [20, 15, 45, 10, 30, 25]
     const defaultMins = [25, 30, 10, 45, 15, 20];
     
     for (let i = 6; i >= 1; i--) {
@@ -120,6 +130,7 @@ function seedInitialStudyHistory() {
  * Save study history to localStorage
  */
 function saveStudyHistory(history) {
+    inMemoryStudyHistory = history;
     try {
         localStorage.setItem('edubrain_daily_focus_seconds', JSON.stringify(history));
     } catch (e) {
@@ -128,22 +139,24 @@ function saveStudyHistory(history) {
 }
 
 /**
- * Get today's total study seconds (resets to 0 for new date)
+ * Get today's total study seconds (exact in-memory accumulator)
  */
 function getTodayStudySeconds() {
-    const history = getStudyHistory();
-    const todayStr = getLocalDateString();
-    return history[todayStr] || 0;
+    getStudyHistory(); // ensures initialization
+    return inMemoryTodaySeconds !== null ? inMemoryTodaySeconds : 0;
 }
 
 /**
  * Save today's study seconds
  */
-function setTodayStudySeconds(seconds) {
-    const history = getStudyHistory();
+function setTodayStudySeconds(seconds, persistImmediately = false) {
+    getStudyHistory();
     const todayStr = getLocalDateString();
-    history[todayStr] = Math.max(0, Math.floor(seconds));
-    saveStudyHistory(history);
+    inMemoryTodaySeconds = Math.max(0, seconds);
+    inMemoryStudyHistory[todayStr] = Math.round(inMemoryTodaySeconds);
+    if (persistImmediately) {
+        saveStudyHistory(inMemoryStudyHistory);
+    }
 }
 
 /**
@@ -309,23 +322,30 @@ function startFocusMode() {
             const elapsedSeconds = (now - focusLastTickTime) / 1000;
             focusLastTickTime = now;
 
-            // Increment today study time
-            const currentSeconds = getTodayStudySeconds();
-            const newSeconds = currentSeconds + elapsedSeconds;
-            setTodayStudySeconds(newSeconds);
+            const oldSeconds = getTodayStudySeconds();
+            const newSeconds = oldSeconds + elapsedSeconds;
+
+            // Update in-memory accumulator (no integer truncation)
+            setTodayStudySeconds(newSeconds, false);
 
             // Update UI timer
             updateFocusTimerDisplay();
 
-            // Periodically sync dashboard stats & charts
+            // Smoothly sync dashboard stats if active (without restarting animation)
             if (typeof updateDashboardStats === 'function') {
-                updateDashboardStats();
+                updateDashboardStats(false);
             }
-            if (typeof renderCharts === 'function' && typeof hoursChartObj !== 'undefined' && hoursChartObj) {
-                // Update chart bar for today
-                const rolling = getRolling7DaysStudyData();
-                const lastIdx = rolling.length - 1;
-                if (hoursChartObj.data && hoursChartObj.data.datasets && hoursChartObj.data.datasets[0]) {
+
+            // Sync chart only when integer minute increments
+            const oldMins = Math.floor(oldSeconds / 60);
+            const newMins = Math.floor(newSeconds / 60);
+            if (newMins !== oldMins) {
+                // Save to localStorage immediately when minute ticks
+                setTodayStudySeconds(newSeconds, true);
+
+                if (typeof hoursChartObj !== 'undefined' && hoursChartObj && hoursChartObj.data && hoursChartObj.data.datasets && hoursChartObj.data.datasets[0]) {
+                    const rolling = getRolling7DaysStudyData();
+                    const lastIdx = rolling.length - 1;
                     hoursChartObj.data.datasets[0].data[lastIdx] = rolling[lastIdx].minutes;
                     hoursChartObj.update('none'); // smooth update without full animation
                 }
@@ -336,7 +356,7 @@ function startFocusMode() {
     }, 1000);
 
     updateFocusTimerDisplay();
-    if (typeof updateDashboardStats === 'function') updateDashboardStats();
+    if (typeof updateDashboardStats === 'function') updateDashboardStats(false);
 }
 
 /**
@@ -346,6 +366,9 @@ function togglePauseFocusTimer() {
     isFocusTimerPaused = !isFocusTimerPaused;
     focusLastTickTime = Date.now();
     updatePlayPauseButtonUI();
+    if (inMemoryStudyHistory) {
+        saveStudyHistory(inMemoryStudyHistory);
+    }
 }
 
 /**
@@ -386,6 +409,11 @@ function exitFocusMode() {
     if (focusInterval) {
         clearInterval(focusInterval);
         focusInterval = null;
+    }
+
+    // Flush current in-memory time to localStorage
+    if (inMemoryStudyHistory) {
+        saveStudyHistory(inMemoryStudyHistory);
     }
 
     // Exit Fullscreen if currently fullscreen
@@ -460,8 +488,184 @@ function initFocusMode() {
     // 2. Start midnight checker
     startMidnightResetChecker();
 
-    // 3. Initial display render
+    // 3. Register debug keyboard shortcut (Ctrl + Shift + D)
+    document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.shiftKey && (e.key === 'D' || e.key === 'd')) {
+            e.preventDefault();
+            openDebugTimeModal();
+        }
+    });
+
+    // 4. Initial display render
     updateFocusTimerDisplay();
+}
+
+/**
+ * ============================================================================
+ * DEBUG TIME MODAL CONTROLLERS (For developer & testing 7-day study minutes)
+ * ============================================================================
+ */
+
+/**
+ * Open Debug Time Modal & render input rows for the 7 rolling days
+ */
+function openDebugTimeModal() {
+    const modal = document.getElementById('debug-time-modal');
+    const listContainer = document.getElementById('debug-days-input-list');
+    if (!modal || !listContainer) return;
+
+    const rolling7Days = getRolling7DaysStudyData();
+    
+    listContainer.innerHTML = rolling7Days.map((item, idx) => `
+        <div class="flex items-center justify-between gap-3 p-2.5 rounded-xl border ${item.isToday ? 'border-brand-400 bg-brand-50/40 dark:bg-brand-950/40' : 'border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50'}">
+            <div class="min-w-0 flex-1">
+                <div class="flex items-center space-x-2">
+                    <span class="text-xs font-bold text-slate-800 dark:text-white truncate">${item.dayLabel}</span>
+                    ${item.isToday ? '<span class="text-[9px] font-black px-1.5 py-0.5 rounded bg-brand-500 text-white shrink-0">Hôm nay</span>' : ''}
+                </div>
+                <span class="text-[10px] text-slate-400 block">${item.dateStr}</span>
+            </div>
+            <div class="flex items-center space-x-1.5 shrink-0">
+                <input 
+                    type="number" 
+                    min="0" 
+                    max="1440"
+                    step="1"
+                    data-date="${item.dateStr}"
+                    value="${item.minutes}"
+                    oninput="calculateDebugPreview()"
+                    class="debug-day-input w-20 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500 text-right"
+                />
+                <span class="text-xs text-slate-400 font-semibold">phút</span>
+            </div>
+        </div>
+    `).join('');
+
+    calculateDebugPreview();
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+/**
+ * Close Debug Time Modal
+ */
+function closeDebugTimeModal() {
+    const modal = document.getElementById('debug-time-modal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+}
+
+/**
+ * Calculate and preview total minutes & % in debug modal
+ */
+function calculateDebugPreview() {
+    const inputs = document.querySelectorAll('.debug-day-input');
+    const previewEl = document.getElementById('debug-preview-total');
+    if (!previewEl) return;
+
+    let totalMins = 0;
+    inputs.forEach(input => {
+        totalMins += Math.max(0, parseInt(input.value, 10) || 0);
+    });
+
+    const dailyGoal = getDailyGoalMinutes();
+    const weeklyTarget = dailyGoal * 7;
+    const pct = weeklyTarget > 0 ? Math.round((totalMins / weeklyTarget) * 100) : 0;
+
+    let tierDesc = '';
+    if (pct === 0) tierDesc = '(0% - Xám)';
+    else if (pct <= 100) tierDesc = `(${pct}% - Vàng)`;
+    else if (pct <= 200) tierDesc = `(${pct}% - Xanh lá đè Vàng)`;
+    else if (pct <= 300) tierDesc = `(${pct}% - Xanh dương đè Xanh lá)`;
+    else tierDesc = `(MAX ${pct}% - Tím phát sáng 100%)`;
+
+    previewEl.textContent = `Tổng: ${totalMins} phút / ${weeklyTarget}m ${tierDesc}`;
+}
+
+/**
+ * Apply quick debug presets
+ */
+function applyDebugPreset(presetKey) {
+    const inputs = document.querySelectorAll('.debug-day-input');
+    if (!inputs || inputs.length === 0) return;
+
+    const dailyGoal = getDailyGoalMinutes();
+    let values = [];
+
+    if (presetKey === '0') {
+        values = [0, 0, 0, 0, 0, 0, 0];
+    } else if (presetKey === '75') {
+        // ~75% => dailyGoal * 7 * 0.75
+        const dayAvg = Math.round(dailyGoal * 0.75);
+        values = [dayAvg - 5, dayAvg, dayAvg + 5, dayAvg - 2, dayAvg + 3, dayAvg, dayAvg];
+    } else if (presetKey === '130') {
+        // ~130% => dailyGoal * 7 * 1.3
+        const dayAvg = Math.round(dailyGoal * 1.3);
+        values = [dayAvg - 5, dayAvg, dayAvg + 5, dayAvg, dayAvg + 2, dayAvg - 2, dayAvg];
+    } else if (presetKey === '230') {
+        // ~230% => dailyGoal * 7 * 2.3
+        const dayAvg = Math.round(dailyGoal * 2.3);
+        values = [dayAvg - 10, dayAvg, dayAvg + 10, dayAvg, dayAvg + 5, dayAvg - 5, dayAvg];
+    } else if (presetKey === '340') {
+        // ~340% => dailyGoal * 7 * 3.4
+        const dayAvg = Math.round(dailyGoal * 3.4);
+        values = [dayAvg - 15, dayAvg, dayAvg + 15, dayAvg, dayAvg + 10, dayAvg - 10, dayAvg];
+    } else if (presetKey === 'reset_default') {
+        values = [25, 30, 10, 45, 15, 20, 20];
+    }
+
+    inputs.forEach((input, idx) => {
+        if (values[idx] !== undefined) {
+            input.value = Math.max(0, values[idx]);
+        }
+    });
+
+    calculateDebugPreview();
+}
+
+/**
+ * Save Debug Time Modal inputs to localStorage and refresh all views
+ */
+function saveDebugTimeModal(event) {
+    if (event) event.preventDefault();
+
+    const inputs = document.querySelectorAll('.debug-day-input');
+    const history = getStudyHistory();
+
+    inputs.forEach(input => {
+        const dateStr = input.getAttribute('data-date');
+        const mins = Math.max(0, parseInt(input.value, 10) || 0);
+        if (dateStr) {
+            history[dateStr] = mins * 60; // in seconds
+        }
+    });
+
+    saveStudyHistory(history);
+    const todayStr = getLocalDateString();
+    inMemoryTodaySeconds = history[todayStr] || 0;
+
+    // Refresh everything immediately
+    updateFocusTimerDisplay();
+    if (typeof updateDashboardStats === 'function') updateDashboardStats(true);
+    if (typeof renderCharts === 'function') renderCharts();
+
+    closeDebugTimeModal();
+}
+
+// Lifecycle listeners to flush in-memory data
+if (typeof window !== 'undefined') {
+    window.addEventListener('beforeunload', () => {
+        if (inMemoryStudyHistory) saveStudyHistory(inMemoryStudyHistory);
+    });
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden && inMemoryStudyHistory) {
+            saveStudyHistory(inMemoryStudyHistory);
+        } else if (!document.hidden && isFocusModeActive) {
+            focusLastTickTime = Date.now();
+        }
+    });
 }
 
 // Auto initialize when DOM is ready

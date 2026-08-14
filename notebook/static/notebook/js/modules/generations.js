@@ -51,15 +51,15 @@
 
             if (genericContainer) {
                 const labelMap = {
-                    quiz: t('key_44', 'Bài tập trắc nghiệm'),
-                    flashcards: t('key_46', 'Flashcards'),
-                    mind_map: t('key_48', 'Mind Map'),
-                    report: t('key_51', 'Báo cáo'),
-                    audio_overview: 'Audio Overview',
-                    presentation: 'Presentation',
-                    video_overview: 'Video Overview',
-                    infographics: 'Infographics',
-                    data_table: 'Data Table'
+                    quiz: t('key_tag_quiz', 'Trắc nghiệm'),
+                    flashcards: t('key_tag_flashcards', 'Flashcards'),
+                    mind_map: t('key_tag_mindmap', 'Mind Map'),
+                    report: t('key_tag_report', 'Báo cáo'),
+                    audio_overview: t('key_tag_audio', 'Audio Overview'),
+                    presentation: t('key_tag_presentation', 'Presentation'),
+                    video_overview: t('key_tag_video', 'Video Overview'),
+                    infographics: t('key_tag_infographic', 'Infographics'),
+                    data_table: t('key_tag_data_table', 'Data Table')
                 };
 
                 const deleteText = t('key_btn_delete', 'Xóa');
