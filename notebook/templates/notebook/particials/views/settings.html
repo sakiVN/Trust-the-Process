@@ -1,8 +1,12 @@
+{% load static %}
 <!-- 7. VIEW: SETTINGS -->
 <section id="view-settings" class="hidden space-y-6">
-  <div>
-    <h2 class="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">Cài đặt hệ thống</h2>
-    <p class="text-xs text-slate-400 mt-1">Quản lý hồ sơ cá nhân và cấu hình ứng dụng.</p>
+  <div class="flex items-center space-x-3.5">
+    <img src="{% static 'notebook/icon-set/option.png' %}" class="w-10 h-10 object-contain shrink-0" alt="Cài đặt" />
+    <div>
+      <h2 class="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">Cài đặt hệ thống</h2>
+      <p class="text-xs text-slate-400 mt-0.5">Quản lý hồ sơ cá nhân và cấu hình ứng dụng.</p>
+    </div>
   </div>
 
   <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm max-w-2xl">

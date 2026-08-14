@@ -1,8 +1,12 @@
+{% load static %}
 <!-- 3. VIEW: DOCUMENTS (UNIFIED LIST VIEW) -->
 <section id="view-documents" class="hidden space-y-6">
-  <div>
-    <h2 class="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">Tất cả tài liệu của bạn</h2>
-    <p class="text-xs text-slate-400 mt-1">Danh sách tổng hợp tài nguyên học tập nguồn từ tất cả các sổ tay của bạn.</p>
+  <div class="flex items-center space-x-3.5">
+    <img src="{% static 'notebook/icon-set/upload.png' %}" class="w-10 h-10 object-contain shrink-0" alt="Tài liệu" />
+    <div>
+      <h2 class="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">Tất cả tài liệu của bạn</h2>
+      <p class="text-xs text-slate-400 mt-0.5">Danh sách tổng hợp tài nguyên học tập nguồn từ tất cả các sổ tay của bạn.</p>
+    </div>
   </div>
 
   <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">

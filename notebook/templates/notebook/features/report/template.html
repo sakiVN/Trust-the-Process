@@ -156,10 +156,13 @@ function generateReportHTML(rawText, title = "Tài liệu học tập") {
 
     let html = `
         <div class="text-left font-sans space-y-3 w-full max-w-2xl mx-auto">
-            <p class="text-xs font-semibold text-slate-500">🏷️ Báo cáo sinh tự động (Extractive)</p>
+            <p class="text-xs font-semibold text-slate-500 flex items-center space-x-1.5">
+                <img src="/static/notebook/icon-set/report.png" class="w-4 h-4 object-contain" alt="Report" />
+                <span>Báo cáo sinh tự động (Extractive)</span>
+            </p>
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm space-y-4">
                 <h4 class="text-sm font-bold text-brand-600 dark:text-brand-400 border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center space-x-2">
-                    <span>📄</span>
+                    <img src="/static/notebook/icon-set/report.png" class="w-5 h-5 object-contain shrink-0" alt="Báo cáo" />
                     <span>${displayTitle}</span>
                 </h4>
                 

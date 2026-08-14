@@ -34,19 +34,19 @@
             }
 
             if (type === 'flashcards') {
-                icon.innerText = '🎴';
+                if (icon) icon.src = '/static/notebook/icon-set/flashcard.png';
                 title.innerText = 'Tạo Flashcards';
                 subtitle.innerText = 'Nhập chủ đề học tập để hệ thống sinh thẻ nhớ thông minh';
             } else if (type === 'quiz') {
-                icon.innerText = '❓';
+                if (icon) icon.src = '/static/notebook/icon-set/quiz.png';
                 title.innerText = 'Tạo Câu hỏi trắc nghiệm';
                 subtitle.innerText = 'Nhập chủ đề học tập để sinh câu hỏi trắc nghiệm kèm giải thích';
             } else if (type === 'report') {
-                icon.innerText = '📝';
+                if (icon) icon.src = '/static/notebook/icon-set/report.png';
                 title.innerText = 'Tạo Báo cáo tóm tắt';
                 subtitle.innerText = 'Nhập chủ đề học tập để sinh báo cáo tóm lược học thuật';
             } else if (type === 'mindmap') {
-                icon.innerText = '🌿';
+                if (icon) icon.src = '/static/notebook/icon-set/mindmap.png';
                 title.innerText = 'Tạo Sơ đồ tư duy';
                 subtitle.innerText = 'Nhập chủ đề học tập để sinh sơ đồ tư duy dạng cây Mermaid.js';
             }

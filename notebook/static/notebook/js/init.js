@@ -1,9 +1,10 @@
+
 // ============================================================================
 // MAIN APPLICATION INITIALIZATION
 // ============================================================================
 
 window.addEventListener('DOMContentLoaded', () => {
-    console.log(':rocket: App Initializing...');
+    console.log('🚀 App Initializing...');
     
     // Step 1: Initialize theme (light/dark mode)
     if (typeof initTheme === 'function') {
@@ -16,5 +17,21 @@ window.addEventListener('DOMContentLoaded', () => {
         loadNotebooks();
     }
     
-    console.log(':white_check_mark: App Initialized - Notebooks loaded successfully');
+    console.log('✅ App Initialized - Notebooks loaded successfully');
+
+    // Step 3: Set up account and user settings
+    if (typeof setupUserSettings === 'function') {
+        setupUserSettings();
+    }
+
+    // Change the current language
+    const languageSelect = document.getElementById('language-select');
+    if (languageSelect) {
+        languageSelect.addEventListener('change', (event) => {
+            const selectedLang = event.target.value;
+            if (typeof loadLanguage === 'function') {
+                loadLanguage(selectedLang);
+            }
+        });
+    }
 });

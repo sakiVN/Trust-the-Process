@@ -1,3 +1,4 @@
+{% load static %}
 <!-- 2. VIEW: NOTEBOOKS (ORIGINAL INTERACTIVE WORKSPACE) -->
 <section id="view-notebooks" class="hidden space-y-8">
   <!-- Two Column Layout: Sub-sidebar Notebook List & Main Notebook Workspace -->
@@ -36,9 +37,15 @@
       <!-- Notebook workspace content tabs (only visible when notebook selected) -->
       <div id="notebook-workspace" class="hidden space-y-6">
         <!-- Tab switches -->
-        <div class="flex border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl p-1 shadow-sm">
-          <button onclick="switchTab('sources')" id="tab-btn-sources" class="flex-1 py-2.5 text-center text-sm font-semibold rounded-lg transition bg-brand-50 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400">📁 Tài liệu liên quan</button>
-          <button onclick="switchTab('ai-gen')" id="tab-btn-ai-gen" class="flex-1 py-2.5 text-center text-sm font-semibold rounded-lg transition text-slate-500 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white">✨ Tài nguyên học tập</button>
+        <div class="flex border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl p-1 shadow-sm gap-1">
+          <button onclick="switchTab('sources')" id="tab-btn-sources" class="flex-1 py-2 text-center text-xs font-semibold rounded-lg transition bg-brand-50 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400 flex items-center justify-center space-x-2">
+            <img src="{% static 'notebook/icon-set/upload.png' %}" class="w-5 h-5 object-contain shrink-0" alt="Tài liệu" />
+            <span>Tài liệu liên quan</span>
+          </button>
+          <button onclick="switchTab('ai-gen')" id="tab-btn-ai-gen" class="flex-1 py-2 text-center text-xs font-semibold rounded-lg transition text-slate-500 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white flex items-center justify-center space-x-2">
+            <img src="{% static 'notebook/icon-set/material.png' %}" class="w-5 h-5 object-contain shrink-0" alt="Tài nguyên" />
+            <span>Tài nguyên học tập</span>
+          </button>
         </div>
 
         <!-- Tab Content 1: Sources -->
@@ -93,7 +100,7 @@
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4 flex flex-col justify-between">
               <div class="space-y-4">
                 <div class="flex items-center space-x-3 border-b border-slate-100 dark:border-slate-800 pb-3">
-                  <span class="text-2xl">❓</span>
+                  <img src="{% static 'notebook/icon-set/quiz.png' %}" class="w-9 h-9 object-contain shrink-0" alt="Quiz" />
                   <div>
                     <h4 class="font-bold text-slate-850 dark:text-white text-xs">1. Trắc nghiệm ôn tập (Quiz)</h4>
                     <p class="text-[10px] text-slate-400">Tạo bộ câu hỏi trắc nghiệm để ôn tập và kiểm tra</p>
@@ -111,7 +118,7 @@
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4 flex flex-col justify-between">
               <div class="space-y-4">
                 <div class="flex items-center space-x-3 border-b border-slate-100 dark:border-slate-800 pb-3">
-                  <span class="text-2xl">🎴</span>
+                  <img src="{% static 'notebook/icon-set/flashcard.png' %}" class="w-9 h-9 object-contain shrink-0" alt="Flashcards" />
                   <div>
                     <h4 class="font-bold text-slate-850 dark:text-white text-xs">2. Thẻ nhớ thông minh (Flashcards)</h4>
                     <p class="text-[10px] text-slate-400">Tóm tắt thuật ngữ dưới dạng hỏi và trả lời nhanh</p>
@@ -130,7 +137,7 @@
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4 flex flex-col justify-between">
               <div class="space-y-4">
                 <div class="flex items-center space-x-3 border-b border-slate-100 dark:border-slate-800 pb-3">
-                  <span class="text-2xl">🌿</span>
+                  <img src="{% static 'notebook/icon-set/mindmap.png' %}" class="w-9 h-9 object-contain shrink-0" alt="Mind Map" />
                   <div>
                     <h4 class="font-bold text-slate-850 dark:text-white text-xs">3. Sơ đồ tư duy (Mind Map)</h4>
                     <p class="text-[10px] text-slate-400">Vẽ sơ đồ tư duy liên kết trực quan bằng Mermaid</p>
@@ -147,7 +154,7 @@
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4 flex flex-col justify-between font-sans">
               <div class="space-y-4">
                 <div class="flex items-center space-x-3 border-b border-slate-100 dark:border-slate-800 pb-3">
-                  <span class="text-2xl">📝</span>
+                  <img src="{% static 'notebook/icon-set/report.png' %}" class="w-9 h-9 object-contain shrink-0" alt="Report" />
                   <div>
                     <h4 class="font-bold text-slate-850 dark:text-white text-xs">4. Báo cáo tóm tắt (Report)</h4>
                     <p class="text-[10px] text-slate-400">Sinh báo cáo tóm lược học thuật ngắn gọn của tài liệu</p>

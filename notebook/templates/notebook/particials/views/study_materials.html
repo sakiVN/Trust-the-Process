@@ -1,8 +1,12 @@
+{% load static %}
 <!-- 4. VIEW: STUDY MATERIALS -->
 <section id="view-study-materials" class="hidden space-y-6">
-  <div>
-    <h2 class="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">Tài nguyên học tập</h2>
-    <p class="text-xs text-slate-400 mt-1">Tổng hợp tất cả quiz, flashcard và các tài liệu học tập đã tạo để bạn xem, làm bài và quản lý nhanh.</p>
+  <div class="flex items-center space-x-3.5">
+    <img src="{% static 'notebook/icon-set/material.png' %}" class="w-10 h-10 object-contain shrink-0" alt="Tài nguyên học tập" />
+    <div>
+      <h2 class="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">Tài nguyên học tập</h2>
+      <p class="text-xs text-slate-400 mt-0.5">Tổng hợp tất cả quiz, flashcard và các tài liệu học tập đã tạo để bạn xem, làm bài và quản lý nhanh.</p>
+    </div>
   </div>
 
   <div id="all-study-materials-list" class="grid grid-cols-1 md:grid-cols-2 gap-6">

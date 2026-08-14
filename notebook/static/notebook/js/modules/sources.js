@@ -213,9 +213,9 @@
                 const btn = document.getElementById(`tab-btn-${t}`);
                 if (btn) {
                     if (t === tab) {
-                        btn.className = "flex-1 py-2.5 text-center text-sm font-semibold rounded-lg transition bg-brand-50 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400";
+                        btn.className = "flex-1 py-2 text-center text-xs font-semibold rounded-lg transition bg-brand-50 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400 flex items-center justify-center space-x-2";
                     } else {
-                        btn.className = "flex-1 py-2.5 text-center text-sm font-semibold rounded-lg transition text-slate-500 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white";
+                        btn.className = "flex-1 py-2 text-center text-xs font-semibold rounded-lg transition text-slate-500 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white flex items-center justify-center space-x-2";
                     }
                 }
                 const content = document.getElementById(`tab-content-${t}`);

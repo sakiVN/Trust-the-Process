@@ -19,12 +19,16 @@
                 return;
             }
 
-            container.innerHTML = allSources.map(src => `
+            container.innerHTML = allSources.map(src => {
+                const docIcon = src.type === 'quiz' ? '/static/notebook/icon-set/quiz.png' : '/static/notebook/icon-set/upload.png';
+                const labelText = src.type === 'quiz' ? 'Bài tập trắc nghiệm' : (src.source_type === 'file' ? 'File PDF' : (src.source_type === 'link' ? 'Link' : 'Văn bản'));
+                return `
                 <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-3 hover:scale-[1.01] hover:shadow-md transition">
                     <div class="flex justify-between items-start gap-3">
                         <div class="min-w-0">
-                            <span class="text-[9px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full ${src.type === 'quiz' ? 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' : (src.source_type === 'link' ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300')}">
-                                ${src.type === 'quiz' ? 'Bài tập trắc nghiệm' : (src.source_type === 'file' ? 'File PDF' : (src.source_type === 'link' ? 'Link' : 'Văn bản'))}
+                            <span class="inline-flex items-center gap-1.5 text-[9px] uppercase tracking-wider font-bold px-2.5 py-0.5 rounded-full ${src.type === 'quiz' ? 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' : (src.source_type === 'link' ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : 'bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300')}">
+                                <img src="${docIcon}" class="w-3.5 h-3.5 object-contain shrink-0" alt="Icon" />
+                                <span>${labelText}</span>
                             </span>
                             <h4 class="font-bold text-slate-850 dark:text-white text-sm mt-2 truncate">${src.type === 'quiz' ? src.name : src.title}</h4>
                         </div>
@@ -35,14 +39,15 @@
                             </button>`}
                         </div>
                     </div>
-                    ${src.type === 'quiz' ? `<p class="text-[10px] text-slate-500 dark:text-slate-400 line-clamp-3 bg-slate-50 dark:bg-slate-900/40 p-3 rounded-xl border border-slate-100 dark:border-slate-800">${src.description || 'Bộ câu hỏi trắc nghiệm đã lưu.'}</p>` : `${src.file_path ? `<a href="${src.file_path}" target="_blank" class="text-[10px] text-brand-500 hover:underline truncate block mt-1">📄 Tải xuống file PDF</a>` : ''}
+                    ${src.type === 'quiz' ? `<p class="text-[10px] text-slate-500 dark:text-slate-400 line-clamp-3 bg-slate-50 dark:bg-slate-900/40 p-3 rounded-xl border border-slate-100 dark:border-slate-800">${src.description || 'Bộ câu hỏi trắc nghiệm đã lưu.'}</p>` : `${src.file_path ? `<a href="${src.file_path}" target="_blank" class="text-[10px] text-brand-500 hover:underline truncate block mt-1 flex items-center space-x-1"><img src="/static/notebook/icon-set/upload.png" class="w-3.5 h-3.5 object-contain" /><span>Tải xuống file PDF</span></a>` : ''}
                     <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-3 bg-slate-50 dark:bg-slate-900/40 p-3 rounded-xl border border-slate-100 dark:border-slate-800">${src.content}</p>`}
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center text-[10px] text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-800 gap-2">
                         <span>Sổ tay: <strong>${src.notebookName}</strong></span>
                         <span>${new Date(src.created_at || Date.now()).toLocaleDateString('vi-VN')}</span>
                     </div>
                 </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         function renderStudyMaterialsView() {
@@ -76,10 +81,18 @@
                 data_table: 'Data Table'
             };
 
+            const typeIconMap = {
+                quiz: '/static/notebook/icon-set/quiz.png',
+                flashcards: '/static/notebook/icon-set/flashcard.png',
+                mind_map: '/static/notebook/icon-set/mindmap.png',
+                report: '/static/notebook/icon-set/report.png'
+            };
+
             container.innerHTML = allMaterials.map(item => {
                 const isQuiz = item.materialType === 'quiz';
                 const label = isQuiz ? 'Bài tập trắc nghiệm' : (generationLabel[item.generation_type] || 'Tài liệu học tập');
                 const title = isQuiz ? item.name : `${item.generation_type ? (generationLabel[item.generation_type] || item.generation_type) : 'Tài liệu học tập'}`;
+                const iconSrc = isQuiz ? typeIconMap.quiz : (typeIconMap[item.generation_type] || '/static/notebook/icon-set/material.png');
                 let summary = 'Không có mô tả nội dung.';
                 if (isQuiz) {
                     summary = item.description || 'Bộ câu hỏi trắc nghiệm đã lưu.';
@@ -106,8 +119,9 @@
                     <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm hover:scale-[1.01] hover:shadow-md transition">
                         <div class="flex justify-between items-start gap-3">
                             <div class="min-w-0">
-                                <span class="text-[9px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full ${isQuiz ? 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' : 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300'}">
-                                    ${label}
+                                <span class="inline-flex items-center gap-1.5 text-[9px] uppercase tracking-wider font-bold px-2.5 py-0.5 rounded-full ${isQuiz ? 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' : 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300'}">
+                                    <img src="${iconSrc}" class="w-3.5 h-3.5 object-contain shrink-0" alt="Icon" />
+                                    <span>${label}</span>
                                 </span>
                                 <h4 class="font-bold text-slate-850 dark:text-white text-sm mt-2 truncate">${title}</h4>
                             </div>
@@ -206,9 +220,9 @@
                 const navBtn = document.getElementById(`nav-${v}`);
                 if (navBtn) {
                     if (v === viewName) {
-                        navBtn.className = "w-full flex items-center justify-start space-x-3 px-4 py-3 rounded-xl text-sm text-left font-semibold transition bg-brand-50 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400 shadow-sm";
+                        navBtn.className = "w-full flex items-center justify-start space-x-2.5 px-3 py-2 rounded-xl text-xs text-left font-semibold transition bg-brand-50 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400 shadow-sm";
                     } else {
-                        navBtn.className = "w-full flex items-center justify-start space-x-3 px-4 py-3 rounded-xl text-sm text-left font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white";
+                        navBtn.className = "w-full flex items-center justify-start space-x-2.5 px-3 py-2 rounded-xl text-xs text-left font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white";
                     }
                 }
             });
