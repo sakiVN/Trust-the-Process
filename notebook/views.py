@@ -4,10 +4,11 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.request import Request
 from django.contrib.auth.models import User
-from .models import Notebook, Note, Source, AIGeneration, QuizSet, QuizQuestion, QuizAttempt
+from .models import Notebook, Note, Source, AIGeneration, QuizSet, QuizQuestion, QuizAttempt, FlashcardSet, Flashcard
 from .serializers import (
     NotebookSerializer, NoteSerializer, SourceSerializer, AIGenerationSerializer,
-    NoteReviseSerializer, QuizSetSerializer, QuizQuestionSerializer, QuizAttemptSerializer
+    NoteReviseSerializer, QuizSetSerializer, QuizQuestionSerializer, QuizAttemptSerializer,
+    FlashcardSetSerializer
 )
 from . import ai_service
 import pypdf
@@ -128,14 +129,39 @@ class NotebookViewSet(viewsets.ModelViewSet):
         ai_content = ai_service.generate_notebook_materials(sources_text, generation_type, first_title)
         
         # Save generation to DB
-        gen_obj = AIGeneration.objects.create(
-            notebook=notebook,
-            generation_type=generation_type,
-            content=ai_content
-        )
-        
-        serializer = AIGenerationSerializer(gen_obj)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        if generation_type == 'flashcards':
+            import json
+            try:
+                flashcards_data = json.loads(ai_content)
+                flashcard_set_name = request.data.get('name', f'Flashcards: {first_title}')
+                user = request.user if request.user.is_authenticated else User.objects.filter(username='student').first()
+                
+                flashcard_set = FlashcardSet.objects.create(
+                    user=user,
+                    notebook=notebook,
+                    name=flashcard_set_name
+                )
+                
+                for idx, card in enumerate(flashcards_data):
+                    Flashcard.objects.create(
+                        flashcard_set=flashcard_set,
+                        order=idx,
+                        question=card.get('question', ''),
+                        answer=card.get('answer', '')
+                    )
+                
+                serializer = FlashcardSetSerializer(flashcard_set)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response({'error': f"Failed to save flashcards: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        else:
+            gen_obj = AIGeneration.objects.create(
+                notebook=notebook,
+                generation_type=generation_type,
+                content=ai_content
+            )
+            serializer = AIGenerationSerializer(gen_obj)
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class NoteViewSet(viewsets.ModelViewSet):
@@ -206,6 +232,22 @@ class SourceViewSet(viewsets.ModelViewSet):
             return Source.objects.filter(notebook__user=self.request.user)
         return Source.objects.all()
 
+
+class FlashcardSetViewSet(viewsets.ModelViewSet):
+    serializer_class = FlashcardSetSerializer
+    queryset = FlashcardSet.objects.all().order_by('-created_at')
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            return FlashcardSet.objects.filter(user=self.request.user).order_by('-created_at')
+        return FlashcardSet.objects.all().order_by('-created_at')
+
+    def perform_create(self, serializer):
+        if self.request.user.is_authenticated:
+            serializer.save(user=self.request.user)
+        else:
+            user, created = User.objects.get_or_create(username='student', email='student@example.com')
+            serializer.save(user=user)
 
 class QuizSetViewSet(viewsets.ModelViewSet):
     serializer_class = QuizSetSerializer

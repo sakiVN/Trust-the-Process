@@ -400,6 +400,10 @@ function updateProgressViewStats() {
 
 // Select a notebook to show details and workspace
 async function selectNotebook(id, keepCurrentTab = false) {
+    if (isSelfStudyMode) {
+        alert("Vui lòng kết thúc Chế độ Tự học trước khi chuyển sổ tay khác.");
+        return;
+    }
     activeNotebookId = id;
     renderNotebooksList();
 
@@ -416,7 +420,7 @@ async function selectNotebook(id, keepCurrentTab = false) {
         // Render tabs content
         renderSources(notebook.sources || []);
         renderNotes(notebook.notes || []);
-        renderAIGenerations(notebook.generations || [], notebook.quizzes || []);
+        renderAIGenerations(notebook.generations || [], notebook.quizzes || [], notebook.flashcard_sets || []);
         renderQuizSets(notebook.quizzes || []);
         populateNotebookSelectors();
 
@@ -1751,14 +1755,24 @@ async function triggerAIGeneration(type) {
 }
 
 // Render AI generated documents / study materials in split workspace category containers
-function renderAIGenerations(generations, quizzes = []) {
+function renderAIGenerations(generations, quizzes = [], flashcardSets = []) {
     const categories = ['quiz', 'flashcards', 'mind_map', 'report'];
-    const allStudyMaterials = [...(generations || []), ...(quizzes || []).map(q => ({
-        ...q,
-        generation_type: 'quiz',
-        isQuizSet: true,
-        created_at: q.created_at || new Date().toISOString()
-    }))];
+    const allStudyMaterials = [
+        ...(generations || []),
+        ...(quizzes || []).map(q => ({
+            ...q,
+            generation_type: 'quiz',
+            isQuizSet: true,
+            created_at: q.created_at || new Date().toISOString()
+        })),
+        ...(flashcardSets || []).map(f => ({
+            ...f,
+            generation_type: 'flashcards',
+            isFlashcardSet: true,
+            content: JSON.stringify(f.flashcards),
+            created_at: f.created_at || new Date().toISOString()
+        }))
+    ];
     const genericContainer = document.getElementById('ai-generations-container');
 
     // Clear containers
@@ -1793,7 +1807,7 @@ function renderAIGenerations(generations, quizzes = []) {
         };
 
         genericContainer.innerHTML = allStudyMaterials.slice().reverse().map(gen => {
-            const label = labelMap[gen.generation_type] || 'Tài liệu học tập';
+            const label = gen.name || labelMap[gen.generation_type] || 'Tài liệu học tập';
             let preview = 'Tài liệu học tập đã lưu.';
             try {
                 const raw = String(gen.content || '').trim();
@@ -1809,7 +1823,7 @@ function renderAIGenerations(generations, quizzes = []) {
                         <div class="border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm space-y-3">
                             <div class="flex justify-between items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-2">
                                 <span class="text-[9px] uppercase tracking-wider font-bold text-slate-500">${label}</span>
-                                <button onclick="deleteGeneration(${gen.id})" class="text-[10px] text-rose-500 hover:text-rose-700 font-bold hover:underline" title="Xóa kết quả">Xóa</button>
+                                <button onclick="${gen.isFlashcardSet ? 'deleteFlashcardSet' : 'deleteGeneration'}(${gen.id})" class="text-[10px] text-rose-500 hover:text-rose-700 font-bold hover:underline" title="Xóa kết quả">Xóa</button>
                             </div>
                             <p class="text-xs text-slate-700 dark:text-slate-300 line-clamp-4">${preview}</p>
                             <div class="text-[10px] text-slate-400">${new Date(gen.created_at).toLocaleString('vi-VN')}</div>
@@ -1945,7 +1959,7 @@ function renderAIGenerations(generations, quizzes = []) {
                         <div class="border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-3">
                             <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2">
                                 <span class="text-[9px] text-slate-400 font-semibold">${new Date(gen.created_at).toLocaleString('vi-VN')}</span>
-                                <button onclick="deleteGeneration(${gen.id})" class="text-[10px] text-rose-500 hover:text-rose-700 font-bold hover:underline" title="Xóa kết quả">Xóa</button>
+                                <button onclick="${gen.isFlashcardSet ? 'deleteFlashcardSet' : 'deleteGeneration'}(${gen.id})" class="text-[10px] text-rose-500 hover:text-rose-700 font-bold hover:underline" title="Xóa kết quả">Xóa</button>
                             </div>
                             <div class="space-y-3">
                                 ${renderedContent}
@@ -2507,6 +2521,24 @@ async function deleteSource(id) {
 }
 
 // DELETE Request: Remove an AI Generation
+async function deleteFlashcardSet(id) {
+    if (!confirm("Bạn có chắc chắn muốn xóa danh mục Flashcard này?")) return;
+    try {
+        const res = await fetchWithCsrf(`${API_URL}/flashcard_sets/${id}/`, {
+            method: 'DELETE'
+        });
+        if (res.ok) {
+            alert("Đã xóa danh mục Flashcard thành công!");
+            await loadNotebooks();
+            if (activeNotebookId) {
+                await selectNotebook(activeNotebookId, true);
+            }
+        }
+    } catch (e) {
+        console.error("Lỗi xóa Flashcard Set:", e);
+    }
+}
+
 async function deleteGeneration(id) {
     if (!confirm("Bạn có chắc chắn muốn xóa tài nguyên AI này?")) return;
 
@@ -3437,6 +3469,34 @@ async function saveToolResult() {
             }
         }
 
+        if (activeToolType === 'flashcards') {
+            const saveRes = await fetchWithCsrf(`${API_URL}/flashcard_sets/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    notebook: activeNotebookId,
+                    name: document.getElementById('tool-input-title').value.trim() || 'Thẻ ghi nhớ mới',
+                    flashcards: JSON.parse(content)
+                })
+            });
+            if (saveRes.ok) {
+                alert("Đã lưu dữ liệu vào hệ thống!");
+                closeToolModal();
+                if (activeNotebookId) {
+                    await selectNotebook(activeNotebookId, true);
+                    await loadNotebooks();
+                }
+            } else {
+                const data = await saveRes.json();
+                alert("Lỗi lưu DB: " + JSON.stringify(data));
+            }
+            if (saveBtn) {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = originalBtnHTML;
+            }
+            return;
+        }
+
         // POST to AIGeneration endpoint
         const saveRes = await fetchWithCsrf(`${API_URL}/generations/`, {
             method: 'POST',
@@ -3616,6 +3676,27 @@ async function markAllNotificationsRead() {
 let isSelfStudyMode = false;
 let pomodoroTimer = null;
 let pomodoroSeconds = 25 * 60;
+
+let studySessionStartTime = null;
+
+function playPomodoroChime() {
+    try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // A5
+        gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1);
+        oscillator.start(audioCtx.currentTime);
+        oscillator.stop(audioCtx.currentTime + 1);
+    } catch(e) {
+        console.log('Audio not supported');
+    }
+}
+
 let isPomodoroRunning = false;
 
 function toggleSelfStudyMode() {
@@ -3627,6 +3708,7 @@ function toggleSelfStudyMode() {
     const rightSideIcons = document.querySelector('header .flex.items-center.space-x-3\\.5');
     
     if (isSelfStudyMode) {
+        studySessionStartTime = new Date();
         if (sidebar) sidebar.classList.add('hidden');
         if (mainContainer) mainContainer.classList.remove('lg:pl-72');
         if (searchBar) searchBar.classList.add('hidden');
@@ -3641,7 +3723,23 @@ function toggleSelfStudyMode() {
         }
         const btnIcon = document.querySelector('#self-study-btn svg');
         if(btnIcon) btnIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>`;
+        
+        const toast = document.createElement('div');
+        toast.className = 'fixed bottom-4 right-4 bg-brand-600 text-white px-4 py-2 rounded-xl shadow-lg z-50 text-sm font-semibold transition-opacity duration-500';
+        toast.innerText = 'Đã vào Chế độ Tự học. Hãy tập trung nhé!';
+        document.body.appendChild(toast);
+        setTimeout(() => { toast.classList.add('opacity-0'); setTimeout(() => toast.remove(), 500); }, 3000);
+        
     } else {
+        let sessionMsg = 'Đã thoát Chế độ Tự học.';
+        if (studySessionStartTime) {
+            const diffMs = new Date() - studySessionStartTime;
+            const diffMins = Math.floor(diffMs / 60000);
+            if (diffMins > 0) {
+                sessionMsg = `Phiên học kết thúc! Bạn đã tập trung được ${diffMins} phút.`;
+            }
+        }
+        
         if (sidebar) sidebar.classList.remove('hidden');
         if (mainContainer) mainContainer.classList.add('lg:pl-72');
         if (searchBar) searchBar.classList.remove('hidden');
@@ -3654,6 +3752,8 @@ function toggleSelfStudyMode() {
         }
         const btnIcon = document.querySelector('#self-study-btn svg');
         if(btnIcon) btnIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>`;
+        
+        alert(sessionMsg);
     }
 }
 
@@ -3678,7 +3778,23 @@ function togglePomodoro() {
             } else {
                 clearInterval(pomodoroTimer);
                 isPomodoroRunning = false;
-                alert("Hết giờ! Hãy nghỉ ngơi 5 phút nhé.");
+                playPomodoroChime(); // Phát âm thanh tinh tế
+                
+                // Hiển thị modal thay vì alert
+                const modalHtml = `
+                    <div id="pomodoro-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center">
+                        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 max-w-sm w-full mx-4 shadow-2xl text-center">
+                            <div class="w-16 h-16 bg-brand-100 dark:bg-brand-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <span class="text-3xl">🎯</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Hết giờ học!</h3>
+                            <p class="text-slate-500 dark:text-slate-400 mb-6">Bạn đã hoàn thành 25 phút tập trung. Hãy đứng lên và nghỉ ngơi 5 phút nhé.</p>
+                            <button onclick="document.getElementById('pomodoro-modal').remove()" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-3 px-4 rounded-xl transition">Tuyệt vời!</button>
+                        </div>
+                    </div>
+                `;
+                document.body.insertAdjacentHTML('beforeend', modalHtml);
+                
                 pomodoroSeconds = 25 * 60;
                 if(timeEl) timeEl.innerText = formatPomodoroTime(pomodoroSeconds);
                 if(toggleBtn) toggleBtn.innerHTML = `<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>`;

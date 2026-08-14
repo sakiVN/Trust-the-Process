@@ -98,3 +98,26 @@ class AIGeneration(models.Model):
 
     def __str__(self):
         return f"{self.generation_type} for {self.notebook.name}"
+
+class FlashcardSet(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='flashcard_sets')
+    notebook = models.ForeignKey(Notebook, on_delete=models.CASCADE, related_name='flashcard_sets', blank=True, null=True)
+    name = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Flashcard Set: {self.name} ({self.user.username})"
+
+class Flashcard(models.Model):
+    flashcard_set = models.ForeignKey(FlashcardSet, on_delete=models.CASCADE, related_name='flashcards')
+    question = models.TextField()
+    answer = models.TextField()
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        return f"Card {self.order + 1}: {self.question[:50]}"

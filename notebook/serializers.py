@@ -2,7 +2,7 @@ from rest_framework.exceptions import APIException
 from rest_framework import status
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Notebook, Note, Source, AIGeneration, QuizSet, QuizQuestion, QuizAttempt
+from .models import Notebook, Note, Source, AIGeneration, QuizSet, QuizQuestion, QuizAttempt, FlashcardSet, Flashcard
 
 class NoteValidationError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
@@ -127,13 +127,54 @@ class QuizAttemptSerializer(serializers.ModelSerializer):
         fields = ['id', 'quiz', 'user', 'score', 'total', 'percentage', 'created_at']
         read_only_fields = ['id', 'user', 'created_at']
 
+class FlashcardSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Flashcard
+        fields = ['id', 'question', 'answer', 'order']
+        read_only_fields = ['id', 'order']
+
+class FlashcardSetSerializer(serializers.ModelSerializer):
+    flashcards = FlashcardSerializer(many=True, required=False)
+
+    class Meta:
+        model = FlashcardSet
+        fields = ['id', 'user', 'notebook', 'name', 'description', 'flashcards', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'user']
+
+    def validate(self, attrs):
+        notebook = attrs.get('notebook')
+        if notebook == '':
+            attrs['notebook'] = None
+        return attrs
+
+    def create(self, validated_data):
+        flashcards_data = validated_data.pop('flashcards', [])
+        flashcard_set = FlashcardSet.objects.create(**validated_data)
+        for idx, card_data in enumerate(flashcards_data):
+            Flashcard.objects.create(flashcard_set=flashcard_set, order=idx, **card_data)
+        return flashcard_set
+
+    def update(self, instance, validated_data):
+        flashcards_data = validated_data.pop('flashcards', None)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        if flashcards_data is not None:
+            instance.flashcards.all().delete()
+            for idx, card_data in enumerate(flashcards_data):
+                Flashcard.objects.create(flashcard_set=instance, order=idx, **card_data)
+
+        return instance
+
 class NotebookSerializer(serializers.ModelSerializer):
     notes = NoteSerializer(many=True, read_only=True)
     sources = SourceSerializer(many=True, read_only=True)
     generations = AIGenerationSerializer(many=True, read_only=True)
     quizzes = QuizSetSerializer(many=True, read_only=True)
+    flashcard_sets = FlashcardSetSerializer(many=True, read_only=True)
     
     class Meta:
         model = Notebook
-        fields = ['id', 'user', 'name', 'description', 'notes', 'sources', 'generations', 'quizzes', 'created_at', 'updated_at']
+        fields = ['id', 'user', 'name', 'description', 'notes', 'sources', 'generations', 'quizzes', 'flashcard_sets', 'created_at', 'updated_at']
         read_only_fields = ['user', 'created_at', 'updated_at']
