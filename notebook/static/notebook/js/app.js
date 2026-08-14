@@ -3702,7 +3702,7 @@ let isPomodoroRunning = false;
 function toggleSelfStudyMode() {
     isSelfStudyMode = !isSelfStudyMode;
     const sidebar = document.querySelector('aside');
-    const mainContainer = document.querySelector('.lg\\:pl-72');
+    const mainContainer = document.getElementById('main-content-wrapper') || document.querySelector('.lg\\:pl-72');
     const searchBar = document.querySelector('.search-dropdown-wrapper');
     const pomodoroContainer = document.getElementById('pomodoro-timer-container');
     const rightSideIcons = document.querySelector('header .flex.items-center.space-x-3\\.5');
