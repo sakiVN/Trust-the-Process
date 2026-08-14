@@ -15,6 +15,20 @@ let currentFlashcardEditorCards = [];
 let currentQuizGenerationEditingId = null;
 let currentQuizGenerationEditorQuestions = [];
 
+// Study Timer Variables
+let eduBrainStudyMins = parseInt(localStorage.getItem('eduBrainStudyMins')) || 0;
+let studyTimerInterval = null;
+
+function startStudyTimer() {
+    if (!studyTimerInterval) {
+        studyTimerInterval = setInterval(() => {
+            eduBrainStudyMins++;
+            localStorage.setItem('eduBrainStudyMins', eduBrainStudyMins);
+            updateDashboardStats(); // Refresh stats UI if in view
+        }, 60000); // every minute
+    }
+}
+
 // CSRF Token helper function
 function getCsrfToken() {
     const name = 'csrftoken';
@@ -49,6 +63,7 @@ async function fetchWithCsrf(url, options = {}) {
 window.addEventListener('DOMContentLoaded', () => {
     loadNotebooks();
     initTheme();
+    startStudyTimer();
 });
 
 // Toggle Sidebar for mobile
@@ -64,6 +79,11 @@ function switchView(viewName) {
 
     if (viewName === 'dashboard') {
         fetchNotifications();
+    }
+    
+    // Auto-select first notebook if navigating to notebooks view and none is selected
+    if (viewName === 'notebooks' && !activeNotebookId && notebooks.length > 0) {
+        selectNotebook(notebooks[0].id);
     }
 
     // Toggle view visibility
@@ -302,10 +322,13 @@ function renderNotebooksList() {
         return;
     }
     container.innerHTML = notebooks.map(nb => `
-                <button onclick="selectNotebook(${nb.id})" class="w-full text-left px-4 py-3 rounded-xl transition text-sm flex flex-col space-y-1 ${nb.id === activeNotebookId ? 'bg-brand-600 text-white font-medium shadow-md shadow-brand-100 dark:shadow-none' : 'hover:bg-slate-100 dark:hover:bg-slate-850 text-slate-700 dark:text-slate-300'}">
-                    <span class="truncate block font-semibold">${nb.name}</span>
-                    <span class="truncate text-[10px] ${nb.id === activeNotebookId ? 'text-brand-100' : 'text-slate-400'}">${nb.description || 'Không mô tả'}</span>
-                </button>
+                <div class="group flex items-center relative rounded-xl transition ${nb.id === activeNotebookId ? 'bg-brand-600 shadow-md shadow-brand-100 dark:shadow-none' : 'hover:bg-slate-100 dark:hover:bg-slate-850'}">
+                    <input type="checkbox" class="bulk-notebook-cb absolute left-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity w-4 h-4 rounded text-brand-600 focus:ring-brand-500 border-slate-300 z-10" value="${nb.id}">
+                    <button onclick="selectNotebook(${nb.id})" class="w-full text-left pl-9 pr-4 py-3 flex flex-col space-y-1 text-sm ${nb.id === activeNotebookId ? 'text-white font-medium' : 'text-slate-700 dark:text-slate-300'}">
+                        <span class="truncate block font-semibold">${nb.name}</span>
+                        <span class="truncate text-[10px] ${nb.id === activeNotebookId ? 'text-brand-100' : 'text-slate-400'}">${nb.description || 'Không mô tả'}</span>
+                    </button>
+                </div>
             `).join('');
 }
 
@@ -337,8 +360,15 @@ function updateDashboardStats() {
     });
 
     const completionPct = quizCount ? Math.round((quizCompletedCount / quizCount) * 100) : 0;
-    document.getElementById('stat-notebooks-count').innerText = notebooksCount;
-    document.getElementById('stat-documents-count').innerText = sourcesCount;
+    const statNotebooks = document.getElementById('stat-notebooks-count');
+    if (statNotebooks) statNotebooks.innerText = notebooksCount;
+    
+    const statDocs = document.getElementById('stat-documents-count');
+    if (statDocs) statDocs.innerText = sourcesCount;
+
+    const statStudyTime = document.getElementById('stat-study-time');
+    if (statStudyTime) statStudyTime.innerText = `${eduBrainStudyMins} phút`;
+    
     const completionCard = document.querySelector('#view-dashboard .bg-amber-50')?.parentElement?.querySelector('div > span.block.text-2xl');
     if (completionCard) {
         completionCard.innerText = `${completionPct}%`;
@@ -2434,6 +2464,7 @@ function renderCharts() {
                     borderColor: isDark ? '#0f172a' : '#ffffff'
                 }]
             },
+            plugins: hasData ? [centerTextPlugin] : [],
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -3357,5 +3388,157 @@ async function fetchNotifications() {
     } catch (err) {
         console.error("Lỗi khi tải thông báo:", err);
     }
-    }
+}
 
+// --- ADDED FUNCTIONS ---
+
+const centerTextPlugin = {
+    id: 'centerTextPlugin',
+    beforeDraw: function(chart) {
+        if (chart.config.type !== 'doughnut') return;
+        const ctx = chart.ctx;
+        const width = chart.width;
+        const height = chart.height;
+
+        let total = 0;
+        chart.data.datasets.forEach(dataset => {
+            total += dataset.data.reduce((a, b) => a + b, 0);
+        });
+
+        ctx.restore();
+        const fontSize = (height / 120).toFixed(2);
+        ctx.font = 'bold ' + fontSize + 'em sans-serif';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = document.documentElement.classList.contains('dark') ? '#f8fafc' : '#0f172a';
+
+        const text = total.toString();
+        const textX = Math.round((width - ctx.measureText(text).width) / 2);
+        const textY = height / 2;
+
+        ctx.fillText(text, textX, textY);
+
+        ctx.font = 'normal ' + (fontSize * 0.4).toFixed(2) + 'em sans-serif';
+        ctx.fillStyle = document.documentElement.classList.contains('dark') ? '#94a3b8' : '#64748b';
+        const subText = 'Tài liệu';
+        const subTextX = Math.round((width - ctx.measureText(subText).width) / 2);
+        ctx.fillText(subText, subTextX, textY + (height * 0.12));
+
+        ctx.save();
+    }
+};
+
+async function deleteBulkNotebooks() {
+    const checkboxes = document.querySelectorAll('.bulk-notebook-cb:checked');
+    if (checkboxes.length === 0) {
+        return alert('Vui lòng chọn ít nhất một sổ tay để xóa.');
+    }
+    
+    if (!confirm('Bạn có chắc chắn muốn xóa ' + checkboxes.length + ' sổ tay đã chọn? Hành động này không thể hoàn tác.')) return;
+    
+    let successCount = 0;
+    for (let cb of checkboxes) {
+        try {
+            const res = await fetchWithCsrf(`${API_URL}/notebooks/${cb.value}/`, { method: 'DELETE' });
+            if (res.ok) successCount++;
+        } catch (e) { console.error('Error deleting notebook:', e); }
+    }
+    
+    alert('Đã xóa ' + successCount + ' sổ tay thành công!');
+    activeNotebookId = null;
+    await loadNotebooks();
+    switchView('dashboard');
+}
+
+async function markAllNotificationsRead() {
+    const badge = document.getElementById('notification-badge');
+    if (badge) {
+        badge.classList.add('hidden');
+        badge.classList.remove('flex');
+        badge.innerText = '0';
+    }
+    const list = document.getElementById('notification-list');
+    if (list) {
+        list.querySelectorAll('li').forEach(li => {
+            li.classList.remove('bg-brand-50/50', 'dark:bg-brand-900/10');
+            li.classList.add('opacity-70');
+        });
+    }
+    try { await fetchWithCsrf(`${API_URL}/dashboard/notifications/mark-read/`, { method: 'POST' }); } catch (e) {}
+}
+
+let isSelfStudyMode = false;
+let pomodoroTimer = null;
+let pomodoroSeconds = 25 * 60;
+let isPomodoroRunning = false;
+
+function toggleSelfStudyMode() {
+    isSelfStudyMode = !isSelfStudyMode;
+    const sidebar = document.querySelector('aside');
+    const mainContainer = document.querySelector('.lg\\:pl-72');
+    const searchBar = document.querySelector('.search-dropdown-wrapper');
+    const pomodoroContainer = document.getElementById('pomodoro-timer-container');
+    const rightSideIcons = document.querySelector('header .flex.items-center.space-x-3\\.5');
+    
+    if (isSelfStudyMode) {
+        if (sidebar) sidebar.classList.add('hidden');
+        if (mainContainer) mainContainer.classList.remove('lg:pl-72');
+        if (searchBar) searchBar.classList.add('hidden');
+        if (pomodoroContainer) {
+            pomodoroContainer.classList.remove('hidden');
+            pomodoroContainer.classList.add('flex');
+        }
+        if (rightSideIcons) {
+            Array.from(rightSideIcons.children).forEach(child => {
+                if (child.id !== 'self-study-btn') child.classList.add('hidden');
+            });
+        }
+        const btnIcon = document.querySelector('#self-study-btn svg');
+        if(btnIcon) btnIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>`;
+    } else {
+        if (sidebar) sidebar.classList.remove('hidden');
+        if (mainContainer) mainContainer.classList.add('lg:pl-72');
+        if (searchBar) searchBar.classList.remove('hidden');
+        if (pomodoroContainer) {
+            pomodoroContainer.classList.add('hidden');
+            pomodoroContainer.classList.remove('flex');
+        }
+        if (rightSideIcons) {
+            Array.from(rightSideIcons.children).forEach(child => child.classList.remove('hidden'));
+        }
+        const btnIcon = document.querySelector('#self-study-btn svg');
+        if(btnIcon) btnIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>`;
+    }
+}
+
+function formatPomodoroTime(seconds) {
+    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const s = (seconds % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+}
+
+function togglePomodoro() {
+    isPomodoroRunning = !isPomodoroRunning;
+    const toggleBtn = document.getElementById('pomodoro-toggle');
+    const timeEl = document.getElementById('pomodoro-time');
+    
+    if (isPomodoroRunning) {
+        if(toggleBtn) toggleBtn.innerHTML = `<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>`;
+        
+        pomodoroTimer = setInterval(() => {
+            if (pomodoroSeconds > 0) {
+                pomodoroSeconds--;
+                if(timeEl) timeEl.innerText = formatPomodoroTime(pomodoroSeconds);
+            } else {
+                clearInterval(pomodoroTimer);
+                isPomodoroRunning = false;
+                alert("Hết giờ! Hãy nghỉ ngơi 5 phút nhé.");
+                pomodoroSeconds = 25 * 60;
+                if(timeEl) timeEl.innerText = formatPomodoroTime(pomodoroSeconds);
+                if(toggleBtn) toggleBtn.innerHTML = `<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>`;
+            }
+        }, 1000);
+    } else {
+        clearInterval(pomodoroTimer);
+        if(toggleBtn) toggleBtn.innerHTML = `<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>`;
+    }
+}

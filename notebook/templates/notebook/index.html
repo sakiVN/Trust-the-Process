@@ -318,8 +318,24 @@
                 </div>
             </div>
 
+            <!-- Pomodoro Timer (Hidden by default) -->
+            <div id="pomodoro-timer-container" class="hidden flex-1 flex justify-center items-center">
+                <div class="flex items-center space-x-3 bg-brand-50 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 px-5 py-2 rounded-2xl font-bold font-mono tracking-wider shadow-inner">
+                    <span class="text-xs uppercase tracking-widest opacity-70">Focus</span>
+                    <span id="pomodoro-time" class="text-xl">25:00</span>
+                    <button onclick="togglePomodoro()" id="pomodoro-toggle" class="hover:text-brand-900 dark:hover:text-white transition ml-2 bg-white/50 dark:bg-slate-900/50 p-1.5 rounded-lg shadow-sm">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
+                    </button>
+                </div>
+            </div>
+
             <!-- Right Side: Dark Mode, Notification & User Dropdown -->
             <div class="flex items-center space-x-3.5">
+                <!-- Self Study Mode Toggle -->
+                <button onclick="toggleSelfStudyMode()" id="self-study-btn" class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-brand-50 hover:text-brand-600 dark:hover:bg-brand-900/30 dark:hover:text-brand-400 text-slate-600 dark:text-slate-400 transition" title="Chế độ Tự học (Zen Mode)">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                </button>
+
                 <!-- Theme Toggle -->
                 <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 transition" title="Đổi chế độ sáng/tối">
                     <!-- Sun Icon -->
@@ -338,24 +354,19 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                         </svg>
-                        <span
-                            class="absolute top-1.5 right-1.5 bg-rose-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">{{ notifications|length }}</span>
+                        <span id="notification-badge"
+                            class="absolute top-1.5 right-1.5 bg-rose-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center hidden">0</span>
                     <!-- Notification Panel -->
-                    <div id="-panel"
-                        class="hidden group-hover:block opacity-0 group-hover:opacity-100 transition-opacity duration-200 absolute left-1/2 -translate-x-1/2 mt-1.5 w-64
-                            bg-white dark:bg-slate-900 border-2 dark:border-slate-800
-                            rounded-lg shadow-lg max-h-64 overflow-y-auto">
-                        <ul class="divide-y divide-slate-200 dark:divide-slate-700">
-                            <li class="p-3 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">Thông báo 1</li>
-                            <li class="p-3 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">Thông báo 2</li>
-                            <li class="p-3 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">Thông báo 3</li>
-                            <li class="p-3 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">Thông báo 4</li>
-                            <li class="p-3 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">Thông báo 5</li>
-                            <li class="p-3 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">Thông báo 6</li>
-                            <li class="p-3 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">Thông báo 7</li>
-                            <li class="p-3 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">Thông báo 8</li>
-                            <li class="p-3 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">Thông báo 9</li>
-                            <li class="p-3 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">Thông báo 10</li>
+                    <div id="notification-panel"
+                        class="hidden group-hover:block opacity-0 group-hover:opacity-100 transition-opacity duration-200 absolute right-0 mt-2 w-80
+                            bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800
+                            rounded-xl shadow-xl max-h-80 overflow-y-auto z-50">
+                        <div class="p-3 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-900/50">
+                            <h4 class="font-bold text-sm text-slate-800 dark:text-white">Thông báo</h4>
+                            <button onclick="markAllNotificationsRead()" class="text-[10px] text-brand-600 dark:text-brand-400 font-semibold hover:underline">Đánh dấu đã đọc</button>
+                        </div>
+                        <ul id="notification-list" class="divide-y divide-slate-100 dark:divide-slate-800/60">
+                            <!-- Injected by JS -->
                         </ul>
                     </div>
                 </div>
@@ -395,10 +406,10 @@
                         </div>
                         <div>
                             <span class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Thời gian học</span>
-                            <span class="block text-2xl font-extrabold text-slate-800 dark:text-white mt-0.5">145 phút</span>
-                            <span class="text-[11px] font-bold text-emerald-500 flex items-center mt-0.5">
+                            <span id="stat-study-time" class="block text-2xl font-extrabold text-slate-800 dark:text-white mt-0.5">0 phút</span>
+                            <span id="stat-study-trend" class="text-[11px] font-bold text-emerald-500 flex items-center mt-0.5">
                                 <svg class="w-3.5 h-3.5 mr-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
-                                +12.4% tuần này
+                                +0% tuần này
                             </span>
                         </div>
                     </div>
@@ -431,9 +442,9 @@
                         </div>
                         <div>
                             <span class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Hoàn thành bài tập</span>
-                            <span class="block text-2xl font-extrabold text-slate-800 dark:text-white mt-0.5">68%</span>
+                            <span id="stat-completion-pct" class="block text-2xl font-extrabold text-slate-800 dark:text-white mt-0.5">0%</span>
                             <div class="w-24 bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
-                                <div class="bg-amber-500 h-full" style="width: 68%"></div>
+                                <div id="stat-completion-bar" class="bg-amber-500 h-full" style="width: 0%"></div>
                             </div>
                         </div>
                     </div>
@@ -522,6 +533,7 @@
                     <div class="w-full lg:w-72 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4 shrink-0">
                         <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
                             <h3 class="font-bold text-slate-800 dark:text-white text-sm">Chọn Sổ Tay của bạn</h3>
+                            <button id="bulk-delete-btn" class="text-rose-500 hover:text-rose-700 text-xs font-bold transition" onclick="deleteBulkNotebooks()">Xóa</button>
                         </div>
                         <!-- Scrollable notebook buttons list -->
                         <div id="notebooks-list" class="space-y-1.5 max-h-[350px] overflow-y-auto pr-1">
