@@ -200,5 +200,22 @@
   "key_status_drafting": "Đang soạn thảo",
   "key_status_reviewed": "Phản biện xong",
   "key_status_practiced": "Đã luyện",
-  "key_status_not_done": "Chưa làm"
+  "key_status_not_done": "Chưa làm",
+  "key_weekly_goal_completion": "Mục tiêu tuần",
+  "key_focus_mode": "Focus Mode",
+  "key_focus_mode_active": "FOCUS MODE",
+  "key_btn_start_focus": "Focus Mode",
+  "key_exit_focus": "Thoát Focus",
+  "key_focus_timer_prefix": "Đang học:",
+  "key_goal_reached": "Đã đạt mục tiêu!",
+  "key_vs_yesterday": "so với hôm qua",
+  "key_label_goal": "Mục tiêu tự học mỗi ngày (Focus Mode Goal)",
+  "key_opt_goal_15": "15 phút / ngày (Nhẹ nhàng)",
+  "key_opt_goal_30": "30 phút / ngày (Khuyến nghị)",
+  "key_opt_goal_45": "45 phút / ngày (Tập trung vừa)",
+  "key_opt_goal_60": "60 phút / ngày (Chuyên sâu)",
+  "key_opt_goal_90": "90 phút / ngày (Nâng cao)",
+  "key_opt_goal_120": "2+ giờ / ngày (Ôn thi cao độ)",
+  "key_pause": "Tạm dừng",
+  "key_resume": "Tiếp tục"
 }

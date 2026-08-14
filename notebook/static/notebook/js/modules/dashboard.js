@@ -1,27 +1,150 @@
 function updateDashboardStats() {
-    const notebooksCount = notebooks.length;
-    let sourcesCount = 0;
-    let quizCount = 0;
-    let quizCompletedCount = 0;
-    notebooks.forEach(nb => {
-        sourcesCount += (nb.sources || []).length;
-        quizCount += (nb.quizzes || []).length;
-        quizCompletedCount += (nb.quizzes || []).filter(q => q.attempts_count > 0).length;
-    });
+    const t = window.t || ((k, f) => f);
+    const lang = localStorage.getItem('user_language') || 'vi';
+    const minutesUnit = lang === 'en' ? 'mins' : (lang === 'jp' ? '分' : 'phút');
 
-    const completionPct = quizCount ? Math.round((quizCompletedCount / quizCount) * 100) : 0;
+    // 1. Stat Card 1: Today's Study Time (Minutes) and vs Yesterday Comparison
+    const todaySeconds = typeof getTodayStudySeconds === 'function' ? getTodayStudySeconds() : 0;
+    const todayMinutes = Math.floor(todaySeconds / 60);
+
+    const studyTimeEl = document.getElementById('stat-today-study-time');
+    if (studyTimeEl) {
+        studyTimeEl.innerText = `${todayMinutes} ${minutesUnit}`;
+    }
+
+    const yesterdayMinutes = typeof getYesterdayStudyMinutes === 'function' ? getYesterdayStudyMinutes() : 0;
+    const vsYesterdayEl = document.getElementById('stat-study-vs-yesterday');
+
+    if (vsYesterdayEl) {
+        const vsText = t('key_vs_yesterday', 'so với hôm qua');
+        let pctDiff = 0;
+        let isIncrease = true;
+        let isSame = false;
+
+        if (yesterdayMinutes === 0) {
+            if (todayMinutes > 0) {
+                pctDiff = 100;
+                isIncrease = true;
+            } else {
+                pctDiff = 0;
+                isSame = true;
+            }
+        } else {
+            const diff = todayMinutes - yesterdayMinutes;
+            pctDiff = Math.round((diff / yesterdayMinutes) * 100);
+            if (pctDiff > 0) {
+                isIncrease = true;
+            } else if (pctDiff < 0) {
+                isIncrease = false;
+                pctDiff = Math.abs(pctDiff);
+            } else {
+                isSame = true;
+            }
+        }
+
+        if (isSame) {
+            vsYesterdayEl.className = "text-[11px] font-bold text-slate-400 flex items-center mt-0.5";
+            vsYesterdayEl.innerHTML = `
+                <span class="w-2 h-2 rounded-full bg-slate-400 mr-1.5 inline-block shrink-0"></span>
+                <span id="stat-study-vs-yesterday-text">0% ${vsText}</span>
+            `;
+        } else if (isIncrease) {
+            vsYesterdayEl.className = "text-[11px] font-bold text-emerald-500 flex items-center mt-0.5";
+            vsYesterdayEl.innerHTML = `
+                <svg class="w-3.5 h-3.5 mr-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+                <span id="stat-study-vs-yesterday-text">+${pctDiff}% ${vsText}</span>
+            `;
+        } else {
+            vsYesterdayEl.className = "text-[11px] font-bold text-rose-500 flex items-center mt-0.5";
+            vsYesterdayEl.innerHTML = `
+                <svg class="w-3.5 h-3.5 mr-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
+                </svg>
+                <span id="stat-study-vs-yesterday-text">-${pctDiff}% ${vsText}</span>
+            `;
+        }
+    }
+
+    // 2. Stat Card 2: Weekly Goal Completion % with Color Tiers & Glowing MAX
+    const dailyGoalMinutes = typeof getDailyGoalMinutes === 'function' ? getDailyGoalMinutes() : 30;
+    const weeklyTargetMinutes = dailyGoalMinutes * 7;
+    const rolling7Days = typeof getRolling7DaysStudyData === 'function' ? getRolling7DaysStudyData() : [];
+    const total7DaysMinutes = rolling7Days.reduce((acc, curr) => acc + (curr.minutes || 0), 0);
+
+    const weeklyGoalPct = weeklyTargetMinutes > 0 ? Math.round((total7DaysMinutes / weeklyTargetMinutes) * 100) : 0;
+
+    const goalCardEl = document.getElementById('stat-weekly-goal-card');
+    const goalIconWrapEl = document.getElementById('stat-weekly-goal-icon-wrap');
+    const goalPctEl = document.getElementById('stat-weekly-goal-pct');
+    const goalBarEl = document.getElementById('stat-weekly-goal-bar');
+    const goalBadgeEl = document.getElementById('stat-weekly-goal-badge');
+
+    if (goalCardEl && goalPctEl && goalBarEl && goalIconWrapEl) {
+        // Reset custom classes
+        goalCardEl.classList.remove('stat-max-purple-card');
+        goalPctEl.classList.remove('stat-max-purple-text');
+        goalBarEl.classList.remove('stat-max-purple-bar');
+        if (goalBadgeEl) goalBadgeEl.classList.add('hidden');
+
+        let barWidth = Math.min(100, weeklyGoalPct);
+
+        if (weeklyGoalPct === 0) {
+            // Tier 0: 0% -> Xám (Gray)
+            goalPctEl.innerText = `0%`;
+            goalPctEl.className = "block text-2xl font-extrabold text-slate-400 dark:text-slate-500 mt-0.5";
+            goalBarEl.className = "bg-slate-400 dark:bg-slate-600 h-full transition-all duration-500";
+            goalBarEl.style.width = `0%`;
+            goalIconWrapEl.className = "p-3.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 shrink-0";
+        } else if (weeklyGoalPct <= 100) {
+            // Tier 1: 1 - 100% -> Vàng (Amber/Yellow)
+            goalPctEl.innerText = `${weeklyGoalPct}%`;
+            goalPctEl.className = "block text-2xl font-extrabold text-amber-500 dark:text-amber-400 mt-0.5";
+            goalBarEl.className = "bg-amber-500 h-full transition-all duration-500";
+            goalBarEl.style.width = `${barWidth}%`;
+            goalIconWrapEl.className = "p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 shrink-0";
+        } else if (weeklyGoalPct <= 200) {
+            // Tier 2: 101 - 200% -> Xanh lá (Emerald/Green)
+            goalPctEl.innerText = `${weeklyGoalPct}%`;
+            goalPctEl.className = "block text-2xl font-extrabold text-emerald-500 dark:text-emerald-400 mt-0.5";
+            goalBarEl.className = "bg-emerald-500 h-full transition-all duration-500";
+            goalBarEl.style.width = `100%`;
+            goalIconWrapEl.className = "p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 shrink-0";
+        } else if (weeklyGoalPct <= 300) {
+            // Tier 3: 201 - 300% -> Xanh dương (Blue/Indigo)
+            goalPctEl.innerText = `${weeklyGoalPct}%`;
+            goalPctEl.className = "block text-2xl font-extrabold text-blue-500 dark:text-blue-400 mt-0.5";
+            goalBarEl.className = "bg-blue-500 h-full transition-all duration-500";
+            goalBarEl.style.width = `100%`;
+            goalIconWrapEl.className = "p-3.5 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 shrink-0";
+        } else {
+            // Tier 4: > 300% -> MAX & Tím phát sáng (Purple Neon Glow Aura)
+            goalCardEl.classList.add('stat-max-purple-card');
+            goalPctEl.classList.add('stat-max-purple-text');
+            goalBarEl.classList.add('stat-max-purple-bar');
+            goalPctEl.innerText = `MAX (${weeklyGoalPct}%)`;
+            goalBarEl.style.width = `100%`;
+            goalIconWrapEl.className = "p-3.5 rounded-xl bg-purple-100 dark:bg-purple-950/80 text-purple-500 dark:text-purple-300 shrink-0";
+            if (goalBadgeEl) {
+                goalBadgeEl.classList.remove('hidden');
+                goalBadgeEl.innerText = 'MAX ⚡';
+            }
+        }
+    }
+
+    // 3. Stat Card 3: Notebooks Count
+    const notebooksCount = notebooks.length;
     const nbCountEl = document.getElementById('stat-notebooks-count');
     if (nbCountEl) nbCountEl.innerText = notebooksCount;
+
+    // 4. Stat Card 4: Documents Count
+    let sourcesCount = 0;
+    notebooks.forEach(nb => {
+        sourcesCount += (nb.sources || []).length;
+    });
     const docCountEl = document.getElementById('stat-documents-count');
     if (docCountEl) docCountEl.innerText = sourcesCount;
-    const completionCard = document.querySelector('#view-dashboard .bg-amber-50')?.parentElement?.querySelector('div > span.block.text-2xl');
-    if (completionCard) {
-        completionCard.innerText = `${completionPct}%`;
-    }
-    const completionBar = document.querySelector('#view-dashboard .bg-amber-500.h-full');
-    if (completionBar) {
-        completionBar.style.width = `${completionPct}%`;
-    }
 }
 
 function updateProgressViewStats() {
@@ -135,7 +258,7 @@ function renderRecentActivityTable() {
                 </span>
             </td>
             <td class="py-3 px-4 text-right">
-                <button onclick="switchView('notebooks'); selectNotebook(${act.notebookId}); switchTab('${act.isSource ? 'sources' : 'notes'}')" class="text-brand-600 dark:text-brand-400 font-bold hover:underline">
+                <button onclick="switchView('notebooks'); selectNotebook(${act.notebookId}); switchTab('${act.isSource ? 'sources' : 'notes'}')" class="text-brand-600 dark:text-brand-400 font-bold hover:underline cursor-pointer">
                     ${viewDetailText}
                 </button>
             </td>
@@ -159,15 +282,16 @@ function renderCharts() {
         });
     });
 
-    const dayLabels = lang === 'en' 
-        ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] 
-        : (lang === 'jp' ? ['月', '火', '水', '木', '金', '土', '日'] : ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ nhật']);
-    
     const studyMinsLabel = lang === 'en' ? 'Study Minutes' : (lang === 'jp' ? '学習時間(分)' : 'Số phút tự học');
     const textLabel = lang === 'en' ? 'Plain Text' : (lang === 'jp' ? 'テキスト' : 'Văn bản nguồn');
     const linkLabel = lang === 'en' ? 'Web Link' : (lang === 'jp' ? 'ウェブリンク' : 'Web Link');
 
-    // 1. Weekly hours Chart
+    // 1. Weekly Rolling 7 Days Chart
+    const rolling7Days = typeof getRolling7DaysStudyData === 'function' ? getRolling7DaysStudyData() : [];
+    const dayLabels = rolling7Days.map(item => item.dayLabel);
+    const dayMinutesData = rolling7Days.map(item => item.minutes);
+    const backgroundColors = rolling7Days.map(item => item.isToday ? '#6366f1' : (isDark ? '#4338ca' : '#4f46e5'));
+
     const hoursCtx = document.getElementById('hoursChart');
     if (hoursCtx) {
         if (hoursChartObj) hoursChartObj.destroy();
@@ -177,27 +301,36 @@ function renderCharts() {
                 labels: dayLabels,
                 datasets: [{
                     label: studyMinsLabel,
-                    data: [20, 15, 45, 10, 30, 25, 0],
-                    backgroundColor: '#4f46e5',
-                    borderRadius: 6,
+                    data: dayMinutesData,
+                    backgroundColor: backgroundColors,
+                    borderRadius: 8,
                     borderSkipped: false,
+                    barPercentage: 0.6,
+                    categoryPercentage: 0.8
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { display: false }
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return ` ${context.parsed.y} ${lang === 'en' ? 'mins' : (lang === 'jp' ? '分' : 'phút')}`;
+                            }
+                        }
+                    }
                 },
                 scales: {
                     x: {
                         grid: { display: false },
-                        ticks: { color: labelColor }
+                        ticks: { color: labelColor, font: { size: 11, weight: '600' } }
                     },
                     y: {
                         border: { dash: [4, 4] },
                         grid: { color: gridColor },
-                        ticks: { color: labelColor }
+                        ticks: { color: labelColor, beginAtZero: true, font: { size: 11 } }
                     }
                 }
             }
@@ -225,7 +358,7 @@ function renderCharts() {
                 plugins: {
                     legend: {
                         position: 'bottom',
-                        labels: { color: labelColor, boxWidth: 12, padding: 15 }
+                        labels: { color: labelColor, boxWidth: 12, padding: 15, font: { size: 11, weight: '600' } }
                     }
                 },
                 cutout: '70%'

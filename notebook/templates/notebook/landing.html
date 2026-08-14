@@ -73,7 +73,7 @@
                 <div class="relative">
                     <select 
                         id="landing-language-select" 
-                        onchange="setLandingLanguage(this.value);" 
+                        onchange="setLandingLanguage(this.value, true);" 
                         class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl px-2.5 py-2 pr-7 focus:outline-none focus:ring-1 focus:ring-brand-500 cursor-pointer appearance-none shadow-sm transition hover:bg-slate-100 dark:hover:bg-slate-700"
                         title="Chọn ngôn ngữ / Select language"
                     >
@@ -175,11 +175,11 @@
         <!-- Features Details Section -->
         <section id="features" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-slate-200/70 dark:border-slate-800/80">
             <div class="text-center max-w-2xl mx-auto mb-16 space-y-3">
-                <span class="text-xs font-extrabold uppercase tracking-widest text-brand-600 dark:text-brand-400">Bộ Công Cụ Toàn Diện</span>
-                <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                <span data-i18n="feat_tag" class="text-xs font-extrabold uppercase tracking-widest text-brand-600 dark:text-brand-400">Bộ Công Cụ Toàn Diện</span>
+                <h2 data-i18n="feat_title" class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                     Mọi thứ bạn cần để bứt phá kết quả học tập
                 </h2>
-                <p class="text-sm text-slate-500 dark:text-slate-400">
+                <p data-i18n="feat_sub" class="text-sm text-slate-500 dark:text-slate-400">
                     Được tối ưu hóa cho phong cách học tập chủ động, tiết kiệm tới 70% thời gian tổng hợp kiến thức.
                 </p>
             </div>
@@ -190,8 +190,8 @@
                     <div class="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 flex items-center justify-center">
                         <img src="{% static 'notebook/icon-set/notebook.png' %}" class="w-7 h-7 object-contain" alt="Sổ tay thông minh" />
                     </div>
-                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">Sổ tay Thông minh (Smart Notebooks)</h3>
-                    <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                    <h3 data-i18n="feat_1_title" class="text-lg font-bold text-slate-900 dark:text-white">Sổ tay Thông minh (Smart Notebooks)</h3>
+                    <p data-i18n="feat_1_desc" class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
                         Tổ chức từng môn học hoặc dự án theo từng Sổ tay riêng biệt. Mỗi sổ tay chứa các tài liệu, ghi chú và bài tập liên kết chặt chẽ.
                     </p>
                 </div>
@@ -201,8 +201,8 @@
                     <div class="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/50 flex items-center justify-center">
                         <img src="{% static 'notebook/icon-set/quiz.png' %}" class="w-7 h-7 object-contain" alt="Trắc nghiệm thông minh" />
                     </div>
-                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">Tự động tạo Quiz & Bài tập ôn luyện</h3>
-                    <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                    <h3 data-i18n="feat_2_title" class="text-lg font-bold text-slate-900 dark:text-white">Tự động tạo Quiz & Bài tập ôn luyện</h3>
+                    <p data-i18n="feat_2_desc" class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
                         Chỉ với 1 click, AI tự động quét toàn bộ giáo trình và sinh các bộ câu hỏi trắc nghiệm kèm giải thích logic sâu sắc.
                     </p>
                 </div>
@@ -212,8 +212,8 @@
                     <div class="w-12 h-12 rounded-2xl bg-violet-50 dark:bg-violet-950/50 flex items-center justify-center">
                         <img src="{% static 'notebook/icon-set/mindmap.png' %}" class="w-7 h-7 object-contain" alt="Mindmap" />
                     </div>
-                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">Sơ đồ Tư duy & Báo cáo Tóm tắt</h3>
-                    <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                    <h3 data-i18n="feat_3_title" class="text-lg font-bold text-slate-900 dark:text-white">Sơ đồ Tư duy & Báo cáo Tóm tắt</h3>
+                    <p data-i18n="feat_3_desc" class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
                         Tổng hợp tài liệu thành sơ đồ Mindmap sinh động kéo thả được, và tạo báo cáo tóm tắt cấu trúc rõ ràng trong vài giây.
                     </p>
                 </div>
@@ -223,8 +223,8 @@
                     <div class="w-12 h-12 rounded-2xl bg-rose-50 dark:bg-rose-950/50 flex items-center justify-center">
                         <img src="{% static 'notebook/icon-set/report.png' %}" class="w-7 h-7 object-contain" alt="Phản biện" />
                     </div>
-                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">Trợ lý Phản biện Luận điểm AI</h3>
-                    <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                    <h3 data-i18n="feat_4_title" class="text-lg font-bold text-slate-900 dark:text-white">Trợ lý Phản biện Luận điểm AI</h3>
+                    <p data-i18n="feat_4_desc" class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
                         Soạn bài viết và ý tưởng của bạn, AI sẽ tìm ra các lỗ hổng lập luận và đưa ra góc nhìn phản biện giúp bạn phát triển tư duy sắc bén.
                     </p>
                 </div>
@@ -234,8 +234,8 @@
                     <div class="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-950/50 flex items-center justify-center">
                         <img src="{% static 'notebook/icon-set/upload.png' %}" class="w-7 h-7 object-contain" alt="Đa nguồn" />
                     </div>
-                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">Hỗ trợ PDF & Nguồn Đa Định dạng</h3>
-                    <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                    <h3 data-i18n="feat_5_title" class="text-lg font-bold text-slate-900 dark:text-white">Hỗ trợ PDF & Nguồn Đa Định dạng</h3>
+                    <p data-i18n="feat_5_desc" class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
                         Tải lên sách PDF, tài liệu nghiên cứu, link bài báo học thuật hoặc paste trực tiếp ghi chú để phân tích ngay lập tức.
                     </p>
                 </div>
@@ -245,8 +245,8 @@
                     <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 flex items-center justify-center">
                         <img src="{% static 'notebook/icon-set/chart.png' %}" class="w-7 h-7 object-contain" alt="Tiến độ" />
                     </div>
-                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">Theo dõi Chuỗi & Tiến độ Học tập</h3>
-                    <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                    <h3 data-i18n="feat_6_title" class="text-lg font-bold text-slate-900 dark:text-white">Theo dõi Chuỗi & Tiến độ Học tập</h3>
+                    <p data-i18n="feat_6_desc" class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
                         Bảng thống kê thời gian học hàng tuần, nhắc nhở lặp lại ngắt quãng để bạn không bao giờ bị đứt chuỗi thói quen.
                     </p>
                 </div>
@@ -333,12 +333,12 @@
                 <div class="w-8 h-8 rounded-xl bg-brand-600 flex items-center justify-center text-white font-bold text-xs">
                     EB
                 </div>
-                <span class="text-xs font-bold text-slate-800 dark:text-slate-200">EduBrain &copy; 2026 - Nền tảng Học tập Thông minh</span>
+                <span data-i18n="footer_copy" class="text-xs font-bold text-slate-800 dark:text-slate-200">EduBrain &copy; 2026 - Nền tảng Học tập Thông minh</span>
             </div>
             <div class="flex items-center space-x-6 text-xs text-slate-500 dark:text-slate-400">
-                <a href="/getting-started/" class="hover:text-brand-600 dark:hover:text-brand-400 transition">Bắt đầu</a>
-                <a href="/dashboard/" class="hover:text-brand-600 dark:hover:text-brand-400 transition">Dashboard</a>
-                <a href="#features" class="hover:text-brand-600 dark:hover:text-brand-400 transition">Tính năng</a>
+                <a href="/getting-started/" data-i18n="footer_start" class="hover:text-brand-600 dark:hover:text-brand-400 transition">Bắt đầu</a>
+                <a href="/dashboard/" data-i18n="footer_dash" class="hover:text-brand-600 dark:hover:text-brand-400 transition">Dashboard</a>
+                <a href="#features" data-i18n="footer_feat" class="hover:text-brand-600 dark:hover:text-brand-400 transition">Tính năng</a>
             </div>
         </div>
     </footer>
@@ -362,6 +362,23 @@
                 trust_1: "Không cần thẻ tín dụng",
                 trust_2: "Sử dụng ngay không cần mật khẩu",
                 trust_3: "Hỗ trợ Tiếng Việt & Đa ngôn ngữ",
+                
+                feat_tag: "Bộ Công Cụ Toàn Diện",
+                feat_title: "Mọi thứ bạn cần để bứt phá kết quả học tập",
+                feat_sub: "Được tối ưu hóa cho phong cách học tập chủ động, tiết kiệm tới 70% thời gian tổng hợp kiến thức.",
+                feat_1_title: "Sổ tay Thông minh (Smart Notebooks)",
+                feat_1_desc: "Tổ chức từng môn học hoặc dự án theo từng Sổ tay riêng biệt. Mỗi sổ tay chứa các tài liệu, ghi chú và bài tập liên kết chặt chẽ.",
+                feat_2_title: "Tự động tạo Quiz & Bài tập ôn luyện",
+                feat_2_desc: "Chỉ với 1 click, AI tự động quét toàn bộ giáo trình và sinh các bộ câu hỏi trắc nghiệm kèm giải thích logic sâu sắc.",
+                feat_3_title: "Sơ đồ Tư duy & Báo cáo Tóm tắt",
+                feat_3_desc: "Tổng hợp tài liệu thành sơ đồ Mindmap sinh động kéo thả được, và tạo báo cáo tóm tắt cấu trúc rõ ràng trong vài giây.",
+                feat_4_title: "Trợ lý Phản biện Luận điểm AI",
+                feat_4_desc: "Soạn bài viết và ý tưởng của bạn, AI sẽ tìm ra các lỗ hổng lập luận và đưa ra góc nhìn phản biện giúp bạn phát triển tư duy sắc bén.",
+                feat_5_title: "Hỗ trợ PDF & Nguồn Đa Định dạng",
+                feat_5_desc: "Tải lên sách PDF, tài liệu nghiên cứu, link bài báo học thuật hoặc paste trực tiếp ghi chú để phân tích ngay lập tức.",
+                feat_6_title: "Theo dõi Chuỗi & Tiến độ Học tập",
+                feat_6_desc: "Bảng thống kê thời gian học hàng tuần, nhắc nhở lặp lại ngắt quãng để bạn không bao giờ bị đứt chuỗi thói quen.",
+
                 step_tag: "Quy Trình Tinh Gọn",
                 step_title: "Bắt đầu chỉ trong 3 bước đơn giản",
                 step_sub: "Không cần tạo mật khẩu rườm rà. Bạn chỉ cần chọn mục đích và bắt đầu học ngay.",
@@ -374,7 +391,11 @@
                 cta_badge: "Dành cho mọi nhu cầu tri thức",
                 cta_title: "Sẵn sàng nâng tầm hiệu suất học tập của bạn?",
                 cta_desc: "Dù bạn là học sinh đang ôn thi cấp tốc, sinh viên nghiên cứu đề tài hay người đi làm muốn hệ thống hóa tài liệu, EduBrain luôn sẵn sàng đồng hành.",
-                cta_btn: "Bắt đầu ngay miễn phí"
+                cta_btn: "Bắt đầu ngay miễn phí",
+                footer_copy: "EduBrain © 2026 - Nền tảng Học tập Thông minh",
+                footer_start: "Bắt đầu",
+                footer_dash: "Dashboard",
+                footer_feat: "Tính năng"
             },
             en: {
                 nav_features: "Features",
@@ -392,6 +413,23 @@
                 trust_1: "No credit card required",
                 trust_2: "Instant access without password",
                 trust_3: "Supports Vietnamese & Multi-language",
+
+                feat_tag: "Comprehensive Toolkit",
+                feat_title: "Everything you need to boost learning outcomes",
+                feat_sub: "Optimized for active learning, saving up to 70% of knowledge synthesis time.",
+                feat_1_title: "Smart Notebooks",
+                feat_1_desc: "Organize subjects or projects in dedicated notebooks. Each notebook tightly connects documents, notes, and exercises.",
+                feat_2_title: "Auto-generate Quizzes & Practice Tests",
+                feat_2_desc: "With 1 click, AI scans your syllabus and generates multiple-choice quizzes with in-depth logical explanations.",
+                feat_3_title: "Mind Maps & Executive Summary Reports",
+                feat_3_desc: "Synthesize materials into interactive draggable mind maps and clear structured summary reports in seconds.",
+                feat_4_title: "AI Argumentative Critique Assistant",
+                feat_4_desc: "Write your thoughts and ideas, and AI will identify logical gaps and provide counterarguments to sharpen your thinking.",
+                feat_5_title: "PDF & Multi-format Source Support",
+                feat_5_desc: "Upload PDF textbooks, research papers, article links, or paste raw notes for immediate analysis.",
+                feat_6_title: "Streak & Learning Progress Tracking",
+                feat_6_desc: "Weekly study time statistics and spaced repetition reminders so you never break your learning habits.",
+
                 step_tag: "Streamlined Workflow",
                 step_title: "Get started in 3 simple steps",
                 step_sub: "No complex passwords. Just pick your purpose and start learning immediately.",
@@ -404,7 +442,11 @@
                 cta_badge: "For every knowledge seeker",
                 cta_title: "Ready to elevate your learning performance?",
                 cta_desc: "Whether you are cramming for exams, conducting research, or organizing knowledge, EduBrain is ready to assist you.",
-                cta_btn: "Get Started for Free"
+                cta_btn: "Get Started for Free",
+                footer_copy: "EduBrain © 2026 - Smart Learning Platform",
+                footer_start: "Get Started",
+                footer_dash: "Dashboard",
+                footer_feat: "Features"
             },
             jp: {
                 nav_features: "機能",
@@ -422,6 +464,23 @@
                 trust_1: "クレジットカード不要",
                 trust_2: "パスワード不要ですぐ利用",
                 trust_3: "ベトナム語・多言語対応",
+
+                feat_tag: "包括的な学習ツールセット",
+                feat_title: "学習成果を飛躍させるためのすべて",
+                feat_sub: "能動的学習に最適化され、知識の整理にかかる時間を最大70%削減します。",
+                feat_1_title: "スマートノートブック (Smart Notebooks)",
+                feat_1_desc: "科目やプロジェクトごとに専用ノートブックで整理。資料、ノート、演習問題を体系的に連携管理します。",
+                feat_2_title: "クイズ・復習問題の自動生成",
+                feat_2_desc: "ワンクリックでAIが教材全体をスキャンし、詳細な論理解説付きの選択式クイズを瞬時に生成します。",
+                feat_3_title: "マインドマップと要約レポート",
+                feat_3_desc: "資料をドラッグ＆ドロップ可能なマインドマップに整理し、構造化された要約レポートを数秒で作成します。",
+                feat_4_title: "AI論理反論・批判的思考アシスタント",
+                feat_4_desc: "自分の考察を記述すると、AIが論理の弱点を見つけ、多角的な反論を提示して深い思考力を育成します。",
+                feat_5_title: "PDFおよび多様な資料形式に対応",
+                feat_5_desc: "PDF教材、学術論文、ウェブリンクの読み込みやテキスト貼り付けに対応し、即座に分析できます。",
+                feat_6_title: "学習進捗とストリーク管理",
+                feat_6_desc: "週間学習時間の統計や間隔反復リマインダーにより、学習習慣の継続をしっかりサポートします。",
+
                 step_tag: "シンプルな流れ",
                 step_title: "わずか3つの簡単ステップで開始",
                 step_sub: "複雑なパスワードは不要です。目的を選択してすぐに学習を開始できます。",
@@ -434,13 +493,23 @@
                 cta_badge: "すべての学習ニーズに対応",
                 cta_title: "学習効率を次のレベルへ引き上げる準備はできましたか？",
                 cta_desc: "試験勉強、学術研究、知識の整理など、EduBrainはあなたの学習をいつでもサポートします。",
-                cta_btn: "無料で体験を始める"
+                cta_btn: "無料で体験を始める",
+                footer_copy: "EduBrain © 2026 - スマート学習プラットフォーム",
+                footer_start: "始める",
+                footer_dash: "ダッシュボード",
+                footer_feat: "機能"
             }
         };
 
-        function setLandingLanguage(lang) {
+        function setLandingLanguage(lang, reload = false) {
             if (!lang) lang = localStorage.getItem('user_language') || 'vi';
+            const currentLang = localStorage.getItem('user_language') || 'vi';
             localStorage.setItem('user_language', lang);
+
+            if (reload && currentLang !== lang) {
+                window.location.reload();
+                return;
+            }
 
             const selectEl = document.getElementById('landing-language-select');
             if (selectEl && selectEl.value !== lang) selectEl.value = lang;

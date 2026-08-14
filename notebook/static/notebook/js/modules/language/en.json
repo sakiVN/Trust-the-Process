@@ -200,5 +200,22 @@
   "key_status_drafting": "Drafting",
   "key_status_reviewed": "Critiqued",
   "key_status_practiced": "Practiced",
-  "key_status_not_done": "Not done"
+  "key_status_not_done": "Not done",
+  "key_weekly_goal_completion": "Weekly Goal",
+  "key_focus_mode": "Focus Mode",
+  "key_focus_mode_active": "FOCUS MODE",
+  "key_btn_start_focus": "Focus Mode",
+  "key_exit_focus": "Exit Focus",
+  "key_focus_timer_prefix": "Studying:",
+  "key_goal_reached": "Goal Reached!",
+  "key_vs_yesterday": "vs yesterday",
+  "key_label_goal": "Daily Self-Study Goal (Focus Mode Goal)",
+  "key_opt_goal_15": "15 mins / day (Light)",
+  "key_opt_goal_30": "30 mins / day (Recommended)",
+  "key_opt_goal_45": "45 mins / day (Moderate)",
+  "key_opt_goal_60": "60 mins / day (Intensive)",
+  "key_opt_goal_90": "90 mins / day (Advanced)",
+  "key_opt_goal_120": "2+ hours / day (Exam Prep)",
+  "key_pause": "Pause",
+  "key_resume": "Resume"
 }

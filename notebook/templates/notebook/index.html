@@ -35,6 +35,7 @@
     <script src="{% static 'notebook/js/modules/modals.js' %}"></script>
     <script src="{% static 'notebook/js/modules/notifications.js' %}"></script>
     <script src="{% static 'notebook/js/modules/search.js' %}"></script>
+    <script src="{% static 'notebook/js/modules/focus.js' %}"></script>
     <script src="{% static 'notebook/js/modules/settings.js' %}"></script>
     <script src="{% static 'notebook/js/modules/context.js' %}"></script>
     <script src="{% static 'notebook/js/modules/language/settingLanguage.js' %}"></script>
@@ -71,41 +72,97 @@
     </script>
     <link rel="stylesheet" href="{% static 'notebook/css/base.css' %}">
 </head>
-<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 min-h-screen flex transition-colors duration-200">
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-200">
 
-    <!-- Left Sidebar (Collapsible & Responsive) -->
-    {% include 'notebook/particials/sidebar.html' %}
+    <!-- Main Container Wrapper -->
+    <div class="flex-1 flex min-h-screen">
+        <!-- Left Sidebar (Collapsible & Responsive) -->
+        {% include 'notebook/particials/sidebar.html' %}
 
-    <!-- Main Container -->
-    <div class="flex-1 flex flex-col lg:pl-72 min-h-screen">
-        
-        <!-- Header -->
-        {% include 'notebook/particials/header.html' %}
+        <!-- Content Area (With lg:pl-72 so sidebar never overlaps top bars) -->
+        <div class="flex-1 flex flex-col lg:pl-72 min-h-screen">
+            
+            <!-- Focus Mode Active Status Bar (Sticky Top Banner when Fullscreen/Focus Active) -->
+            <div id="focus-mode-bar" class="hidden bg-slate-900/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-brand-500/30 text-white px-4 sm:px-6 py-2.5 items-center justify-between shadow-xl z-40 sticky top-0 transition-all duration-300">
+              <div class="flex items-center space-x-3">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-gradient-to-r from-brand-600 to-purple-600 text-white shadow-md shadow-brand-500/30 animate-pulse">
+                  <span>🎯</span>
+                  <span translate="key_focus_mode_active">FOCUS MODE</span>
+                </span>
+                <div class="focus-timer-container goal-in-progress px-3.5 py-1 rounded-xl border flex items-center space-x-2 text-xs font-mono font-bold tracking-wide transition-all duration-500">
+                  <span class="text-slate-400 text-[11px] hidden sm:inline" translate="key_focus_timer_prefix">Đang học:</span>
+                  <span class="focus-today-time-val text-brand-400 text-sm font-extrabold">00:00:00</span>
+                  <span class="text-slate-500">/</span>
+                  <span class="focus-target-time-val text-slate-300 text-sm font-medium">00:30:00</span>
+                </div>
+                <span id="focus-goal-badge" class="hidden text-xs font-bold px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 animate-bounce">
+                  🎉 Đã đạt mục tiêu!
+                </span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <button type="button" id="focus-pause-btn" onclick="togglePauseFocusTimer()" class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs flex items-center space-x-1.5 border border-white/20 transition transform active:scale-95 cursor-pointer">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span class="hidden sm:inline">Tạm dừng</span>
+                </button>
+                <button type="button" onclick="exitFocusMode()" class="px-3 py-1.5 rounded-xl bg-rose-500/90 hover:bg-rose-600 text-white font-bold text-xs flex items-center space-x-1.5 shadow-md shadow-rose-500/20 transition transform active:scale-95 cursor-pointer">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  <span translate="key_exit_focus">Thoát Focus</span>
+                </button>
+              </div>
+            </div>
 
-        <!-- Main Content (Swappable Views) -->
-        <main class="flex-1 p-6 lg:p-8 overflow-y-auto">
+            <!-- Header -->
+            {% include 'notebook/particials/header.html' %}
 
-            <!-- 1. VIEW: DASHBOARD -->
-            {% include 'notebook/particials/views/dashboard.html' %}
+            <!-- Main Content (Swappable Views) -->
+            <main class="flex-1 p-6 lg:p-8 overflow-y-auto">
 
-            <!-- 2. VIEW: NOTEBOOKS (ORIGINAL INTERACTIVE WORKSPACE) -->
-            {% include 'notebook/particials/views/notebooks.html' %}
+                <!-- 1. VIEW: DASHBOARD -->
+                {% include 'notebook/particials/views/dashboard.html' %}
 
-            <!-- 3. VIEW: DOCUMENTS (UNIFIED LIST VIEW) -->
-            {% include 'notebook/particials/views/documents.html' %}
+                <!-- 2. VIEW: NOTEBOOKS (ORIGINAL INTERACTIVE WORKSPACE) -->
+                {% include 'notebook/particials/views/notebooks.html' %}
 
-            <!-- 4. VIEW: STUDY MATERIALS -->
-            {% include 'notebook/particials/views/study_materials.html' %}
+                <!-- 3. VIEW: DOCUMENTS (UNIFIED LIST VIEW) -->
+                {% include 'notebook/particials/views/documents.html' %}
 
-            <!-- 5. VIEW: NOTES (UNIFIED LIST VIEW) -->
-            {% include 'notebook/particials/views/notes.html' %}
+                <!-- 4. VIEW: STUDY MATERIALS -->
+                {% include 'notebook/particials/views/study_materials.html' %}
 
-            <!-- 6. VIEW: PROGRESS & ANALYTICS -->
-            {% include 'notebook/particials/views/progress.html' %}
+                <!-- 5. VIEW: NOTES (UNIFIED LIST VIEW) -->
+                {% include 'notebook/particials/views/notes.html' %}
 
-            <!-- 7. VIEW: SETTINGS -->
-            {% include 'notebook/particials/views/settings.html' %}
-        </main>
+                <!-- 6. VIEW: PROGRESS & ANALYTICS -->
+                {% include 'notebook/particials/views/progress.html' %}
+
+                <!-- 7. VIEW: SETTINGS -->
+                {% include 'notebook/particials/views/settings.html' %}
+            </main>
+        </div>
+    </div>
+
+    <!-- Floating Focus Mode Action Button (Bottom Right - Compact Icon Square expanding on Hover) -->
+    <div id="focus-mode-fab-container" class="fixed bottom-6 right-6 z-40">
+      <button 
+        type="button" 
+        id="focus-mode-fab"
+        onclick="typeof isFocusModeActive !== 'undefined' && isFocusModeActive ? exitFocusMode() : startFocusMode()" 
+        class="group fab-glow flex items-center justify-center bg-gradient-to-r from-brand-600 via-indigo-600 to-purple-600 hover:from-brand-700 hover:to-purple-700 text-white p-3.5 rounded-2xl shadow-xl border border-white/20 transition-all duration-300 transform active:scale-95 cursor-pointer max-w-[56px] hover:max-w-[280px] overflow-hidden"
+        title="Bật / Thoát Focus Mode (Phóng to toàn màn hình & Bấm giờ)"
+      >
+        <span class="text-xl shrink-0">🎯</span>
+        <div class="max-w-0 opacity-0 group-hover:max-w-[220px] group-hover:opacity-100 group-hover:ml-3 transition-all duration-300 ease-out whitespace-nowrap overflow-hidden text-left">
+          <div class="text-xs font-black tracking-tight leading-tight flex items-center space-x-1.5">
+            <span translate="key_focus_mode">Focus Mode</span>
+            <span id="focus-fab-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/20 text-white">0/30m</span>
+          </div>
+          <span class="text-[10px] text-brand-200 block font-medium">Toàn màn hình & Bấm giờ</span>
+        </div>
+      </button>
     </div>
 
     <!-- MODALS -->  

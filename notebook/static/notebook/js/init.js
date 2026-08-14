@@ -24,13 +24,18 @@ window.addEventListener('DOMContentLoaded', () => {
         setupUserSettings();
     }
 
+    // Step 4: Initialize Focus Mode and Timer
+    if (typeof initFocusMode === 'function') {
+        initFocusMode();
+    }
+
     // Change the current language
     const languageSelect = document.getElementById('language-select');
     if (languageSelect) {
         languageSelect.addEventListener('change', (event) => {
             const selectedLang = event.target.value;
-            if (typeof loadLanguage === 'function') {
-                loadLanguage(selectedLang);
+            if (typeof changeLanguage === 'function') {
+                changeLanguage(selectedLang);
             }
         });
     }

@@ -79,11 +79,15 @@ function setupUserSettings() {
         const inputEmail = document.getElementById('input-user-email');
         const selectRole = document.getElementById('select-user-role');
         const selectPurpose = document.getElementById('select-user-purpose');
+        const selectDailyGoal = document.getElementById('select-daily-goal');
 
         if (inputName) inputName.value = name;
         if (inputEmail) inputEmail.value = email;
         if (selectRole) selectRole.value = role;
         if (selectPurpose) selectPurpose.value = purpose;
+        if (selectDailyGoal && user.dailyGoal) {
+            selectDailyGoal.value = user.dailyGoal;
+        }
 
     } catch (e) {
         console.error("Lỗi khi tải thông tin người dùng từ localStorage:", e);
@@ -100,12 +104,14 @@ function saveSettings(event) {
     const inputEmail = document.getElementById('input-user-email');
     const selectRole = document.getElementById('select-user-role');
     const selectPurpose = document.getElementById('select-user-purpose');
+    const selectDailyGoal = document.getElementById('select-daily-goal');
     const inputAvatar = document.getElementById('input-avatar-url');
 
     const name = inputName && inputName.value.trim() ? inputName.value.trim() : 'Linh Nguyễn';
     const email = inputEmail ? inputEmail.value.trim() : '';
     const role = selectRole ? selectRole.value : 'Học sinh';
     const purpose = selectPurpose ? selectPurpose.value : 'Học tập & Nghiên cứu thường nhật';
+    const dailyGoal = selectDailyGoal ? selectDailyGoal.value : '30 phút';
     const avatar = (inputAvatar && inputAvatar.value) ? inputAvatar.value : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100';
 
     const userData = {
@@ -113,6 +119,7 @@ function saveSettings(event) {
         email: email,
         role: role,
         purpose: purpose,
+        dailyGoal: dailyGoal,
         avatar: avatar,
         updatedAt: Date.now()
     };
@@ -122,7 +129,18 @@ function saveSettings(event) {
     // Update UI immediately
     setupUserSettings();
 
-    alert('Cài đặt thông tin tài khoản đã được lưu thành công!');
+    // Trigger Focus Timer & Dashboard refresh
+    if (typeof updateFocusTimerDisplay === 'function') {
+        updateFocusTimerDisplay();
+    }
+    if (typeof updateDashboardStats === 'function') {
+        updateDashboardStats();
+    }
+    if (typeof renderCharts === 'function') {
+        renderCharts();
+    }
+
+    alert('Cài đặt thông tin và mục tiêu tự học đã được lưu thành công!');
 }
 
 // Auto-run on script load to ensure state is initialized as early as possible

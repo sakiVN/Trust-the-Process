@@ -41,8 +41,19 @@
             <option value="Giảng dạy & Soạn giáo án" translate="key_opt_purpose_teach">Giảng dạy & Soạn giáo án / Bài tập</option>
           </select>
         </div>
+        <div class="sm:col-span-2">
+          <label translate="key_label_goal" class="block text-xs font-semibold text-slate-500 uppercase mb-1">Mục tiêu tự học mỗi ngày (Focus Mode Goal)</label>
+          <select id="select-daily-goal" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-brand-500">
+            <option value="15 phút" translate="key_opt_goal_15">15 phút / ngày (Nhẹ nhàng)</option>
+            <option value="30 phút" translate="key_opt_goal_30">30 phút / ngày (Khuyến nghị)</option>
+            <option value="45 phút" translate="key_opt_goal_45">45 phút / ngày (Tập trung vừa)</option>
+            <option value="60 phút" translate="key_opt_goal_60">60 phút / ngày (Chuyên sâu)</option>
+            <option value="90 phút" translate="key_opt_goal_90">90 phút / ngày (Nâng cao)</option>
+            <option value="120+ phút" translate="key_opt_goal_120">2+ giờ / ngày (Ôn thi cao độ)</option>
+          </select>
+        </div>
         <div class="flex justify-end pt-4 sm:col-span-2">
-          <button type="submit" translate="key_87" class="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-6 py-2.5 rounded-xl text-sm transition">Lưu thay đổi</button>
+          <button type="submit" translate="key_87" class="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-6 py-2.5 rounded-xl text-sm transition cursor-pointer">Lưu thay đổi</button>
         </div>
       </div>
     </form>

@@ -200,5 +200,22 @@
   "key_status_drafting": "作成中",
   "key_status_reviewed": "論理確認済",
   "key_status_practiced": "演習済",
-  "key_status_not_done": "未着手"
+  "key_status_not_done": "未着手",
+  "key_weekly_goal_completion": "週間目標達成率",
+  "key_focus_mode": "集中モード",
+  "key_focus_mode_active": "集中モード起動中",
+  "key_btn_start_focus": "集中モード",
+  "key_exit_focus": "集中モード終了",
+  "key_focus_timer_prefix": "学習中:",
+  "key_goal_reached": "目標達成！",
+  "key_vs_yesterday": "前日比",
+  "key_label_goal": "1日の自習目標時間 (集中モード)",
+  "key_opt_goal_15": "15分 / 日 (手軽)",
+  "key_opt_goal_30": "30分 / 日 (推奨)",
+  "key_opt_goal_45": "45分 / 日 (中程度)",
+  "key_opt_goal_60": "60分 / 日 (集中)",
+  "key_opt_goal_90": "90分 / 日 (上級)",
+  "key_opt_goal_120": "2時間以上 / 日 (試験対策)",
+  "key_pause": "一時停止",
+  "key_resume": "再開"
 }

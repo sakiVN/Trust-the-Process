@@ -19,7 +19,21 @@ window.t = function(key, fallback = '') {
 };
 
 /**
- * Load and apply translations based on language code (vi, jp, en)
+ * Change language handler that saves preference and reloads page to guarantee complete fresh rendering
+ * @param {string} lang - Target language ('vi', 'en', 'jp')
+ */
+function changeLanguage(lang) {
+  if (!lang) return;
+  const currentLang = localStorage.getItem('user_language') || 'vi';
+  localStorage.setItem('user_language', lang);
+  
+  if (currentLang !== lang) {
+    window.location.reload();
+  }
+}
+
+/**
+ * Load and apply translations based on language code (vi, jp, en) without forcing reload
  */
 async function loadLanguage(lang) {
   if (!lang) lang = localStorage.getItem('user_language') || 'vi';
@@ -85,7 +99,7 @@ async function loadLanguage(lang) {
     if (landingSelect && landingSelect.value !== lang) {
       landingSelect.value = lang;
     }
-    const gettingStartedSelect = document.getElementById('header-language-select-getting-started');
+    const gettingStartedSelect = document.getElementById('getting-started-language-select');
     if (gettingStartedSelect && gettingStartedSelect.value !== lang) {
       gettingStartedSelect.value = lang;
     }
@@ -122,7 +136,7 @@ async function loadLanguage(lang) {
 
 // Global hooks
 window.loadLanguage = loadLanguage;
-window.changeLanguage = loadLanguage;
+window.changeLanguage = changeLanguage;
 
 // Automatically load saved language on DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {

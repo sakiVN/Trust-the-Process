@@ -58,7 +58,7 @@
             <div class="relative">
                 <select 
                     id="getting-started-language-select" 
-                    onchange="setGSLanguage(this.value);" 
+                    onchange="setGSLanguage(this.value, true);" 
                     class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl px-2.5 py-1.5 pr-7 focus:outline-none focus:ring-1 focus:ring-brand-500 cursor-pointer appearance-none shadow-sm transition hover:bg-slate-100 dark:hover:bg-slate-700"
                     title="Chọn ngôn ngữ / Select language"
                 >
@@ -177,12 +177,12 @@
                             onchange="onPurposeDropdownChange(this.value)"
                             class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500 transition appearance-none"
                         >
-                            <option value="Học tập & Nghiên cứu thường nhật">Học tập & Nghiên cứu thường nhật</option>
-                            <option value="Ôn thi cấp tốc & Luyện đề">Ôn thi cấp tốc & Luyện đề trắc nghiệm</option>
-                            <option value="Tập trung sâu & Quản lý tri thức">Tập trung sâu & Quản lý tri thức</option>
-                            <option value="Lưu trữ & Tổng hợp tài liệu">Lưu trữ & Tổng hợp tài liệu PDF</option>
-                            <option value="Nâng cao tư duy phản biện">Nâng cao tư duy phản biện & Viết luận</option>
-                            <option value="Giảng dạy & Soạn giáo án">Giảng dạy & Soạn giáo án / Bài tập</option>
+                            <option value="Học tập & Nghiên cứu thường nhật" data-i18n="opt_purpose_study">Học tập & Nghiên cứu thường nhật</option>
+                            <option value="Ôn thi cấp tốc & Luyện đề" data-i18n="opt_purpose_exam">Ôn thi cấp tốc & Luyện đề trắc nghiệm</option>
+                            <option value="Tập trung sâu & Quản lý tri thức" data-i18n="opt_purpose_focus">Tập trung sâu & Quản lý tri thức</option>
+                            <option value="Lưu trữ & Tổng hợp tài liệu" data-i18n="opt_purpose_storage">Lưu trữ & Tổng hợp tài liệu PDF</option>
+                            <option value="Nâng cao tư duy phản biện" data-i18n="opt_purpose_critique">Nâng cao tư duy phản biện & Viết luận</option>
+                            <option value="Giảng dạy & Soạn giáo án" data-i18n="opt_purpose_teach">Giảng dạy & Soạn giáo án / Bài tập</option>
                         </select>
                         <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-400">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -226,11 +226,11 @@
                                 id="user-role" 
                                 class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500 transition appearance-none"
                             >
-                                <option value="Học sinh">Học sinh (K12)</option>
-                                <option value="Sinh viên" selected>Sinh viên (Đại học / Cao đẳng)</option>
-                                <option value="Giáo viên">Giáo viên / Giảng viên</option>
-                                <option value="Nhà nghiên cứu">Nhà nghiên cứu / Chuyên gia</option>
-                                <option value="Người tự học">Người tự học / Đi làm</option>
+                                <option value="Học sinh" data-i18n="opt_role_student">Học sinh (K12)</option>
+                                <option value="Sinh viên" data-i18n="opt_role_uni" selected>Sinh viên (Đại học / Cao đẳng)</option>
+                                <option value="Giáo viên" data-i18n="opt_role_teacher">Giáo viên / Giảng viên</option>
+                                <option value="Nhà nghiên cứu" data-i18n="opt_role_researcher">Nhà nghiên cứu / Chuyên gia</option>
+                                <option value="Người tự học" data-i18n="opt_role_self">Người tự học / Đi làm</option>
                             </select>
                             <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-400">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -250,10 +250,10 @@
                                 id="daily-goal" 
                                 class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500 transition appearance-none"
                             >
-                                <option value="15 phút">15 phút / ngày (Nhẹ nhàng)</option>
-                                <option value="30 phút" selected>30 phút / ngày (Khuyến nghị)</option>
-                                <option value="60 phút">60 phút / ngày (Chuyên sâu)</option>
-                                <option value="120+ phút">2+ giờ / ngày (Ôn thi cao độ)</option>
+                                <option value="15 phút" data-i18n="opt_goal_15">15 phút / ngày (Nhẹ nhàng)</option>
+                                <option value="30 phút" data-i18n="opt_goal_30" selected>30 phút / ngày (Khuyến nghị)</option>
+                                <option value="60 phút" data-i18n="opt_goal_60">60 phút / ngày (Chuyên sâu)</option>
+                                <option value="120+ phút" data-i18n="opt_goal_120">2+ giờ / ngày (Ôn thi cao độ)</option>
                             </select>
                             <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-400">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -296,7 +296,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="py-4 text-center text-xs text-slate-400">
+    <footer data-i18n="footer_text" class="py-6 text-center text-xs text-slate-400 border-t border-slate-200/60 dark:border-slate-800/80">
         EduBrain LMS &bull; Tự động hóa trải nghiệm học tập cùng AI
     </footer>
 
@@ -322,7 +322,23 @@
                 pill_focus: "Tập trung sâu",
                 pill_storage: "Lưu trữ tài liệu",
                 pill_critique: "Tư duy phản biện",
-                pill_teach: "Giảng dạy & Giáo án"
+                pill_teach: "Giảng dạy & Giáo án",
+                opt_purpose_study: "Học tập & Nghiên cứu thường nhật",
+                opt_purpose_exam: "Ôn thi cấp tốc & Luyện đề trắc nghiệm",
+                opt_purpose_focus: "Tập trung sâu & Quản lý tri thức",
+                opt_purpose_storage: "Lưu trữ & Tổng hợp tài liệu PDF",
+                opt_purpose_critique: "Nâng cao tư duy phản biện & Viết luận",
+                opt_purpose_teach: "Giảng dạy & Soạn giáo án / Bài tập",
+                opt_role_student: "Học sinh (K12)",
+                opt_role_uni: "Sinh viên (Đại học / Cao đẳng)",
+                opt_role_teacher: "Giáo viên / Giảng viên",
+                opt_role_researcher: "Nhà nghiên cứu / Chuyên gia",
+                opt_role_self: "Người tự học / Đi làm",
+                opt_goal_15: "15 phút / ngày (Nhẹ nhàng)",
+                opt_goal_30: "30 phút / ngày (Khuyến nghị)",
+                opt_goal_60: "60 phút / ngày (Chuyên sâu)",
+                opt_goal_120: "2+ giờ / ngày (Ôn thi cao độ)",
+                footer_text: "EduBrain LMS • Tự động hóa trải nghiệm học tập cùng AI"
             },
             en: {
                 back: "Back to Home",
@@ -343,7 +359,23 @@
                 pill_focus: "Deep Focus",
                 pill_storage: "Doc Archiving",
                 pill_critique: "Critical Thinking",
-                pill_teach: "Teaching & Lesson Plan"
+                pill_teach: "Teaching & Lesson Plan",
+                opt_purpose_study: "Daily Study & Research",
+                opt_purpose_exam: "Exam Cramming & Practice Tests",
+                opt_purpose_focus: "Deep Focus & Knowledge Management",
+                opt_purpose_storage: "PDF Document Archiving",
+                opt_purpose_critique: "Critical Thinking & Essay Logic",
+                opt_purpose_teach: "Teaching & Lesson Preparation",
+                opt_role_student: "Student (K12)",
+                opt_role_uni: "University / College Student",
+                opt_role_teacher: "Teacher / Lecturer",
+                opt_role_researcher: "Researcher / Expert",
+                opt_role_self: "Self-learner / Professional",
+                opt_goal_15: "15 mins / day (Light)",
+                opt_goal_30: "30 mins / day (Recommended)",
+                opt_goal_60: "60 mins / day (Intensive)",
+                opt_goal_120: "2+ hours / day (Exam Cram)",
+                footer_text: "EduBrain LMS • Automating AI-Powered Learning Experience"
             },
             jp: {
                 back: "ホームに戻る",
@@ -364,13 +396,35 @@
                 pill_focus: "集中ナレッジ管理",
                 pill_storage: "資料・PDF保存",
                 pill_critique: "批判的論理思考",
-                pill_teach: "授業・指導準備"
+                pill_teach: "授業・指導準備",
+                opt_purpose_study: "日常学習・学術研究",
+                opt_purpose_exam: "直前試験対策・問題演習",
+                opt_purpose_focus: "集中ナレッジ管理",
+                opt_purpose_storage: "資料・PDF保存",
+                opt_purpose_critique: "批判的論理思考・論文執筆",
+                opt_purpose_teach: "授業・指導準備",
+                opt_role_student: "中高生 (K12)",
+                opt_role_uni: "大学生 / 短大生",
+                opt_role_teacher: "教員 / 講師",
+                opt_role_researcher: "研究者 / 専門家",
+                opt_role_self: "社会人 / 独学者",
+                opt_goal_15: "15分 / 日（ライト）",
+                opt_goal_30: "30分 / 日（推奨）",
+                opt_goal_60: "60分 / 日（集中）",
+                opt_goal_120: "2時間以上 / 日（試験対策）",
+                footer_text: "EduBrain LMS • AIによる次世代学習体験の自動化"
             }
         };
 
-        function setGSLanguage(lang) {
+        function setGSLanguage(lang, reload = false) {
             if (!lang) lang = localStorage.getItem('user_language') || 'vi';
+            const currentLang = localStorage.getItem('user_language') || 'vi';
             localStorage.setItem('user_language', lang);
+
+            if (reload && currentLang !== lang) {
+                window.location.reload();
+                return;
+            }
 
             const selectEl = document.getElementById('getting-started-language-select');
             if (selectEl && selectEl.value !== lang) selectEl.value = lang;
