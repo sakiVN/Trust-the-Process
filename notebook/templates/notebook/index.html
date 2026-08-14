@@ -1114,7 +1114,7 @@
     </div>
 
     <!-- Frontend logic & dynamic integration -->
-    <script src="{% static 'notebook/js/app.js' %}"></script>
+    <script src="{% static 'notebook/js/app.js' %}?v={% now 'U' %}"></script>
     {% include 'notebook/features/flashcard/template.html' %}
     {% include 'notebook/features/quiz/template.html' %}
     {% include 'notebook/features/report/template.html' %}

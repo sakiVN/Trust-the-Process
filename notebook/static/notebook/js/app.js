@@ -3102,15 +3102,20 @@ function openCreateModal(type) {
     // Configure modal details based on selected tool
     const titleInput = document.getElementById('tool-input-title');
     const textInput = document.getElementById('tool-input-text');
-    if (type === 'quiz' || type === 'report') {
+    if (type === 'quiz') {
+        titleInput.classList.remove('hidden');
+        textInput.classList.remove('hidden');
+        titleInput.placeholder = "Nhập chủ đề Quiz (Ví dụ: Lập trình Python, Lịch sử...)...";
+        textInput.placeholder = "Dán nội dung tài liệu hoặc ghi chú bổ sung (Tùy chọn)...";
+        titleInput.value = '';
+        textInput.value = '';
+        titleInput.required = false;
+        textInput.required = false;
+    } else if (type === 'report') {
         titleInput.classList.add('hidden');
         textInput.classList.remove('hidden');
-        if (type === 'quiz') {
-            textInput.placeholder = "Dán văn bản có cấu trúc:\nQ: Câu hỏi?\nA: Đáp án 1\nB: Đáp án 2 (*)\nC: Đáp án 3\nD: Đáp án 4\nEXP: Giải thích chi tiết";
-        } else {
-            textInput.placeholder = "Dán nội dung tài liệu dài vào đây để hệ thống tự động tóm tắt...";
-        }
-        textInput.value = ''; // Reset
+        textInput.placeholder = "Dán nội dung tài liệu dài vào đây để hệ thống tự động tóm tắt...";
+        textInput.value = '';
         titleInput.required = false;
         textInput.required = true;
     } else {
@@ -3127,8 +3132,8 @@ function openCreateModal(type) {
         subtitle.innerText = 'Nhập chủ đề học tập để hệ thống sinh thẻ nhớ thông minh';
     } else if (type === 'quiz') {
         icon.innerText = '❓';
-        title.innerText = 'Tạo Câu hỏi trắc nghiệm';
-        subtitle.innerText = 'Nhập chủ đề học tập để sinh câu hỏi trắc nghiệm kèm giải thích';
+        title.innerText = 'Tạo Câu hỏi trắc nghiệm (Gemini 3.6 Flash)';
+        subtitle.innerText = 'Nhập chủ đề hoặc tài liệu để AI Gemini sinh bộ câu hỏi trắc nghiệm kèm giải thích';
     } else if (type === 'report') {
         icon.innerText = '📝';
         title.innerText = 'Tạo Báo cáo tóm tắt';
@@ -3149,12 +3154,13 @@ function closeToolModal() {
     modal.classList.remove('flex');
 }
 
-function handleToolSubmit(e) {
+async function handleToolSubmit(e) {
     e.preventDefault();
     const title = document.getElementById('tool-input-title').value.trim();
+    const rawText = document.getElementById('tool-input-text').value.trim();
     const submitBtn = document.getElementById('tool-submit-btn');
 
-    // Show loading state and hide previous output, keeping form visible
+    // Show loading state and hide previous output
     document.getElementById('tool-output-section').classList.add('hidden');
     document.getElementById('tool-loading').classList.remove('hidden');
 
@@ -3163,38 +3169,156 @@ function handleToolSubmit(e) {
         submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
     }
 
-    // Simulate AI Model/Backend processing (1.5 seconds mock)
-    setTimeout(() => {
+    try {
+        if (activeToolType === 'quiz') {
+            let selectElem = document.getElementById('tool-notebook-select');
+            let targetNotebookId = (selectElem && selectElem.value) ? selectElem.value : activeNotebookId;
+
+            if (!targetNotebookId) {
+                if (notebooks && notebooks.length > 0) {
+                    targetNotebookId = notebooks[0].id;
+                } else {
+                    const createNbRes = await fetchWithCsrf(`${API_URL}/notebooks/`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name: 'Sổ tay tự học', description: 'Sổ tay chung cho các tài liệu sinh tự động' })
+                    });
+                    if (createNbRes.ok) {
+                        const newNb = await createNbRes.json();
+                        targetNotebookId = newNb.id;
+                        await loadNotebooks();
+                    }
+                }
+            }
+
+            if (!targetNotebookId) {
+                alert("Vui lòng chọn hoặc tạo một Sổ tay trước khi sinh Quiz.");
+                return;
+            }
+
+            const res = await fetchWithCsrf(`${API_URL}/notebooks/${targetNotebookId}/generate/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    generation_type: 'quiz',
+                    custom_title: title || 'Quiz ôn tập',
+                    custom_text: rawText
+                })
+            });
+
+            if (!res.ok) {
+                const errData = await res.json();
+                alert("Lỗi khi sinh Quiz: " + (errData.error || JSON.stringify(errData)));
+                return;
+            }
+
+            const genData = await res.json();
+            const outputContent = document.getElementById('tool-output-content');
+            outputContent.innerHTML = renderQuizJSONToHTML(genData.content, title || 'Bài tập trắc nghiệm');
+            document.getElementById('tool-output-section').classList.remove('hidden');
+
+            if (activeNotebookId && String(activeNotebookId) === String(targetNotebookId)) {
+                await selectNotebook(activeNotebookId, true);
+            }
+        } else {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            const outputContent = document.getElementById('tool-output-content');
+            let mockResult = '';
+
+            if (activeToolType === 'flashcards') {
+                mockResult = getFlashcardMockHTML(title);
+            } else if (activeToolType === 'report') {
+                mockResult = generateReportHTML(rawText, title);
+            } else if (activeToolType === 'mindmap') {
+                const mindmapData = getMindmapMockHTML(title);
+                mockResult = mindmapData.html;
+                setTimeout(() => {
+                    const parsedTree = parseMermaidToJsMind(mindmapData.mermaid);
+                    initJsMindInstance('modal', mindmapData.id, parsedTree);
+                }, 100);
+            }
+            outputContent.innerHTML = mockResult;
+            document.getElementById('tool-output-section').classList.remove('hidden');
+        }
+    } catch (err) {
+        console.error("Tool submit error:", err);
+        alert("Có lỗi xảy ra khi tạo nội dung: " + err.message);
+    } finally {
         document.getElementById('tool-loading').classList.add('hidden');
         if (submitBtn) {
             submitBtn.disabled = false;
             submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
         }
+    }
+}
 
-        const outputContent = document.getElementById('tool-output-content');
-        let mockResult = '';
+function renderQuizJSONToHTML(contentStr, title) {
+    if (!contentStr) return '<div class="text-xs text-slate-400 py-4 text-center">Không có dữ liệu quiz.</div>';
 
-        if (activeToolType === 'flashcards') {
-            mockResult = getFlashcardMockHTML(title);
-        } else if (activeToolType === 'quiz') {
-            const rawText = document.getElementById('tool-input-text').value;
-            mockResult = parseQuizText(rawText);
-        } else if (activeToolType === 'report') {
-            const rawText = document.getElementById('tool-input-text').value;
-            mockResult = generateReportHTML(rawText, title);
-        } else if (activeToolType === 'mindmap') {
-            const mindmapData = getMindmapMockHTML(title);
-            mockResult = mindmapData.html;
+    let clean = contentStr.trim();
+    if (clean.startsWith('```')) {
+        clean = clean.replace(/^```(?:json)?\s*/, '').replace(/```$/, '').trim();
+    }
 
-            setTimeout(() => {
-                const parsedTree = parseMermaidToJsMind(mindmapData.mermaid);
-                initJsMindInstance('modal', mindmapData.id, parsedTree);
-            }, 100);
+    let questions = [];
+    try {
+        questions = JSON.parse(clean);
+    } catch (err) {
+        if (typeof parseQuizText === 'function') {
+            return parseQuizText(contentStr);
         }
+        return `<div class="text-xs text-slate-400 py-4">${escapeHtml(contentStr)}</div>`;
+    }
 
-        outputContent.innerHTML = mockResult;
-        document.getElementById('tool-output-section').classList.remove('hidden');
-    }, 1500);
+    if (!Array.isArray(questions) || questions.length === 0) {
+        if (typeof parseQuizText === 'function') {
+            return parseQuizText(contentStr);
+        }
+        return '<div class="text-xs text-slate-400 py-4 text-center">Chưa có câu hỏi nào được sinh ra.</div>';
+    }
+
+    let html = `<div class="text-left font-sans space-y-4 w-full max-w-2xl mx-auto">
+        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+            <span class="text-xs font-bold text-brand-600 dark:text-brand-400">✨ Bộ câu hỏi Quiz (Gemini 3.6 Flash)</span>
+            <span class="text-[10px] text-slate-400">Chủ đề: ${escapeHtml(title)}</span>
+        </div>`;
+
+    questions.forEach((q, index) => {
+        const qId = `tool-quiz-q-${index}-${Date.now()}`;
+        const options = Array.isArray(q.options) ? q.options : [];
+        const correctAns = (q.answer || (typeof q.correct_index === 'number' ? String.fromCharCode(65 + q.correct_index) : 'A')).toString().toUpperCase();
+
+        let optionsHtml = '';
+        options.forEach((opt, optIdx) => {
+            const letter = String.fromCharCode(65 + optIdx);
+            optionsHtml += `
+                <button id="${qId}-opt-${optIdx}" onclick="checkQuizAnswer('${qId}', '${letter}', '${correctAns}', ${optIdx})" 
+                class="text-left bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3.5 py-2.5 rounded-xl text-xs hover:bg-slate-50 dark:hover:bg-slate-800/60 transition shadow-sm w-full font-medium text-slate-700 dark:text-slate-300">
+                    ${formatQuizOption(opt, optIdx)}
+                </button>
+            `;
+        });
+
+        html += `
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 space-y-3 shadow-sm hover:border-brand-300 transition-colors group">
+                <span class="text-xs font-bold text-slate-850 dark:text-slate-100">Câu ${index + 1}: ${escapeHtml(q.question || q.question_text || '')}</span>
+                <div class="grid grid-cols-1 gap-2 mt-2" id="${qId}-options">
+                    ${optionsHtml}
+                </div>
+                <div id="${qId}-result" class="hidden text-[11px] font-bold p-3 rounded-xl"></div>
+                <div id="${qId}-explanation" class="hidden text-[10px] text-slate-500 dark:text-slate-400 italic bg-slate-100 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
+                    Giải thích: ${escapeHtml(q.explanation || 'Không có giải thích.')}
+                </div>
+            </div>
+        `;
+    });
+
+    html += '</div>';
+
+    let jsonEscaped = escapeHtml(JSON.stringify(questions));
+    html += `<textarea id="quiz-hidden-data" class="hidden">${jsonEscaped}</textarea>`;
+
+    return html;
 }
 
 function copyToolResult() {
