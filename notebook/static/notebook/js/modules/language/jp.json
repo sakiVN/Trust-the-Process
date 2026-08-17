@@ -365,5 +365,12 @@
   "key_filter_quiz": "クイズ",
   "key_filter_report": "レポート (Report)",
   "key_filter_flashcard": "単語カード (Flashcard)",
-  "key_filter_mindmap": "マインドマップ (Mindmap)"
+  "key_filter_mindmap": "マインドマップ (Mindmap)",
+  "key_filter_notebook_label": "ノート:",
+  "key_filter_type_label": "タイプ:",
+  "key_filter_all_notebooks": "すべてのノート",
+  "key_filter_unlinked": "未リンク",
+  "key_confirm_delete_material": "この学習教材を削除してもよろしいですか？この操作は元に戻せません。",
+  "key_alert_deleted_material": "学習教材を正常に削除しました！",
+  "key_error_delete_material": "教材の削除に失敗しました。再試行してください。"
 }

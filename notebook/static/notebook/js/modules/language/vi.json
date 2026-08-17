@@ -365,5 +365,12 @@
   "key_filter_quiz": "Trắc nghiệm",
   "key_filter_report": "Report",
   "key_filter_flashcard": "Flashcard",
-  "key_filter_mindmap": "Mindmap"
+  "key_filter_mindmap": "Mindmap",
+  "key_filter_notebook_label": "Sổ tay:",
+  "key_filter_type_label": "Thể loại:",
+  "key_filter_all_notebooks": "Tất cả sổ tay",
+  "key_filter_unlinked": "Không liên kết",
+  "key_confirm_delete_material": "Bạn có chắc chắn muốn xóa tài nguyên học tập này? Hành động này không thể hoàn tác.",
+  "key_alert_deleted_material": "Đã xóa tài nguyên học tập thành công!",
+  "key_error_delete_material": "Không thể xóa tài nguyên. Vui lòng thử lại."
 }
