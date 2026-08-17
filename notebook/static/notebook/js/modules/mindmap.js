@@ -87,18 +87,20 @@ function parseMermaidToJsMind(text) {
         }
     }
 
+    const t = window.t || ((k, fallback) => fallback);
     return {
         meta: { name: "jsmind", author: "edubrain", version: "0.2" },
         format: "node_tree",
-        data: root || { id: "root", topic: "Sơ đồ trống", children: [] }
+        data: root || { id: "root", topic: t('key_mindmap_empty_tree', 'Sơ đồ trống'), children: [] }
     };
 }
 
 async function updateSavedMindmap(genId) {
+    const t = window.t || ((k, fallback) => fallback);
     // Try workspace key first (ws-<id>), then fallback to direct key
     const jm = jmInstances['ws-' + genId] || jmInstances[genId];
     if (!jm) {
-        alert("Không tìm thấy sơ đồ tư duy để lưu. Vui lòng thử lại.");
+        alert(t('key_mindmap_save_error', "Không tìm thấy sơ đồ tư duy để lưu. Vui lòng thử lại."));
         return;
     }
     const mindData = jm.get_data();
@@ -111,10 +113,10 @@ async function updateSavedMindmap(genId) {
         });
 
         if (res.ok) {
-            alert("Đã cập nhật và lưu thay đổi sơ đồ tư duy thành công!");
+            alert(t('key_mindmap_saved_success', "Đã cập nhật và lưu thay đổi sơ đồ tư duy thành công!"));
         } else {
             const err = await res.json();
-            alert("Lỗi lưu thay đổi: " + JSON.stringify(err));
+            alert(t('key_mindmap_save_error', "Lỗi lưu thay đổi: ") + JSON.stringify(err));
         }
     } catch (err) {
         console.error("Lỗi cập nhật sơ đồ tư duy:", err);
@@ -224,52 +226,56 @@ function generateMockMermaidMindmap(title) {
 }
 
 function addJsMindChildNode(key) {
+    const t = window.t || ((k, fallback) => fallback);
     const jm = jmInstances[key];
     if (!jm) return;
     const selected = jm.get_selected_node();
     if (!selected) {
-        alert("Vui lòng chọn một nút trước khi thêm nhánh con!");
+        alert(t('key_mindmap_select_node_first', "Vui lòng chọn một nút trước khi thêm nhánh con!"));
         return;
     }
     const nodeId = 'node_' + Date.now();
-    jm.add_node(selected, nodeId, "Nhánh mới");
+    jm.add_node(selected, nodeId, t('key_mindmap_new_node', "Nhánh mới"));
 }
 
 function editJsMindNodeName(key) {
+    const t = window.t || ((k, fallback) => fallback);
     const jm = jmInstances[key];
     if (!jm) return;
     const selected = jm.get_selected_node();
     if (!selected) {
-        alert("Vui lòng chọn nhánh cần sửa!");
+        alert(t('key_mindmap_select_node_first', "Vui lòng chọn nhánh cần sửa!"));
         return;
     }
-    const newTopic = prompt("Nhập nội dung mới:", selected.topic);
+    const newTopic = prompt(t('key_mindmap_prompt_edit', "Nhập nội dung mới:"), selected.topic);
     if (newTopic && newTopic.trim() !== "") {
         jm.update_node(selected.id, newTopic.trim());
     }
 }
 
 function removeJsMindNode(key) {
+    const t = window.t || ((k, fallback) => fallback);
     const jm = jmInstances[key];
     if (!jm) return;
     const selected = jm.get_selected_node();
     if (!selected) {
-        alert("Vui lòng chọn nút cần xóa!");
+        alert(t('key_mindmap_select_node_first', "Vui lòng chọn nút cần xóa!"));
         return;
     }
     if (selected.id === 'root') {
-        alert("Không thể xóa nút gốc!");
+        alert(t('key_mindmap_cannot_delete_root', "Không thể xóa nút gốc!"));
         return;
     }
     jm.remove_node(selected);
 }
 
 function changeJsMindNodeColor(key, color) {
+    const t = window.t || ((k, fallback) => fallback);
     const jm = jmInstances[key];
     if (!jm) return;
     const selected = jm.get_selected_node();
     if (!selected) {
-        alert("Vui lòng chọn một nút để đổi màu!");
+        alert(t('key_mindmap_select_node_first', "Vui lòng chọn một nút để đổi màu!"));
         return;
     }
     // jsMind 0.6.4 stores node data - update via set_node_data and re-render

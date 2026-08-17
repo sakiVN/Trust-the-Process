@@ -1,3 +1,22 @@
+// Documents view state
+let currentDocumentsPage = 1;
+let documentsSortBy = 'date_desc';
+const DOCUMENTS_PER_PAGE = 20;
+
+function setDocumentsSort(sortBy) {
+    documentsSortBy = sortBy;
+    currentDocumentsPage = 1; // Reset to page 1 on sort change
+    renderAllDocumentsView();
+}
+
+function setDocumentsPage(page) {
+    currentDocumentsPage = page;
+    renderAllDocumentsView();
+    // Scroll to top of documents list
+    const container = document.getElementById('all-documents-list');
+    if (container) container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 function renderAllDocumentsView() {
     const container = document.getElementById('all-documents-list');
     if (!container) return;
@@ -6,56 +25,118 @@ function renderAllDocumentsView() {
     const lang = localStorage.getItem('user_language') || 'vi';
     const localeStr = lang === 'en' ? 'en-US' : (lang === 'jp' ? 'ja-JP' : 'vi-VN');
 
+    // Only collect sources — no quizzes
     let allSources = [];
     notebooks.forEach(nb => {
         const sources = nb.sources || [];
         sources.forEach(src => {
             allSources.push({ ...src, notebookName: nb.name, notebookId: nb.id, type: 'source' });
         });
-        const quizzes = nb.quizzes || [];
-        quizzes.forEach(quiz => {
-            allSources.push({ ...quiz, notebookName: nb.name, notebookId: nb.id, type: 'quiz' });
-        });
     });
 
-    if (allSources.length === 0) {
-        container.innerHTML = `<div class="col-span-full text-xs text-slate-400 text-center py-12">${t('key_25', 'Không có tài liệu nào.')}</div>`;
-        return;
+    // Sync sort dropdown
+    const sortSelect = document.getElementById('documents-sort-select');
+    if (sortSelect && sortSelect.value !== documentsSortBy) {
+        sortSelect.value = documentsSortBy;
     }
 
-    container.innerHTML = allSources.map(src => {
-        const docIcon = src.type === 'quiz' ? '/static/notebook/icon-set/quiz.png' : '/static/notebook/icon-set/upload.png';
-        const labelText = src.type === 'quiz' ? t('key_tag_quiz', 'Trắc nghiệm') : (src.source_type === 'file' ? t('key_tag_pdf', 'File PDF') : (src.source_type === 'link' ? t('key_tag_link', 'Trang web') : t('key_tag_text', 'Văn bản')));
-        const clickHandler = src.type === 'quiz' ? `openQuizPlayModal(${src.id})` : `openDocumentModal(${src.id})`;
-        
-        return `
-        <div onclick="${clickHandler}" class="cursor-pointer bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-3 hover:scale-[1.01] hover:shadow-md transition hover:border-brand-300 dark:hover:border-brand-700">
-            <div class="flex justify-between items-start gap-3">
-                <div class="min-w-0">
-                    <span class="inline-flex items-center gap-1.5 text-[9px] uppercase tracking-wider font-bold px-2.5 py-0.5 rounded-full ${src.type === 'quiz' ? 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' : (src.source_type === 'link' ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : (src.source_type === 'file' ? 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' : 'bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300'))}">
-                        <img src="${docIcon}" class="w-3.5 h-3.5 object-contain shrink-0" alt="Icon" />
-                        <span>${labelText}</span>
-                    </span>
-                    <h4 class="font-bold text-slate-850 dark:text-white text-sm mt-2 truncate">${src.type === 'quiz' ? src.name : src.title}</h4>
+    // Sort
+    allSources.sort((a, b) => {
+        if (documentsSortBy === 'name_asc') {
+            return (a.title || '').localeCompare(b.title || '', lang);
+        } else if (documentsSortBy === 'name_desc') {
+            return (b.title || '').localeCompare(a.title || '', lang);
+        } else if (documentsSortBy === 'date_asc') {
+            return new Date(a.created_at || 0) - new Date(b.created_at || 0);
+        } else { // date_desc (default)
+            return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+        }
+    });
+
+    // Pagination calculation
+    const totalItems = allSources.length;
+    const totalPages = Math.max(1, Math.ceil(totalItems / DOCUMENTS_PER_PAGE));
+    if (currentDocumentsPage > totalPages) currentDocumentsPage = totalPages;
+    if (currentDocumentsPage < 1) currentDocumentsPage = 1;
+    const startIdx = (currentDocumentsPage - 1) * DOCUMENTS_PER_PAGE;
+    const endIdx = startIdx + DOCUMENTS_PER_PAGE;
+    const pageItems = allSources.slice(startIdx, endIdx);
+
+    // Render items
+    if (totalItems === 0) {
+        container.innerHTML = `<div class="col-span-full text-xs text-slate-400 text-center py-12">${t('key_25', 'Không có tài liệu nào.')}</div>`;
+    } else {
+        container.innerHTML = pageItems.map(src => {
+            const labelText = src.source_type === 'file' ? t('key_tag_pdf', 'File PDF') : (src.source_type === 'link' ? t('key_tag_link', 'Trang web') : t('key_tag_text', 'Văn bản'));
+            
+            return `
+            <div onclick="openDocumentModal(${src.id})" class="cursor-pointer bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-3 hover:scale-[1.01] hover:shadow-md transition hover:border-brand-300 dark:hover:border-brand-700">
+                <div class="flex justify-between items-start gap-3">
+                    <div class="min-w-0">
+                        <span class="inline-flex items-center gap-1.5 text-[9px] uppercase tracking-wider font-bold px-2.5 py-0.5 rounded-full ${src.source_type === 'link' ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : (src.source_type === 'file' ? 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' : 'bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300')}">
+                            <img src="/static/notebook/icon-set/upload.png" class="w-3.5 h-3.5 object-contain shrink-0" alt="Icon" />
+                            <span>${labelText}</span>
+                        </span>
+                        <h4 class="font-bold text-slate-850 dark:text-white text-sm mt-2 truncate">${src.title}</h4>
+                    </div>
+                    <div class="flex items-center space-x-2 shrink-0">
+                        <button onclick="event.stopPropagation(); openDocumentModal(${src.id});" class="text-xs bg-brand-500 hover:bg-brand-600 text-white rounded-xl px-3 py-1.5 font-bold transition shadow-sm flex items-center space-x-1"><span>📖</span> <span>${t('key_btn_read_now', 'Đọc ngay')}</span></button>
+                        <button onclick="event.stopPropagation(); switchView('notebooks'); selectNotebook(${src.notebookId});" class="text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-slate-600 dark:text-slate-350 hover:bg-slate-100 font-semibold transition opacity-80 hover:opacity-100">${t('key_btn_view_notebook', 'Sổ tay')}</button>
+                        <button onclick="event.stopPropagation(); deleteSource(${src.id})" class="p-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-500 transition opacity-80 hover:opacity-100" title="${t('key_btn_delete', 'Xóa tài liệu')}">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        </button>
+                    </div>
                 </div>
-                <div class="flex items-center space-x-2 shrink-0">
-                    ${src.type !== 'quiz' ? `<button onclick="event.stopPropagation(); openDocumentModal(${src.id});" class="text-xs bg-brand-500 hover:bg-brand-600 text-white rounded-xl px-3 py-1.5 font-bold transition shadow-sm flex items-center space-x-1"><span>📖</span> <span>${t('key_btn_read_now', 'Đọc ngay')}</span></button>` : ''}
-                    <button onclick="event.stopPropagation(); switchView('notebooks'); selectNotebook(${src.notebookId});" class="text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-slate-600 dark:text-slate-350 hover:bg-slate-100 font-semibold transition opacity-80 hover:opacity-100">${t('key_btn_view_notebook', 'Sổ tay')}</button>
-                    ${src.type === 'quiz' ? `<button onclick="event.stopPropagation(); openQuizPlayModal(${src.id})" class="text-xs bg-brand-600 hover:bg-brand-700 text-white px-2.5 py-1.5 rounded-xl font-semibold transition">${t('key_btn_practice', 'Làm bài')}</button>` : `<button onclick="event.stopPropagation(); deleteSource(${src.id})" class="p-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-500 transition opacity-80 hover:opacity-100" title="${t('key_btn_delete', 'Xóa tài liệu')}">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                    </button>`}
+                ${src.file_path ? `<a href="${src.file_path}" target="_blank" onclick="event.stopPropagation()" class="text-[10px] text-brand-500 hover:underline truncate block mt-1 flex items-center space-x-1"><img src="/static/notebook/icon-set/upload.png" class="w-3.5 h-3.5 object-contain" /><span>${t('key_btn_open_pdf', 'Tải xuống file PDF')}</span></a>` : ''}
+                <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-3 bg-slate-50 dark:bg-slate-900/40 p-3 rounded-xl border border-slate-100 dark:border-slate-800">${src.content}</p>
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center text-[10px] text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-800 gap-2">
+                    <span>${t('key_btn_view_notebook', 'Sổ tay')}: <strong>${src.notebookName}</strong></span>
+                    <span>${new Date(src.created_at || Date.now()).toLocaleDateString(localeStr)}</span>
                 </div>
             </div>
-            ${src.type === 'quiz' ? `<p class="text-[10px] text-slate-500 dark:text-slate-400 line-clamp-3 bg-slate-50 dark:bg-slate-900/40 p-3 rounded-xl border border-slate-100 dark:border-slate-800">${src.description || t('key_ph_quiz_desc', 'Bộ câu hỏi trắc nghiệm đã lưu.')}</p>` : `${src.file_path ? `<a href="${src.file_path}" target="_blank" onclick="event.stopPropagation()" class="text-[10px] text-brand-500 hover:underline truncate block mt-1 flex items-center space-x-1"><img src="/static/notebook/icon-set/upload.png" class="w-3.5 h-3.5 object-contain" /><span>${t('key_btn_open_pdf', 'Tải xuống file PDF')}</span></a>` : ''}
-            <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-3 bg-slate-50 dark:bg-slate-900/40 p-3 rounded-xl border border-slate-100 dark:border-slate-800">${src.content}</p>`}
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center text-[10px] text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-800 gap-2">
-                <span>${t('key_btn_view_notebook', 'Sổ tay')}: <strong>${src.notebookName}</strong></span>
-                <span>${new Date(src.created_at || Date.now()).toLocaleDateString(localeStr)}</span>
+            `;
+        }).join('');
+    }
+
+    // Render pagination (always visible)
+    const paginationContainer = document.getElementById('documents-pagination');
+    if (paginationContainer) {
+        const showingStart = totalItems === 0 ? 0 : startIdx + 1;
+        const showingEnd = Math.min(endIdx, totalItems);
+
+        let pageButtons = '';
+        // Determine range of page numbers to show (max 5 at a time)
+        let rangeStart = Math.max(1, currentDocumentsPage - 2);
+        let rangeEnd = Math.min(totalPages, rangeStart + 4);
+        if (rangeEnd - rangeStart < 4) rangeStart = Math.max(1, rangeEnd - 4);
+
+        for (let p = rangeStart; p <= rangeEnd; p++) {
+            if (p === currentDocumentsPage) {
+                pageButtons += `<button class="w-8 h-8 rounded-lg text-xs font-bold bg-brand-600 text-white shadow-sm">${p}</button>`;
+            } else {
+                pageButtons += `<button onclick="setDocumentsPage(${p})" class="w-8 h-8 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">${p}</button>`;
+            }
+        }
+
+        paginationContainer.innerHTML = `
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+                <span class="text-[11px] text-slate-400">
+                    ${t('key_pagination_display', 'Hiển thị')} <strong>${showingStart}-${showingEnd}</strong> ${t('key_of', '/')} <strong>${totalItems}</strong> ${t('key_total_docs_count', 'tài liệu')}
+                </span>
+                <div class="flex items-center gap-1.5">
+                    <button onclick="setDocumentsPage(${currentDocumentsPage - 1})" ${currentDocumentsPage <= 1 ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg text-xs font-semibold transition ${currentDocumentsPage <= 1 ? 'text-slate-300 dark:text-slate-700 cursor-not-allowed' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}">
+                        ${t('key_prev_page', 'Trước')}
+                    </button>
+                    ${pageButtons}
+                    <button onclick="setDocumentsPage(${currentDocumentsPage + 1})" ${currentDocumentsPage >= totalPages ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg text-xs font-semibold transition ${currentDocumentsPage >= totalPages ? 'text-slate-300 dark:text-slate-700 cursor-not-allowed' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}">
+                        ${t('key_next_page', 'Sau')}
+                    </button>
+                </div>
             </div>
-        </div>
         `;
-    }).join('');
+    }
 }
+
 
 function renderStudyMaterialsView() {
     const container = document.getElementById('all-study-materials-list');
@@ -268,4 +349,6 @@ window.renderAllDocumentsView = renderAllDocumentsView;
 window.renderStudyMaterialsView = renderStudyMaterialsView;
 window.renderAllNotesView = renderAllNotesView;
 window.switchView = switchView;
+window.setDocumentsSort = setDocumentsSort;
+window.setDocumentsPage = setDocumentsPage;
 

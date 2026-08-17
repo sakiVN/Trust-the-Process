@@ -131,15 +131,26 @@
         <h3 translate="key_14" class="font-bold text-slate-800 dark:text-white text-base">Tài liệu & Ghi chú gần đây</h3>
         <p translate="key_15" class="text-xs text-slate-400 mt-1">Danh sách tổng hợp tài nguyên của các Sổ tay</p>
       </div>
-      <!-- Table Filter and search -->
+      <!-- Table Filter and Sort -->
       <div class="flex flex-wrap items-center gap-3">
-        <input type="text" id="table-search" oninput="filterTable()" data-translate-placeholder="key_search_placeholder" placeholder="Lọc nhanh tại bảng..." class="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand-500" />
-        <select id="table-filter-type" onchange="filterTable()" class="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs focus:outline-none text-slate-600 dark:text-slate-400">
-          <option value="all" translate="key_16">Tất cả loại</option>
-          <option value="source" translate="key_17">Tài liệu liên quan</option>
-          <option value="note" translate="key_18">Ghi chú (Note)</option>
-          <option value="quiz" translate="key_table_filter_quiz">Bài tập (Quiz)</option>
+        <select id="table-filter-type" onchange="setDashboardTableFilter(this.value)" class="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs focus:outline-none text-slate-600 dark:text-slate-400 cursor-pointer">
+          <option value="all" translate="key_filter_all">Tất cả</option>
+          <option value="source" translate="key_filter_source">Tài liệu liên quan</option>
+          <option value="quiz" translate="key_filter_quiz">Trắc nghiệm</option>
+          <option value="report" translate="key_filter_report">Report</option>
+          <option value="flashcards" translate="key_filter_flashcard">Flashcard</option>
+          <option value="mind_map" translate="key_filter_mindmap">Mindmap</option>
         </select>
+        <!-- Sort Dropdown -->
+        <div class="flex items-center gap-1.5">
+          <label for="table-sort-select" class="text-[10px] font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap" translate="key_sort_label">Sắp xếp:</label>
+          <select id="table-sort-select" onchange="setDashboardTableSort(this.value)" class="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs focus:outline-none text-slate-600 dark:text-slate-400 cursor-pointer">
+            <option value="date_desc" translate="key_sort_date_desc">Mới nhất</option>
+            <option value="date_asc" translate="key_sort_date_asc">Cũ nhất</option>
+            <option value="name_asc" translate="key_sort_name_asc">Tên: A → Z</option>
+            <option value="name_desc" translate="key_sort_name_desc">Tên: Z → A</option>
+          </select>
+        </div>
       </div>
     </div>
 
@@ -160,6 +171,11 @@
           <!-- Dynamic rows / Skeleton -->
         </tbody>
       </table>
+    </div>
+
+    <!-- Table Pagination -->
+    <div id="dashboard-table-pagination" class="mt-4">
+      <!-- Rendered dynamically -->
     </div>
 
     <!-- Empty / Loading States -->

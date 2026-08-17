@@ -22,6 +22,7 @@ async function openFlashcardReviewModal(materialId) {
     currentFlashcardIndex = 0;
     isFlashcardFlipped = false;
     flashcardViewMode = 'single';
+    const t = window.t || ((k, fallback) => fallback);
 
     const modal = document.getElementById('flashcard-review-modal');
     const content = document.getElementById('flashcard-review-content');
@@ -30,7 +31,7 @@ async function openFlashcardReviewModal(materialId) {
     content.innerHTML = `
         <div class="flex flex-col items-center justify-center py-16 space-y-3">
             <div class="w-8 h-8 rounded-full border-3 border-indigo-200 border-t-indigo-600 animate-spin"></div>
-            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Đang tải thẻ ghi nhớ...</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">${t('key_105', 'Đang tải thẻ ghi nhớ...')}</p>
         </div>
     `;
     modal.classList.remove('hidden');
@@ -45,8 +46,8 @@ async function openFlashcardReviewModal(materialId) {
         if (!currentFlashcardsList.length) {
             content.innerHTML = `
                 <div class="text-center py-12 text-slate-500 dark:text-slate-400 text-xs space-y-3">
-                    <p>Bộ thẻ ghi nhớ này chưa có nội dung để xem lại.</p>
-                    <button onclick="openFlashcardEditorModal(${materialId})" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-xs font-semibold transition">Thêm thẻ mới</button>
+                    <p>${t('key_flashcard_editor_empty', 'Bộ thẻ ghi nhớ này chưa có nội dung để xem lại.')}</p>
+                    <button onclick="openFlashcardEditorModal(${materialId})" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-xs font-semibold transition">${t('key_btn_add_card', 'Thêm thẻ mới')}</button>
                 </div>
             `;
             return;
@@ -56,7 +57,7 @@ async function openFlashcardReviewModal(materialId) {
         bindFlashcardKeyboardEvents();
     } catch (err) {
         console.error('Flashcard review error:', err);
-        content.innerHTML = '<div class="text-center py-12 text-rose-500 dark:text-rose-400 text-xs">Không thể tải flashcard. Vui lòng thử lại.</div>';
+        content.innerHTML = `<div class="text-center py-12 text-rose-500 dark:text-rose-400 text-xs">${t('key_113', 'Không thể tải flashcard. Vui lòng thử lại.')}</div>`;
     }
 }
 
@@ -91,11 +92,11 @@ function renderSingleFlashcardPlayer(container) {
     const isLast = currentFlashcardIndex === total - 1;
     const t = window.t || ((k, fallback) => fallback);
 
-    const restartLabel = t('key_flashcard_restart', 'Về đầu');
-    const flipLabel = t('key_flashcard_flip', 'Lật thẻ');
+    const restartLabel = t('key_flashcard_restart_btn', 'Về đầu');
+    const flipLabel = t('key_btn_flip', 'Lật thẻ');
     const prevLabel = t('key_flashcard_prev', 'Câu trước');
     const nextLabel = t('key_flashcard_next', 'Câu sau');
-    const finishLabel = t('key_flashcard_finish', 'Hoàn thành');
+    const finishLabel = t('key_btn_finish', 'Hoàn thành');
     const questionLabel = t('key_flashcard_question', 'Câu hỏi');
     const answerLabel = t('key_flashcard_answer', 'Đáp án');
     const flipHintFront = t('key_flashcard_flip_hint_front', 'Nhấn vào thẻ hoặc phím Space để xem đáp án');
@@ -111,29 +112,29 @@ function renderSingleFlashcardPlayer(container) {
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 rounded-2xl px-5 py-3.5">
                 <div class="flex items-center space-x-3">
                     <span class="inline-flex items-center justify-center px-3 py-1 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-bold text-xs">
-                        Thẻ ${currentFlashcardIndex + 1} / ${total}
+                        ${currentFlashcardIndex + 1} / ${total}
                     </span>
                     <div>
                         <div class="flex items-center space-x-2">
-                            <span class="text-xs font-semibold text-slate-800 dark:text-slate-200">Chế độ học từng câu</span>
+                            <span class="text-xs font-semibold text-slate-800 dark:text-slate-200">${t('key_flashcard_single_mode', 'Chế độ học từng câu')}</span>
                             <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-200/60 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold">${progressPercent}%</span>
                         </div>
-                        <p class="text-[11px] text-slate-400 mt-0.5">${isFlashcardFlipped ? 'Đang xem mặt Đáp án' : 'Đang xem mặt Câu hỏi'}</p>
+                        <p class="text-[11px] text-slate-400 mt-0.5">${isFlashcardFlipped ? t('key_flashcard_viewing_answer', 'Đang xem mặt Đáp án') : t('key_flashcard_viewing_question', 'Đang xem mặt Câu hỏi')}</p>
                     </div>
                 </div>
                 
                 <div class="flex flex-wrap items-center gap-2">
-                    <button onclick="toggleFlashcardViewMode()" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-xl text-xs font-medium transition flex items-center space-x-1.5" title="Chuyển sang chế độ danh sách">
+                    <button onclick="toggleFlashcardViewMode()" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-xl text-xs font-medium transition flex items-center space-x-1.5" title="${t('key_flashcard_list_mode', 'Danh sách')}">
                         <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
-                        <span>Danh sách</span>
+                        <span>${t('key_flashcard_list_mode', 'Danh sách')}</span>
                     </button>
-                    <button onclick="shuffleFlashcards()" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-xl text-xs font-medium transition flex items-center space-x-1.5" title="Trộn ngẫu nhiên thứ tự thẻ">
+                    <button onclick="shuffleFlashcards()" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-xl text-xs font-medium transition flex items-center space-x-1.5" title="${t('key_flashcard_shuffle', 'Trộn thẻ')}">
                         <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
-                        <span>Trộn thẻ</span>
+                        <span>${t('key_flashcard_shuffle', 'Trộn thẻ')}</span>
                     </button>
-                    <button onclick="openFlashcardEditorModal(${currentFlashcardMaterialId})" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-xl text-xs font-medium transition flex items-center space-x-1.5" title="Chỉnh sửa bộ thẻ">
+                    <button onclick="openFlashcardEditorModal(${currentFlashcardMaterialId})" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-xl text-xs font-medium transition flex items-center space-x-1.5" title="${t('key_flashcard_edit', 'Chỉnh sửa')}">
                         <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                        <span>Chỉnh sửa</span>
+                        <span>${t('key_flashcard_edit', 'Chỉnh sửa')}</span>
                     </button>
                 </div>
             </div>
@@ -231,22 +232,23 @@ function renderSingleFlashcardPlayer(container) {
 // 5. List View Mode (Alternative Full List)
 function renderListFlashcardPlayer(container) {
     const total = currentFlashcardsList.length;
+    const t = window.t || ((k, fallback) => fallback);
 
     container.innerHTML = `
         <div class="space-y-4">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 rounded-2xl px-5 py-3.5">
                 <div>
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Danh sách thẻ (${total} thẻ)</span>
-                    <h4 class="font-bold text-slate-900 dark:text-white text-sm mt-0.5">Toàn bộ thẻ ghi nhớ</h4>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">${t('key_flashcard_list_mode', 'Danh sách thẻ')} (${total} ${t('key_count_cards', 'thẻ')})</span>
+                    <h4 class="font-bold text-slate-900 dark:text-white text-sm mt-0.5">${t('key_flashcard_view_all', 'Toàn bộ thẻ ghi nhớ')}</h4>
                 </div>
                 <div class="flex items-center space-x-2">
                     <button onclick="toggleFlashcardViewMode()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-xl text-xs font-semibold transition flex items-center space-x-1.5">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
-                        <span>Chế độ từng câu</span>
+                        <span>${t('key_flashcard_single_mode', 'Chế độ từng câu')}</span>
                     </button>
                     <button onclick="openFlashcardEditorModal(${currentFlashcardMaterialId})" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-xl text-xs font-semibold transition flex items-center space-x-1.5">
                         <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                        <span>Sửa thẻ</span>
+                        <span>${t('key_flashcard_edit', 'Sửa thẻ')}</span>
                     </button>
                 </div>
             </div>
@@ -255,24 +257,24 @@ function renderListFlashcardPlayer(container) {
                 ${currentFlashcardsList.map((card, idx) => `
                     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 space-y-4 flex flex-col justify-between shadow-sm">
                         <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
-                            <span class="text-xs font-semibold text-slate-500">Thẻ ${idx + 1}</span>
+                            <span class="text-xs font-semibold text-slate-500">${idx + 1}</span>
                             <span class="text-[10px] font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 px-2 py-0.5 rounded-md">Flashcard</span>
                         </div>
                         
                         <div class="space-y-3">
                             <div id="flash-review-front-${idx}" class="space-y-1.5">
-                                <div class="text-[10px] uppercase font-semibold text-indigo-600 dark:text-indigo-400">Câu hỏi</div>
-                                <p class="text-xs font-semibold text-slate-900 dark:text-white leading-relaxed">${escapeHtml(card.question || 'Câu hỏi chưa có nội dung')}</p>
+                                <div class="text-[10px] uppercase font-semibold text-indigo-600 dark:text-indigo-400">${t('key_flashcard_question', 'Câu hỏi')}</div>
+                                <p class="text-xs font-semibold text-slate-900 dark:text-white leading-relaxed">${escapeHtml(card.question || t('key_ph_quiz_desc', 'Câu hỏi chưa có nội dung'))}</p>
                             </div>
                             <div id="flash-review-back-${idx}" class="hidden space-y-1.5">
-                                <div class="text-[10px] uppercase font-semibold text-emerald-600 dark:text-emerald-400">Đáp án</div>
-                                <p class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">${escapeHtml(card.answer || 'Chưa có đáp án')}</p>
+                                <div class="text-[10px] uppercase font-semibold text-emerald-600 dark:text-emerald-400">${t('key_flashcard_answer', 'Đáp án')}</div>
+                                <p class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">${escapeHtml(card.answer || t('key_113', 'Chưa có đáp án'))}</p>
                             </div>
                         </div>
 
                         <button type="button" onclick="toggleFlashcardReviewCard(${idx})" class="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 py-2 rounded-xl text-xs font-medium transition flex items-center justify-center space-x-1.5">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                            <span>Lật thẻ</span>
+                            <span>${t('key_btn_flip', 'Lật thẻ')}</span>
                         </button>
                     </div>
                 `).join('')}
@@ -304,6 +306,7 @@ function flipCurrentFlashcard() {
 }
 
 function shuffleFlashcards() {
+    const t = window.t || ((k, fallback) => fallback);
     if (currentFlashcardsList.length <= 1) return;
     for (let i = currentFlashcardsList.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -313,7 +316,7 @@ function shuffleFlashcards() {
     isFlashcardFlipped = false;
     renderFlashcardReviewContent();
     if (typeof showToastNotification === 'function') {
-        showToastNotification('Đã xáo trộn thứ tự thẻ flashcard.');
+        showToastNotification(t('key_flashcard_shuffle', 'Đã xáo trộn thứ tự thẻ flashcard.'));
     }
 }
 
@@ -340,6 +343,7 @@ function toggleFlashcardReviewCard(idx) {
 function handleFinishFlashcards() {
     const content = document.getElementById('flashcard-review-content');
     if (!content) return;
+    const t = window.t || ((k, fallback) => fallback);
 
     content.innerHTML = `
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 text-center space-y-5">
@@ -347,15 +351,15 @@ function handleFinishFlashcards() {
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
             </div>
             <div>
-                <h3 class="text-base font-bold text-slate-900 dark:text-white">Đã hoàn thành bộ thẻ ghi nhớ</h3>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Bạn đã ôn tập toàn bộ ${currentFlashcardsList.length} thẻ trong tài liệu.</p>
+                <h3 class="text-base font-bold text-slate-900 dark:text-white">${t('key_flashcard_completed_title', 'Đã hoàn thành bộ thẻ ghi nhớ')}</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">${t('key_flashcard_completed_desc', 'Bạn đã ôn tập toàn bộ các thẻ trong tài liệu.')}</p>
             </div>
             <div class="flex items-center justify-center gap-3 pt-2">
                 <button type="button" onclick="restartFlashcards()" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition">
-                    Ôn lại từ đầu
+                    ${t('key_flashcard_restart_btn', 'Ôn lại từ đầu')}
                 </button>
                 <button type="button" onclick="closeFlashcardReviewModal()" class="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-xs hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-                    Đóng
+                    ${t('key_btn_cancel', 'Đóng')}
                 </button>
             </div>
         </div>
@@ -423,7 +427,7 @@ function parseFlashcardJson(content) {
         questionMatches.forEach((match) => {
             let question = (match[1] || '').trim();
             const answerMatch = text.match(new RegExp(`ANSWER\\s*[:\\-]?\\s*([\\s\\S]*?)(?=(?:\\s*QUESTION\\s*[:\\-]?|\\s*$))`, 'i'));
-            let answer = answerMatch ? answerMatch[1].trim() : 'Chưa có đáp án';
+            let answer = answerMatch ? answerMatch[1].trim() : '';
 
             if (question.includes('ANSWER')) {
                 const answerSplit = question.split(/\s*ANSWER\s*[:\-]?\s*/i);
@@ -435,7 +439,7 @@ function parseFlashcardJson(content) {
 
             question = question.replace(/^[^A-Za-z0-9À-ỹ]+/, '').trim();
             if (!question) return;
-            cards.push({ question, answer: answer && answer !== 'Chưa có đáp án' ? answer : 'Chưa có đáp án' });
+            cards.push({ question, answer: answer || '' });
         });
         if (cards.length) return cards;
     }
@@ -476,24 +480,26 @@ function closeFlashcardEditorModal() {
 function renderFlashcardEditorForm(cards) {
     const container = document.getElementById('flashcard-editor-form');
     if (!container) return;
+    const t = window.t || ((k, fallback) => fallback);
+
     container.innerHTML = `
         <div class="space-y-3">
             ${cards.length ? cards.map((card, idx) => `
                 <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-4 space-y-3" data-flashcard-row="${idx}">
                     <div class="flex items-center justify-between">
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Thẻ ${idx + 1}</span>
-                        <button type="button" onclick="removeFlashcardEditorRow(${idx})" class="text-[10px] text-rose-500 hover:text-rose-700 font-semibold">Xóa</button>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">${idx + 1}</span>
+                        <button type="button" onclick="removeFlashcardEditorRow(${idx})" class="text-[10px] text-rose-500 hover:text-rose-700 font-semibold">${t('key_btn_delete', 'Xóa')}</button>
                     </div>
                     <div>
-                        <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">Câu hỏi</label>
+                        <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">${t('key_flashcard_question', 'Câu hỏi')}</label>
                         <input data-flashcard-question type="text" value="${escapeHtml(card.question || '')}" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">Đáp án</label>
+                        <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">${t('key_flashcard_answer', 'Đáp án')}</label>
                         <textarea data-flashcard-answer rows="3" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500">${escapeHtml(card.answer || '')}</textarea>
                     </div>
                 </div>
-            `).join('') : '<div class="text-center py-6 text-[11px] text-slate-400">Chưa có flashcard nào. Nhấn “+ Thêm flashcard” để bắt đầu.</div>'}
+            `).join('') : `<div class="text-center py-6 text-[11px] text-slate-400">${t('key_flashcard_editor_empty', 'Chưa có flashcard nào. Nhấn “+ Thêm flashcard” để bắt đầu.')}</div>`}
         </div>
     `;
 }
@@ -522,6 +528,7 @@ function collectFlashcardEditorCards() {
 
 async function saveFlashcardEdit() {
     if (!currentFlashcardEditingId) return;
+    const t = window.t || ((k, fallback) => fallback);
     const cards = collectFlashcardEditorCards();
     if (!cards.length) return alert('Vui lòng thêm ít nhất một flashcard.');
     try {
@@ -541,7 +548,7 @@ async function saveFlashcardEdit() {
         
         // Re-open review modal with fresh data
         openFlashcardReviewModal(currentFlashcardEditingId);
-        alert('Đã cập nhật flashcard thành công!');
+        alert(t('key_tool_save_success', 'Đã cập nhật flashcard thành công!'));
     } catch (err) {
         console.error('Save flashcard edit error:', err);
         alert('Lỗi khi lưu flashcard.');

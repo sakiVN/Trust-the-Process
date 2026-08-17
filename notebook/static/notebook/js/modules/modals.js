@@ -4,6 +4,7 @@
             const icon = document.getElementById('modal-icon');
             const title = document.getElementById('modal-title');
             const subtitle = document.getElementById('modal-subtitle');
+            const t = window.t || ((k, f) => f);
             
             // Reset modal state
             document.getElementById('tool-form').reset();
@@ -14,13 +15,17 @@
             // Configure modal details based on selected tool
             const titleInput = document.getElementById('tool-input-title');
             const textInput = document.getElementById('tool-input-text');
+            if (titleInput) {
+                titleInput.placeholder = t('key_ph_tool_title', 'Nhập tiêu đề hoặc tên chủ đề...');
+            }
+
             if (type === 'quiz' || type === 'report') {
                 titleInput.classList.add('hidden');
                 textInput.classList.remove('hidden');
                 if (type === 'quiz') {
-                    textInput.placeholder = "Dán văn bản có cấu trúc:\nQ: Câu hỏi?\nA: Đáp án 1\nB: Đáp án 2 (*)\nC: Đáp án 3\nD: Đáp án 4\nEXP: Giải thích chi tiết";
+                    textInput.placeholder = t('key_ph_quick_quiz_text', "Dán văn bản có cấu trúc:\nQ: Câu hỏi?\nA: Đáp án 1\nB: Đáp án 2 (*)\nC: Đáp án 3\nD: Đáp án 4\nEXP: Giải thích chi tiết");
                 } else {
-                    textInput.placeholder = "Dán nội dung tài liệu dài vào đây để hệ thống tự động tóm tắt...";
+                    textInput.placeholder = t('key_ph_quick_report_text', "Dán nội dung tài liệu dài vào đây để hệ thống tự động tóm tắt...");
                 }
                 textInput.value = ''; // Reset
                 titleInput.required = false;
@@ -35,20 +40,20 @@
 
             if (type === 'flashcards') {
                 if (icon) icon.src = '/static/notebook/icon-set/flashcard.png';
-                title.innerText = 'Tạo Flashcards';
-                subtitle.innerText = 'Nhập chủ đề học tập để hệ thống sinh thẻ nhớ thông minh';
+                title.innerText = t('key_quick_title_flashcards', 'Tạo Flashcards');
+                subtitle.innerText = t('key_quick_sub_flashcards', 'Nhập chủ đề học tập để hệ thống sinh thẻ nhớ thông minh');
             } else if (type === 'quiz') {
                 if (icon) icon.src = '/static/notebook/icon-set/quiz.png';
-                title.innerText = 'Tạo Câu hỏi trắc nghiệm';
-                subtitle.innerText = 'Nhập chủ đề học tập để sinh câu hỏi trắc nghiệm kèm giải thích';
+                title.innerText = t('key_quick_title_quiz', 'Tạo Câu hỏi trắc nghiệm');
+                subtitle.innerText = t('key_quick_sub_quiz', 'Nhập chủ đề học tập để sinh câu hỏi trắc nghiệm kèm giải thích');
             } else if (type === 'report') {
                 if (icon) icon.src = '/static/notebook/icon-set/report.png';
-                title.innerText = 'Tạo Báo cáo tóm tắt';
-                subtitle.innerText = 'Nhập chủ đề học tập để sinh báo cáo tóm lược học thuật';
+                title.innerText = t('key_quick_title_report', 'Tạo Báo cáo tóm tắt');
+                subtitle.innerText = t('key_quick_sub_report', 'Nhập chủ đề học tập để sinh báo cáo tóm lược học thuật');
             } else if (type === 'mindmap') {
                 if (icon) icon.src = '/static/notebook/icon-set/mindmap.png';
-                title.innerText = 'Tạo Sơ đồ tư duy';
-                subtitle.innerText = 'Nhập chủ đề học tập để sinh sơ đồ tư duy dạng cây Mermaid.js';
+                title.innerText = t('key_quick_title_mindmap', 'Tạo Sơ đồ tư duy');
+                subtitle.innerText = t('key_quick_sub_mindmap', 'Nhập chủ đề học tập để sinh sơ đồ tư duy dạng cây Mermaid.js');
             }
             
             modal.classList.remove('hidden');
@@ -112,21 +117,23 @@
         function copyToolResult() {
             const content = document.getElementById('tool-output-content');
             if (!content) return;
+            const t = window.t || ((k, f) => f);
             
             navigator.clipboard.writeText(content.innerText).then(() => {
-                alert("Đã sao chép kết quả vào bộ nhớ tạm!");
+                alert(t('key_tool_copy_success', "Đã sao chép kết quả vào bộ nhớ tạm!"));
             }).catch(err => {
                 console.error("Không thể sao chép:", err);
             });
         }
 
         async function saveToolResult() {
+            const t = window.t || ((k, f) => f);
             const saveBtn = document.querySelector('button[onclick="saveToolResult()"]');
             let originalBtnHTML = '';
             if (saveBtn) {
                 originalBtnHTML = saveBtn.innerHTML;
                 saveBtn.disabled = true;
-                saveBtn.innerHTML = '<span class="animate-spin inline-block w-3 h-3 border-2 border-white border-t-transparent rounded-full mr-2"></span> Đang lưu...';
+                saveBtn.innerHTML = '<span class="animate-spin inline-block w-3 h-3 border-2 border-white border-t-transparent rounded-full mr-2"></span> ' + t('key_105', 'Đang lưu...');
             }
 
             let content = '';
@@ -149,7 +156,7 @@
                     saveBtn.disabled = false;
                     saveBtn.innerHTML = originalBtnHTML;
                 }
-                return alert("Không có nội dung để lưu!");
+                return alert(t('key_tool_save_empty', "Không có nội dung để lưu!"));
             }
             
             try {
@@ -163,7 +170,7 @@
                         const createRes = await fetchWithCsrf(`${API_URL}/notebooks/`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ name: "Sổ tay học tập", description: "Không gian học tập và lưu trữ sơ đồ tư duy" })
+                            body: JSON.stringify({ name: t('key_tag_notebook', "Sổ tay học tập"), description: t('key_29', "Không gian học tập và lưu trữ sơ đồ tư duy") })
                         });
                         const newNb = await createRes.json();
                         activeNotebookId = newNb.id;
@@ -182,7 +189,7 @@
                 });
                 
                 if (saveRes.ok) {
-                    showToastNotification("Đã lưu vào Sổ tay thành công!");
+                    showToastNotification(t('key_tool_save_success', "Đã lưu vào Sổ tay thành công!"));
                     await loadNotebooks(); // Refresh the global notebooks array
                     if (activeNotebookId) {
                         selectNotebook(activeNotebookId, true); // Refresh the workspace view
@@ -190,11 +197,11 @@
                     closeToolModal();
                 } else {
                     const err = await saveRes.json();
-                    alert("Lỗi lưu trữ: " + JSON.stringify(err));
+                    alert(t('key_tool_save_error', "Lỗi lưu trữ: ") + JSON.stringify(err));
                 }
             } catch (err) {
                 console.error("Lỗi khi lưu trữ:", err);
-                alert("Đã xảy ra lỗi khi kết nối lưu trữ.");
+                alert(t('key_tool_save_error', "Đã xảy ra lỗi khi kết nối lưu trữ."));
             } finally {
                 if (saveBtn) {
                     saveBtn.disabled = false;
@@ -204,6 +211,7 @@
         }
 
         function flipToolCard(id){
+            const t = window.t || ((k, f) => f);
             const front = document.getElementById(`tool-front-${id}`);
             const back = document.getElementById(`tool-back-${id}`);
             const btn = document.getElementById(`tool-btn-${id}`);
@@ -213,10 +221,12 @@
             front.classList.toggle('hidden');
             back.classList.toggle('hidden');
 
-            if (showingQuestion){
-                btn.textContent = 'Back to the question';
-            }else{
-                btn.textContent = 'Check the answer';
+            if (btn) {
+                if (showingQuestion){
+                    btn.textContent = t('key_flashcard_viewing_question', 'Quay lại câu hỏi');
+                } else {
+                    btn.textContent = t('key_flashcard_viewing_answer', 'Xem đáp án');
+                }
             }
         }
 

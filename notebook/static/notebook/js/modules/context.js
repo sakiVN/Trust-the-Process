@@ -139,8 +139,9 @@ function closeContextualModal() {
 // ----------------------------------------------------------------------------
 
 function openDocumentModal(sourceId) {
+    const t = window.t || ((k, fallback) => fallback);
     let targetSource = null;
-    let targetNotebookName = "Không xác định";
+    let targetNotebookName = t('key_unknown', "Không xác định");
     let targetNotebookId = null;
 
     for (const nb of notebooks) {
@@ -164,8 +165,8 @@ function openDocumentModal(sourceId) {
     const notebookEl = document.getElementById('document-read-notebook');
     const contentEl = document.getElementById('document-read-content');
     
-    if (titleEl) titleEl.innerText = targetSource.title || "Tài liệu học tập";
-    if (notebookEl) notebookEl.innerText = "Thuộc Sổ tay: " + targetNotebookName;
+    if (titleEl) titleEl.innerText = targetSource.title || t('key_source_type_file', "Tài liệu học tập");
+    if (notebookEl) notebookEl.innerText = `${t('key_nav_notebooks', 'Sổ tay')}: ${targetNotebookName}`;
     
     if (contentEl) {
         if (targetSource.source_type === 'file') {
@@ -175,18 +176,18 @@ function openDocumentModal(sourceId) {
                         <svg class="w-14 h-14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
                     </div>
                     <div>
-                        <h4 class="font-bold text-slate-800 dark:text-slate-200 text-base">Tài liệu định dạng PDF</h4>
-                        <p class="text-xs text-slate-500 mt-1 mb-5">Tài liệu đã được tải lên máy chủ. Bạn có thể mở trực tiếp hoặc tải về máy.</p>
+                        <h4 class="font-bold text-slate-800 dark:text-slate-200 text-base">${t('key_doc_pdf_title', 'Tài liệu định dạng PDF')}</h4>
+                        <p class="text-xs text-slate-500 mt-1 mb-5">${t('key_doc_pdf_desc', 'Tài liệu đã được tải lên máy chủ. Bạn có thể mở trực tiếp hoặc tải về máy.')}</p>
                         <div class="flex flex-wrap items-center justify-center gap-3">
                             <a href="${targetSource.file_path}" target="_blank" class="inline-flex items-center space-x-2 bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold py-2.5 px-6 rounded-xl text-xs transition shadow-md shadow-brand-100 dark:shadow-none">
                                 <span>📄</span>
-                                <span>Mở / Tải xuống tệp PDF</span>
+                                <span>${t('key_open_pdf', 'Mở / Tải xuống tệp PDF')}</span>
                             </a>
                         </div>
                     </div>
                     ${targetSource.content ? `
                     <div class="w-full mt-6 text-left border-t border-slate-100 dark:border-slate-800 pt-6">
-                        <h5 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Nội dung văn bản trích xuất từ PDF (Hỗ trợ bôi đen tra cứu AI):</h5>
+                        <h5 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">${t('key_doc_pdf_text_heading', 'Nội dung văn bản trích xuất từ PDF (Hỗ trợ bôi đen tra cứu AI):')}</h5>
                         <div class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed bg-slate-50 dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 select-text whitespace-pre-wrap max-h-72 overflow-y-auto">${escapeHtml(targetSource.content)}</div>
                     </div>` : ''}
                 </div>`;
@@ -198,16 +199,16 @@ function openDocumentModal(sourceId) {
                         <svg class="w-14 h-14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
                     </div>
                     <div>
-                        <h4 class="font-bold text-slate-800 dark:text-slate-200 text-base">Liên kết Trang Web</h4>
-                        <p class="text-xs text-slate-500 mt-1 mb-5">Tài liệu tham khảo được lưu từ một địa chỉ web trực tuyến.</p>
+                        <h4 class="font-bold text-slate-800 dark:text-slate-200 text-base">${t('key_doc_link_title', 'Liên kết Trang Web')}</h4>
+                        <p class="text-xs text-slate-500 mt-1 mb-5">${t('key_doc_link_desc', 'Tài liệu tham khảo được lưu từ một địa chỉ web trực tuyến.')}</p>
                         <a href="${url}" target="_blank" class="inline-flex items-center space-x-2 bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold py-2.5 px-6 rounded-xl text-xs transition shadow-md shadow-brand-100 dark:shadow-none">
                             <span>🔗</span>
-                            <span>Truy cập trang web gốc</span>
+                            <span>${t('key_doc_link_btn', 'Truy cập trang web gốc')}</span>
                         </a>
                     </div>
                     ${targetSource.content && targetSource.content !== url ? `
                     <div class="w-full mt-6 text-left border-t border-slate-100 dark:border-slate-800 pt-6">
-                        <h5 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Nội dung ghi chú kèm theo (Hỗ trợ bôi đen tra cứu AI):</h5>
+                        <h5 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">${t('key_doc_link_note_heading', 'Nội dung ghi chú kèm theo (Hỗ trợ bôi đen tra cứu AI):')}</h5>
                         <div class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed bg-slate-50 dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 select-text whitespace-pre-wrap max-h-72 overflow-y-auto">${escapeHtml(targetSource.content)}</div>
                     </div>` : ''}
                 </div>`;
@@ -215,7 +216,7 @@ function openDocumentModal(sourceId) {
             contentEl.innerHTML = `
                 <div class="space-y-3 p-2">
                     <div class="flex items-center justify-between text-[11px] text-slate-400 pb-2 border-b border-slate-100 dark:border-slate-800">
-                        <span>💡 <em>Mẹo: Bạn có thể bôi đen bất kỳ đoạn văn bản nào bên dưới để mở thanh công cụ AI (Giải thích, Dịch, Lưu Flashcard).</em></span>
+                        <span>${t('key_doc_tip_selection', '💡 Mẹo: Bạn có thể bôi đen bất kỳ đoạn văn bản nào bên dưới để mở thanh công cụ AI (Giải thích, Dịch, Lưu Flashcard).')}</span>
                     </div>
                     <div class="text-sm text-slate-700 dark:text-slate-200 leading-relaxed p-2 font-sans select-text whitespace-pre-wrap">
                         ${escapeHtml(targetSource.content || 'Tài liệu không có nội dung văn bản.')}
@@ -401,7 +402,7 @@ async function openReportReviewModal(reportId) {
         
         if (!reportObj) throw new Error("Không tìm thấy báo cáo");
         
-        if (titleEl) titleEl.innerText = "Báo cáo tóm tắt học thuật";
+        if (titleEl) titleEl.innerText = t('key_doc_academic_report_title', "Báo cáo tóm tắt học thuật");
         
         // Render content (it might be pre-rendered HTML or plain text)
         let rawContent = reportObj.content || '';
@@ -414,7 +415,7 @@ async function openReportReviewModal(reportId) {
             renderedHtml = `
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 space-y-4 shadow-sm">
                     <h4 class="text-sm font-bold text-brand-600 dark:text-brand-400 border-b border-slate-100 dark:border-slate-800 pb-3">
-                        ${escapeHtml(reportObj.title || 'BÁO CÁO TỔNG HỢP KIẾN THỨC')}
+                        ${escapeHtml(reportObj.title || t('key_doc_academic_report_title', 'BÁO CÁO TỔNG HỢP KIẾN THỨC'))}
                     </h4>
                     <div class="text-xs text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">
                         ${escapeHtml(rawContent)}

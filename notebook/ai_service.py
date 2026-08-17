@@ -183,11 +183,11 @@ def generate_notebook_materials(sources_text, generation_type='quiz', source_tit
             
         elif generation_type == 'report':
             from .features.report import service as report_service
-            return report_service.generate(sources_text, source_title)
+            return report_service.generate(sources_text, source_title, language=language)
             
         elif generation_type == 'mind_map':
             from .features.mindmap import service as mindmap_service
-            return mindmap_service.generate(sources_text, source_title)
+            return mindmap_service.generate(sources_text, source_title, language=language)
             
         else:
             return "No template content available."

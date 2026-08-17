@@ -110,17 +110,17 @@
                         renderedContent = `
                             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 space-y-3 shadow-sm">
                                 <div class="flex items-center justify-between">
-                                    <span class="text-[10px] font-bold uppercase text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 px-2 py-0.5 rounded-md">Bài tập trắc nghiệm</span>
-                                    <span class="text-[10px] text-slate-400 font-semibold">${gen.attempts_count || 0} lượt làm</span>
+                                    <span class="text-[10px] font-bold uppercase text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 px-2 py-0.5 rounded-md">${t('key_tag_quiz', 'Bài tập trắc nghiệm')}</span>
+                                    <span class="text-[10px] text-slate-400 font-semibold">${gen.attempts_count || 0} ${t('key_quiz_attempts_count', 'lượt làm')}</span>
                                 </div>
-                                <h5 class="font-bold text-slate-900 dark:text-white text-xs">${escapeHtml(gen.name || 'Bài tập trắc nghiệm')}</h5>
+                                <h5 class="font-bold text-slate-900 dark:text-white text-xs">${escapeHtml(gen.name || t('key_tag_quiz', 'Bài tập trắc nghiệm'))}</h5>
                                 <div class="flex items-center gap-2 pt-1">
                                     <button onclick="openQuizPlayModal(${gen.id})" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-3 rounded-xl text-xs transition flex items-center justify-center space-x-1.5">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                        <span>Làm bài</span>
+                                        <span>${t('key_quiz_take_now_btn', 'Làm bài')}</span>
                                     </button>
                                     <button onclick="openQuizReviewModal(${gen.id})" class="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium py-2 px-3 rounded-xl text-xs hover:bg-slate-200 dark:hover:bg-slate-700 transition">
-                                        <span>Chi tiết</span>
+                                        <span>${t('key_btn_view_details', 'Chi tiết')}</span>
                                     </button>
                                 </div>
                             </div>
@@ -138,16 +138,16 @@
                                 renderedContent = `
                                     <div class="space-y-3">
                                         <div class="flex items-center justify-between bg-indigo-50/60 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/30 rounded-xl p-3">
-                                            <span class="text-xs font-bold text-indigo-900 dark:text-indigo-300">Bộ câu hỏi trắc nghiệm (${items.length} câu)</span>
+                                            <span class="text-xs font-bold text-indigo-900 dark:text-indigo-300">${t('key_tag_quiz', 'Bộ câu hỏi trắc nghiệm')} (${items.length} ${t('key_count_questions', 'câu')})</span>
                                             <button onclick="openQuizReviewModal(${gen.id})" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-3 py-1.5 rounded-lg text-xs transition flex items-center space-x-1.5">
-                                                <span>Xem chi tiết</span>
+                                                <span>${t('key_btn_view_details', 'Xem chi tiết')}</span>
                                             </button>
                                         </div>
                                         ${items.map((q, idx) => {
                                             const qId = `quiz-${gen.id}-${idx}`;
                                             return `
                                             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 space-y-3 text-left">
-                                                <div class="font-bold text-slate-900 dark:text-slate-200 text-xs">Câu ${idx + 1}: ${escapeHtml(q.question || q.question_text || '')}</div>
+                                                <div class="font-bold text-slate-900 dark:text-slate-200 text-xs">${idx + 1}: ${escapeHtml(q.question || q.question_text || '')}</div>
                                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2" id="${qId}-options">
                                                     ${(q.options || []).map((opt, optIdx) => {
                                                         const letter = String.fromCharCode(65 + optIdx);
@@ -161,7 +161,7 @@
                                                 </div>
                                                 <div id="${qId}-result" class="hidden text-xs font-semibold p-3 rounded-xl"></div>
                                                 <div id="${qId}-explanation" class="hidden text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
-                                                    Giải thích: ${escapeHtml(q.explanation || '')}
+                                                    ${t('key_quiz_explanation_prefix', 'Giải thích:')} ${escapeHtml(q.explanation || '')}
                                                 </div>
                                             </div>
                                             `;
@@ -172,34 +172,34 @@
                                 renderedContent = `
                                     <div class="space-y-3">
                                         <div class="flex items-center justify-between bg-indigo-50/60 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/30 rounded-xl p-3">
-                                            <span class="text-xs font-bold text-indigo-900 dark:text-indigo-300">Bộ thẻ ghi nhớ (${items.length} thẻ)</span>
+                                            <span class="text-xs font-bold text-indigo-900 dark:text-indigo-300">${t('key_tag_flashcards', 'Bộ thẻ ghi nhớ')} (${items.length} ${t('key_count_cards', 'thẻ')})</span>
                                             <button onclick="openFlashcardReviewModal(${gen.id})" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-3 py-1.5 rounded-lg text-xs transition flex items-center space-x-1.5">
                                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
-                                                <span>Chế độ từng câu</span>
+                                                <span>${t('key_flashcard_single_mode', 'Chế độ từng câu')}</span>
                                             </button>
                                         </div>
                                         ${items.slice(0, 3).map((f, idx) => `
                                             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 text-center space-y-3 shadow-sm">
                                                 <div id="front-${gen.id}-${idx}">
-                                                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Thẻ ${idx + 1} / ${items.length} (Câu hỏi)</div>
+                                                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">${idx + 1} / ${items.length} (${t('key_flashcard_question', 'Câu hỏi')})</div>
                                                     <div class="text-xs font-semibold text-slate-900 dark:text-white">${escapeHtml(f.question || '')}</div>
                                                 </div>
 
                                                 <div id="back-${gen.id}-${idx}" class="hidden">
-                                                    <div class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-1.5">Đáp án</div>
+                                                    <div class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-1.5">${t('key_flashcard_answer', 'Đáp án')}</div>
                                                     <div class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">${escapeHtml(f.answer || '')}</div>
                                                 </div>
 
                                                 <button onclick="flipCard('${gen.id}-${idx}')" class="mt-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-4 py-1.5 rounded-xl text-xs font-medium transition flex items-center justify-center space-x-1.5 mx-auto">
                                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                                                    <span>Lật thẻ</span>
+                                                    <span>${t('key_btn_flip', 'Lật thẻ')}</span>
                                                 </button>
                                             </div>
                                         `).join('')}
                                         ${items.length > 3 ? `
                                             <div class="text-center pt-1">
                                                 <button onclick="openFlashcardReviewModal(${gen.id})" class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
-                                                    Xem toàn bộ ${items.length} thẻ ghi nhớ →
+                                                    ${t('key_flashcard_view_all', 'Xem toàn bộ thẻ ghi nhớ →')}
                                                 </button>
                                             </div>
                                         ` : ''}
@@ -224,14 +224,14 @@
                                 <div class="space-y-3 text-left w-full mt-2">
                                     <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-100/60 dark:bg-slate-900/40 p-2.5 rounded-2xl border border-slate-200 dark:border-slate-800/80">
                                         <div class="flex flex-wrap items-center gap-1.5">
-                                            <button onclick="addJsMindChildNode('ws-${gen.id}')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-1 px-2.5 rounded-lg text-xs transition shadow-sm">Thêm nhánh</button>
-                                            <button onclick="editJsMindNodeName('ws-${gen.id}')" class="bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-medium py-1 px-2.5 rounded-lg text-xs transition">Sửa tên</button>
-                                            <button onclick="removeJsMindNode('ws-${gen.id}')" class="bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 hover:bg-rose-100 font-medium py-1 px-2.5 rounded-lg text-xs transition">Xóa</button>
-                                            <button onclick="updateSavedMindmap(${gen.id})" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-1 px-2.5 rounded-lg text-xs transition shadow-sm">Lưu</button>
-                                            <button onclick="openMindmapReviewModal(${gen.id})" class="bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-medium py-1 px-2.5 rounded-lg text-xs transition hover:bg-slate-300 dark:hover:bg-slate-700">Phóng to</button>
+                                            <button onclick="addJsMindChildNode('ws-${gen.id}')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-1 px-2.5 rounded-lg text-xs transition shadow-sm">${t('key_mindmap_add_child', 'Thêm nhánh')}</button>
+                                            <button onclick="editJsMindNodeName('ws-${gen.id}')" class="bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-medium py-1 px-2.5 rounded-lg text-xs transition">${t('key_mindmap_edit_name', 'Sửa tên')}</button>
+                                            <button onclick="removeJsMindNode('ws-${gen.id}')" class="bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 hover:bg-rose-100 font-medium py-1 px-2.5 rounded-lg text-xs transition">${t('key_mindmap_remove_node', 'Xóa')}</button>
+                                            <button onclick="updateSavedMindmap(${gen.id})" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-1 px-2.5 rounded-lg text-xs transition shadow-sm">${t('key_mindmap_save', 'Lưu')}</button>
+                                            <button onclick="openMindmapReviewModal(${gen.id})" class="bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-medium py-1 px-2.5 rounded-lg text-xs transition hover:bg-slate-300 dark:hover:bg-slate-700">${t('key_mindmap_zoom', 'Phóng to')}</button>
                                         </div>
                                         <div class="flex items-center space-x-1 border-l border-slate-200 dark:border-slate-700 pl-2">
-                                            <span class="text-[10px] font-medium text-slate-400 uppercase">Màu:</span>
+                                            <span class="text-[10px] font-medium text-slate-400 uppercase">${t('key_mindmap_color_label', 'Màu:')}</span>
                                             <button onclick="changeJsMindNodeColor('ws-${gen.id}', '#6366f1')" class="w-4 h-4 rounded-full bg-[#6366f1] hover:scale-110 transition ring-1 ring-white/50"></button>
                                             <button onclick="changeJsMindNodeColor('ws-${gen.id}', '#10b981')" class="w-4 h-4 rounded-full bg-[#10b981] hover:scale-110 transition ring-1 ring-white/50"></button>
                                             <button onclick="changeJsMindNodeColor('ws-${gen.id}', '#f43f5e')" class="w-4 h-4 rounded-full bg-[#f43f5e] hover:scale-110 transition ring-1 ring-white/50"></button>
@@ -239,7 +239,7 @@
                                         </div>
                                     </div>
                                     <div class="relative w-full border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-950">
-                                        <div class="absolute top-2 left-3 text-[10px] font-medium text-slate-400 z-10 select-none">Đúp chuột để sửa, kéo để di chuyển</div>
+                                        <div class="absolute top-2 left-3 text-[10px] font-medium text-slate-400 z-10 select-none">${t('key_mindmap_hint', 'Đúp chuột để sửa, kéo để di chuyển')}</div>
                                         <div id="${wsUniqueId}" style="width:100%;height:300px;"></div>
                                     </div>
                                 </div>
@@ -255,10 +255,10 @@
                             renderedContent = `
                                 <div class="space-y-3 text-left">
                                     <div class="flex justify-between items-center bg-slate-50 dark:bg-slate-900 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800">
-                                        <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">Báo cáo tóm tắt</span>
+                                        <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">${t('key_doc_academic_report_title', 'Báo cáo tóm tắt')}</span>
                                         <button onclick="openReportReviewModal(${gen.id})" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-3 py-1.5 rounded-lg transition flex items-center space-x-1.5 shadow-sm">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                                            <span>Xem toàn bộ</span>
+                                            <span>${t('key_btn_view_details', 'Xem toàn bộ')}</span>
                                         </button>
                                     </div>
                                     <div class="whitespace-pre-wrap text-xs text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-100 dark:border-slate-800 leading-relaxed text-left max-h-60 overflow-y-auto">${escapeHtml(gen.content)}</div>
@@ -269,12 +269,14 @@
                         }
                     }
 
+                    const lang = localStorage.getItem('user_language') || 'vi';
+                    const localeStr = lang === 'en' ? 'en-US' : (lang === 'jp' ? 'ja-JP' : 'vi-VN');
                     
                     return `
                         <div class="border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-3">
                             <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2">
-                                <span class="text-[9px] text-slate-400 font-semibold">${new Date(gen.created_at).toLocaleString('vi-VN')}</span>
-                                <button onclick="deleteGeneration(${gen.id})" class="text-[10px] text-rose-500 hover:text-rose-700 font-bold hover:underline" title="Xóa kết quả">Xóa</button>
+                                <span class="text-[9px] text-slate-400 font-semibold">${new Date(gen.created_at).toLocaleString(localeStr)}</span>
+                                <button onclick="deleteGeneration(${gen.id})" class="text-[10px] text-rose-500 hover:text-rose-700 font-bold hover:underline" title="${t('key_btn_delete', 'Xóa')}">${t('key_btn_delete', 'Xóa')}</button>
                             </div>
                             <div class="space-y-3">
                                 ${renderedContent}
@@ -286,14 +288,15 @@
         }
 
         async function deleteGeneration(id) {
-            if (!confirm("Bạn có chắc chắn muốn xóa tài nguyên AI này?")) return;
+            const t = window.t || ((k, f) => f);
+            if (!confirm(t('key_confirm_delete_nb', "Bạn có chắc chắn muốn xóa tài nguyên AI này?"))) return;
             
             try {
                 const res = await fetchWithCsrf(`${API_URL}/generations/${id}/`, {
                     method: 'DELETE'
                 });
                 if (res.ok) {
-                    alert("Đã xóa tài nguyên AI thành công!");
+                    alert(t('key_alert_deleted_nb', "Đã xóa tài nguyên AI thành công!"));
                     // Refresh data
                     await loadNotebooks();
                     if (activeNotebookId) {

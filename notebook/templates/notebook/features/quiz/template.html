@@ -1,48 +1,75 @@
 <script>
 function getQuizMockHTML(title) {
+    const t = window.t || ((k, f) => f);
+    const lang = localStorage.getItem('user_language') || 'vi';
+    
+    let qText = `Đâu là đặc trưng cơ bản nhất khi thiết kế ${title}?`;
+    let opts = [
+        "A. Chạy online hoàn toàn trên đám mây",
+        "B. Chạy offline và xử lý nội dung cực kỳ nhanh",
+        "C. Yêu cầu nhập Gemini API Key liên tục",
+        "D. Đòi hỏi cấu hình rất cao"
+    ];
+    let exp = "Hệ thống đã được chuyển sang chế độ hoạt động offline, giúp nâng cao hiệu năng và độ ổn định bảo mật.";
+    
+    if (lang === 'jp') {
+        qText = `「${title}」の最も基本的な設計特徴は何ですか？`;
+        opts = [
+            "A. クラウド上でのみ動作する",
+            "B. オフラインで高速かつ安全にコンテンツを処理する",
+            "C. 毎回APIキーの手動入力を要求する",
+            "D. 非常に高度なPCスペックを必要とする"
+        ];
+        exp = "オフライン高速処理に対応しており、セキュリティと安定性に優れています。";
+    } else if (lang === 'en') {
+        qText = `What is the most fundamental feature when studying ${title}?`;
+        opts = [
+            "A. Runs strictly on cloud without local cache",
+            "B. Fast offline content processing and robust privacy",
+            "C. Requires continuous manual API key entry",
+            "D. Requires extremely high-end hardware"
+        ];
+        exp = "The system is optimized for fast offline operation, ensuring performance and stability.";
+    }
+
     const quizData = [
         {
-            "question": `Đâu là đặc trưng cơ bản nhất khi thiết kế ${title}?`,
-            "options": [
-                "A. Chạy online hoàn toàn trên đám mây",
-                "B. Chạy offline và xử lý nội dung cực kỳ nhanh",
-                "C. Yêu cầu nhập Gemini API Key liên tục",
-                "D. Đòi hỏi cấu hình rất cao"
-            ],
+            "question": qText,
+            "options": opts,
             "correct_index": 1,
-            "explanation": "Hệ thống đã được chuyển sang chế độ hoạt động offline, giúp nâng cao hiệu năng và độ ổn định bảo mật."
+            "explanation": exp
         }
     ];
     window.currentQuizJSON = JSON.stringify(quizData);
+    
+    const correctBadge = `(${t('key_quiz_correct_badge', 'Đáp án đúng')})`;
     
     return `
         <div class="space-y-4 font-sans text-left">
             <p class="text-xs font-semibold text-slate-500 mb-1 flex items-center space-x-1.5">
                 <img src="/static/notebook/icon-set/quiz.png" class="w-4 h-4 object-contain" alt="Quiz" />
-                <span>Chủ đề: ${title}</span>
+                <span>${t('key_note_topic_prefix', 'Chủ đề:')} ${escapeHtml(title)}</span>
             </p>
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 space-y-2">
-                <span class="text-xs font-bold text-slate-855 dark:text-slate-200">Câu 1: ${quizData[0].question}</span>
+                <span class="text-xs font-bold text-slate-800 dark:text-slate-200">1: ${escapeHtml(quizData[0].question)}</span>
                 <div class="grid grid-cols-1 gap-2 mt-2">
-                    <button class="text-left bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3 py-2 rounded-lg text-xs hover:bg-slate-100 transition">${quizData[0].options[0]}</button>
-                    <button class="text-left bg-emerald-500/10 border border-emerald-500 text-emerald-700 dark:text-emerald-400 px-3 py-2 rounded-lg text-xs">${quizData[0].options[1]} (Đáp án đúng)</button>
-                    <button class="text-left bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3 py-2 rounded-lg text-xs hover:bg-slate-100 transition">${quizData[0].options[2]}</button>
-                    <button class="text-left bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3 py-2 rounded-lg text-xs hover:bg-slate-100 transition">${quizData[0].options[3]}</button>
+                    <button class="text-left bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3 py-2 rounded-lg text-xs hover:bg-slate-100 transition">${escapeHtml(quizData[0].options[0])}</button>
+                    <button class="text-left bg-emerald-500/10 border border-emerald-500 text-emerald-700 dark:text-emerald-400 px-3 py-2 rounded-lg text-xs">${escapeHtml(quizData[0].options[1])} ${correctBadge}</button>
+                    <button class="text-left bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3 py-2 rounded-lg text-xs hover:bg-slate-100 transition">${escapeHtml(quizData[0].options[2])}</button>
+                    <button class="text-left bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3 py-2 rounded-lg text-xs hover:bg-slate-100 transition">${escapeHtml(quizData[0].options[3])}</button>
                 </div>
                 <div class="text-[10px] text-slate-400 italic mt-2 bg-slate-100 dark:bg-slate-900/50 p-2.5 rounded-lg">
-                    Giải thích: ${quizData[0].explanation}
+                    ${t('key_quiz_explanation_prefix', 'Giải thích:')} ${escapeHtml(quizData[0].explanation)}
                 </div>
             </div>
         </div>
     `;
 }
-</script>
-
-<script>
 
 // Method 2: Text Parser for Quiz
 function parseQuizText(rawText) {
-    if (!rawText || rawText.trim() === '') return getQuizMockHTML('Bản nháp rỗng');
+    const t = window.t || ((k, f) => f);
+    if (!rawText || rawText.trim() === '') return getQuizMockHTML(t('key_tag_notebook', 'Tài liệu'));
     
     const blocks = rawText.split('\nQ:');
     let questions = [];
@@ -51,16 +78,9 @@ function parseQuizText(rawText) {
         let block = blocks[i].trim();
         if (!block) continue;
         
-        // If the first block didn't have Q: prefix but we split by \\nQ:, it might just be the first Q:
-        // Or if the string started with Q:, the first block is empty and skipped.
-        
         // Extract Question
         const qMatch = block.match(/^(.*?)\nA:/s);
-        if (!qMatch) {
-            // Handle case where Q: was stripped and it's just the rest of the block
-            // or there's no A:
-            continue;
-        }
+        if (!qMatch) continue;
         const questionText = qMatch[1].trim();
         
         // Extract Options
@@ -87,7 +107,7 @@ function parseQuizText(rawText) {
         
         // Extract EXP
         const expMatch = block.match(/\nEXP:\s*(.*)/s);
-        const explanation = expMatch ? expMatch[1].trim() : "Không có giải thích.";
+        const explanation = expMatch ? expMatch[1].trim() : (t('key_quiz_explanation_prefix', 'Giải thích:') + " " + t('key_113', 'Không có giải thích.'));
         
         questions.push({
             question: questionText,
@@ -98,12 +118,12 @@ function parseQuizText(rawText) {
     }
     
     if (questions.length === 0) {
-        return getQuizMockHTML('Lỗi: Cú pháp không hợp lệ. Vui lòng nhập đúng định dạng Q: A: B: C: D: EXP:');
+        return getQuizMockHTML(t('key_tag_quiz', 'Quiz'));
     }
     
     // Now render these questions into HTML
     let html = `<div class="text-left font-sans space-y-4 w-full max-w-2xl mx-auto">
-        <p class="text-xs font-semibold text-slate-500">🏷️ Bài thi trắc nghiệm (Tự tạo)</p>`;
+        <p class="text-xs font-semibold text-slate-500">🏷️ ${t('key_tag_quiz', 'Trắc nghiệm')}</p>`;
     
     questions.forEach((q, index) => {
         const qId = `quiz-q-${index}-${Date.now()}`;
@@ -114,20 +134,20 @@ function parseQuizText(rawText) {
             optionsHtml += `
                 <button id="${qId}-opt-${optIdx}" onclick="checkQuizAnswer('${qId}', '${letter}', '${q.answer}', ${optIdx})" 
                 class="text-left bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3 py-2.5 rounded-lg text-xs hover:bg-slate-100 dark:hover:bg-slate-800 transition shadow-sm w-full">
-                    ${opt}
+                    ${escapeHtml(opt)}
                 </button>
             `;
         });
         
         html += `
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 space-y-3 shadow-sm hover:border-brand-300 transition-colors group">
-                <span class="text-xs font-bold text-slate-800 dark:text-slate-100">Câu ${index + 1}: ${q.question}</span>
+                <span class="text-xs font-bold text-slate-800 dark:text-slate-100">${index + 1}: ${escapeHtml(q.question)}</span>
                 <div class="grid grid-cols-1 gap-2 mt-2" id="${qId}-options">
                     ${optionsHtml}
                 </div>
                 <div id="${qId}-result" class="hidden mt-3 p-3 rounded-lg text-xs"></div>
                 <div id="${qId}-explanation" class="hidden text-[11px] text-slate-600 dark:text-slate-300 italic mt-2 bg-slate-100 dark:bg-slate-900/50 p-2.5 rounded-lg">
-                    Giải thích: ${q.explanation}
+                    ${t('key_quiz_explanation_prefix', 'Giải thích:')} ${escapeHtml(q.explanation)}
                 </div>
             </div>
         `;
@@ -137,12 +157,10 @@ function parseQuizText(rawText) {
     
     // Convert to JSON array to save in textarea
     let jsonStr = JSON.stringify(questions);
-    // Escape quotes to put in HTML
     jsonStr = jsonStr.replace(/'/g, "&#39;").replace(/"/g, "&quot;");
     
     html += `<textarea id="quiz-hidden-data" class="hidden">${jsonStr}</textarea>`;
     
     return html;
 }
-
 </script>

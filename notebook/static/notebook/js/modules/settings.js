@@ -85,8 +85,30 @@ function setupUserSettings() {
         if (inputEmail) inputEmail.value = email;
         if (selectRole) selectRole.value = role;
         if (selectPurpose) selectPurpose.value = purpose;
-        if (selectDailyGoal && user.dailyGoal) {
-            selectDailyGoal.value = user.dailyGoal;
+        if (selectDailyGoal) {
+            if (user.dailyGoal) {
+                selectDailyGoal.value = user.dailyGoal;
+            }
+            // Bind change listener so changing goal immediately updates state and chart
+            if (!selectDailyGoal.dataset.hasChangeListener) {
+                selectDailyGoal.dataset.hasChangeListener = "true";
+                selectDailyGoal.addEventListener('change', function() {
+                    try {
+                        let storedUser = localStorage.getItem('edubrain_user');
+                        let userObj = storedUser ? JSON.parse(storedUser) : {};
+                        userObj.dailyGoal = this.value;
+                        userObj.updatedAt = Date.now();
+                        localStorage.setItem('edubrain_user', JSON.stringify(userObj));
+
+                        if (typeof updateFocusTimerDisplay === 'function') updateFocusTimerDisplay();
+                        if (typeof updateDashboardStats === 'function') updateDashboardStats(true);
+                        if (typeof renderCharts === 'function') renderCharts();
+                        if (typeof updateProgressViewStats === 'function') updateProgressViewStats();
+                    } catch (err) {
+                        console.error("Lỗi khi cập nhật mục tiêu học hàng ngày:", err);
+                    }
+                });
+            }
         }
 
     } catch (e) {
@@ -134,13 +156,17 @@ function saveSettings(event) {
         updateFocusTimerDisplay();
     }
     if (typeof updateDashboardStats === 'function') {
-        updateDashboardStats();
+        updateDashboardStats(true);
     }
     if (typeof renderCharts === 'function') {
         renderCharts();
     }
+    if (typeof updateProgressViewStats === 'function') {
+        updateProgressViewStats();
+    }
 
-    alert('Cài đặt thông tin và mục tiêu tự học đã được lưu thành công!');
+    const t = window.t || ((k, f) => f);
+    alert(t('key_tool_save_success', 'Cài đặt thông tin và mục tiêu tự học đã được lưu thành công!'));
 }
 
 // Auto-run on script load to ensure state is initialized as early as possible

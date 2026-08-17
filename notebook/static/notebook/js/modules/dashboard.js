@@ -99,101 +99,250 @@ function updateDashboardStats(forceReanimate = false) {
     if (docCountEl) docCountEl.innerText = sourcesCount;
 }
 
+// Dashboard table state
+let currentDashboardTablePage = 1;
+let dashboardTableSortBy = 'date_desc';
+let dashboardTableFilterType = 'all';
+const DASHBOARD_TABLE_PER_PAGE = 20;
+
+function setDashboardTableSort(sortBy) {
+    dashboardTableSortBy = sortBy;
+    currentDashboardTablePage = 1;
+    renderRecentActivityTable();
+}
+
+function setDashboardTableFilter(filterType) {
+    dashboardTableFilterType = filterType;
+    currentDashboardTablePage = 1;
+    renderRecentActivityTable();
+}
+
+function setDashboardTablePage(page) {
+    currentDashboardTablePage = page;
+    renderRecentActivityTable();
+    const tableEl = document.getElementById('recent-activity-table-body');
+    if (tableEl) tableEl.closest('.overflow-x-auto')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+window.setDashboardTableSort = setDashboardTableSort;
+window.setDashboardTableFilter = setDashboardTableFilter;
+window.setDashboardTablePage = setDashboardTablePage;
+
 function renderRecentActivityTable() {
     const tbody = document.getElementById('recent-activity-table-body');
     const emptyState = document.getElementById('table-empty-state');
     if (!tbody) return;
 
     const t = window.t || ((k, f) => f);
+    const lang = localStorage.getItem('user_language') || 'vi';
+    const localeStr = lang === 'en' ? 'en-US' : (lang === 'jp' ? 'ja-JP' : 'vi-VN');
+
+    // Generation type label map
+    const generationLabel = {
+        quiz: t('key_tag_quiz', 'Trắc nghiệm'),
+        flashcards: t('key_tag_flashcards', 'Flashcards'),
+        mind_map: t('key_tag_mindmap', 'Mind Map'),
+        report: t('key_tag_report', 'Báo cáo'),
+        audio_overview: t('key_tag_audio', 'Audio Overview'),
+        presentation: t('key_tag_presentation', 'Presentation'),
+        video_overview: t('key_tag_video', 'Video Overview'),
+        infographics: t('key_tag_infographic', 'Infographics'),
+        data_table: t('key_tag_data_table', 'Data Table')
+    };
 
     let activities = [];
+    // Track quiz generation IDs to avoid duplicates with QuizSets
+    let quizGenerationIds = new Set();
+
     notebooks.forEach(nb => {
+        // 1. Sources (Related Documents)
         const sources = nb.sources || [];
         sources.forEach(src => {
             activities.push({
                 id: src.id,
                 name: src.title,
                 type: t('key_tag_source', 'Tài liệu liên quan'),
+                filterType: 'source',
                 badgeColor: 'bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300',
                 notebookName: nb.name,
                 notebookId: nb.id,
                 date: new Date(src.created_at || Date.now()),
                 status: t('key_status_completed', 'Đã hoàn thành'),
-                isSource: true,
                 tab: 'sources'
             });
         });
 
+        // 2. Notes
         const notes = nb.notes || [];
         notes.forEach(note => {
             activities.push({
                 id: note.id,
                 name: note.title,
                 type: t('key_tag_note', 'Ghi chú'),
+                filterType: 'note',
                 badgeColor: 'bg-violet-50 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300',
                 notebookName: nb.name,
                 notebookId: nb.id,
                 date: new Date(note.created_at || Date.now()),
                 status: note.is_locked ? t('key_status_drafting', 'Đang soạn thảo') : t('key_status_reviewed', 'Phản biện xong'),
-                isSource: false,
                 tab: 'notes'
             });
         });
 
+        // 3. Quizzes (QuizSet)
         const quizzes = nb.quizzes || [];
         quizzes.forEach(quiz => {
             activities.push({
                 id: quiz.id,
                 name: quiz.name,
                 type: t('key_tag_quiz', 'Trắc nghiệm'),
+                filterType: 'quiz',
                 badgeColor: 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
                 notebookName: nb.name,
                 notebookId: nb.id,
                 date: new Date(quiz.updated_at || quiz.created_at || Date.now()),
                 status: quiz.attempts_count > 0 ? t('key_status_practiced', 'Đã luyện') : t('key_status_not_done', 'Chưa làm'),
-                isSource: false,
+                tab: 'ai-gen'
+            });
+        });
+
+        // 4. AI Generations (flashcards, mind_map, report, etc.)
+        const generations = nb.generations || [];
+        generations.forEach(gen => {
+            // Skip quiz-type generations to avoid duplication with QuizSets
+            if (gen.generation_type === 'quiz') {
+                quizGenerationIds.add(gen.id);
+                return;
+            }
+            const label = generationLabel[gen.generation_type] || t('key_tag_generation', 'Tài nguyên học tập');
+            let badgeColor = 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300';
+            if (gen.generation_type === 'flashcards') badgeColor = 'bg-sky-50 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300';
+            else if (gen.generation_type === 'mind_map') badgeColor = 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300';
+            else if (gen.generation_type === 'report') badgeColor = 'bg-rose-50 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300';
+
+            activities.push({
+                id: gen.id,
+                name: label,
+                type: label,
+                filterType: gen.generation_type, // 'flashcards', 'mind_map', 'report', etc.
+                badgeColor: badgeColor,
+                notebookName: nb.name,
+                notebookId: nb.id,
+                date: new Date(gen.created_at || Date.now()),
+                status: t('key_status_generated', 'Đã tạo'),
                 tab: 'ai-gen'
             });
         });
     });
 
-    // Sort by date desc
-    activities.sort((a, b) => b.date - a.date);
+    // Sync filter dropdown
+    const filterSelect = document.getElementById('table-filter-type');
+    if (filterSelect && filterSelect.value !== dashboardTableFilterType) {
+        filterSelect.value = dashboardTableFilterType;
+    }
 
-    if (activities.length === 0) {
+    // Sync sort dropdown
+    const sortSelect = document.getElementById('table-sort-select');
+    if (sortSelect && sortSelect.value !== dashboardTableSortBy) {
+        sortSelect.value = dashboardTableSortBy;
+    }
+
+    // Filter activities by selected category before sorting and pagination
+    if (dashboardTableFilterType !== 'all') {
+        activities = activities.filter(act => act.filterType === dashboardTableFilterType);
+    }
+
+    // Sort
+    activities.sort((a, b) => {
+        if (dashboardTableSortBy === 'name_asc') {
+            return (a.name || '').localeCompare(b.name || '', lang);
+        } else if (dashboardTableSortBy === 'name_desc') {
+            return (b.name || '').localeCompare(a.name || '', lang);
+        } else if (dashboardTableSortBy === 'date_asc') {
+            return a.date - b.date;
+        } else { // date_desc (default)
+            return b.date - a.date;
+        }
+    });
+
+    // Pagination
+    const totalItems = activities.length;
+    const totalPages = Math.max(1, Math.ceil(totalItems / DASHBOARD_TABLE_PER_PAGE));
+    if (currentDashboardTablePage > totalPages) currentDashboardTablePage = totalPages;
+    if (currentDashboardTablePage < 1) currentDashboardTablePage = 1;
+    const startIdx = (currentDashboardTablePage - 1) * DASHBOARD_TABLE_PER_PAGE;
+    const endIdx = startIdx + DASHBOARD_TABLE_PER_PAGE;
+    const pageItems = activities.slice(startIdx, endIdx);
+
+    if (totalItems === 0) {
         tbody.innerHTML = '';
         if (emptyState) emptyState.classList.remove('hidden');
-        return;
+    } else {
+        if (emptyState) emptyState.classList.add('hidden');
+
+        const viewDetailText = t('key_btn_view_detail', 'Xem chi tiết');
+
+        tbody.innerHTML = pageItems.map(act => `
+            <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-900/20 transition duration-150 text-xs" data-filter-type="${act.filterType}">
+                <td class="py-3 px-4 font-bold text-slate-800 dark:text-slate-200">${act.name}</td>
+                <td class="py-3 px-4">
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${act.badgeColor}">
+                        ${act.type}
+                    </span>
+                </td>
+                <td class="py-3 px-4 text-slate-500 dark:text-slate-400">${act.notebookName}</td>
+                <td class="py-3 px-4 text-slate-400">${act.date.toLocaleDateString(localeStr)}</td>
+                <td class="py-3 px-4">
+                    <span class="inline-flex items-center">
+                        <span class="w-1.5 h-1.5 rounded-full mr-1.5 ${act.status.includes('soạn') || act.status.includes('Draft') || act.status.includes('作成中') || act.status.includes('Chưa') ? 'bg-rose-500' : 'bg-emerald-500'}"></span>
+                        <span class="text-slate-650 dark:text-slate-400 font-medium">${act.status}</span>
+                    </span>
+                </td>
+                <td class="py-3 px-4 text-right">
+                    <button onclick="switchView('notebooks'); selectNotebook(${act.notebookId}); switchTab('${act.tab || 'sources'}')" class="text-brand-600 dark:text-brand-400 font-bold hover:underline cursor-pointer">
+                        ${viewDetailText}
+                    </button>
+                </td>
+            </tr>
+        `).join('');
     }
-    if (emptyState) emptyState.classList.add('hidden');
 
-    const viewDetailText = t('key_btn_view_detail', 'Xem chi tiết');
-    const lang = localStorage.getItem('user_language') || 'vi';
-    const localeStr = lang === 'en' ? 'en-US' : (lang === 'jp' ? 'ja-JP' : 'vi-VN');
+    // Render pagination (always visible)
+    const paginationContainer = document.getElementById('dashboard-table-pagination');
+    if (paginationContainer) {
+        const showingStart = totalItems === 0 ? 0 : startIdx + 1;
+        const showingEnd = Math.min(endIdx, totalItems);
 
-    tbody.innerHTML = activities.map(act => `
-        <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-900/20 transition duration-150 text-xs">
-            <td class="py-3 px-4 font-bold text-slate-800 dark:text-slate-200">${act.name}</td>
-            <td class="py-3 px-4">
-                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${act.badgeColor}">
-                    ${act.type}
+        let pageButtons = '';
+        let rangeStart = Math.max(1, currentDashboardTablePage - 2);
+        let rangeEnd = Math.min(totalPages, rangeStart + 4);
+        if (rangeEnd - rangeStart < 4) rangeStart = Math.max(1, rangeEnd - 4);
+
+        for (let p = rangeStart; p <= rangeEnd; p++) {
+            if (p === currentDashboardTablePage) {
+                pageButtons += `<button class="w-8 h-8 rounded-lg text-xs font-bold bg-brand-600 text-white shadow-sm">${p}</button>`;
+            } else {
+                pageButtons += `<button onclick="setDashboardTablePage(${p})" class="w-8 h-8 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">${p}</button>`;
+            }
+        }
+
+        paginationContainer.innerHTML = `
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+                <span class="text-[11px] text-slate-400">
+                    ${t('key_pagination_display', 'Hiển thị')} <strong>${showingStart}-${showingEnd}</strong> ${t('key_of', '/')} <strong>${totalItems}</strong> ${t('key_total_docs_count', 'tài liệu')}
                 </span>
-            </td>
-            <td class="py-3 px-4 text-slate-500 dark:text-slate-400">${act.notebookName}</td>
-            <td class="py-3 px-4 text-slate-400">${act.date.toLocaleDateString(localeStr)}</td>
-            <td class="py-3 px-4">
-                <span class="inline-flex items-center">
-                    <span class="w-1.5 h-1.5 rounded-full mr-1.5 ${act.status.includes('soạn') || act.status.includes('Draft') || act.status.includes('作成中') ? 'bg-rose-500' : 'bg-emerald-500'}"></span>
-                    <span class="text-slate-650 dark:text-slate-400 font-medium">${act.status}</span>
-                </span>
-            </td>
-            <td class="py-3 px-4 text-right">
-                <button onclick="switchView('notebooks'); selectNotebook(${act.notebookId}); switchTab('${act.tab || (act.isSource ? 'sources' : 'notes')}')" class="text-brand-600 dark:text-brand-400 font-bold hover:underline cursor-pointer">
-                    ${viewDetailText}
-                </button>
-            </td>
-        </tr>
-    `).join('');
+                <div class="flex items-center gap-1.5">
+                    <button onclick="setDashboardTablePage(${currentDashboardTablePage - 1})" ${currentDashboardTablePage <= 1 ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg text-xs font-semibold transition ${currentDashboardTablePage <= 1 ? 'text-slate-300 dark:text-slate-700 cursor-not-allowed' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}">
+                        ${t('key_prev_page', 'Trước')}
+                    </button>
+                    ${pageButtons}
+                    <button onclick="setDashboardTablePage(${currentDashboardTablePage + 1})" ${currentDashboardTablePage >= totalPages ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg text-xs font-semibold transition ${currentDashboardTablePage >= totalPages ? 'text-slate-300 dark:text-slate-700 cursor-not-allowed' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}">
+                        ${t('key_next_page', 'Sau')}
+                    </button>
+                </div>
+            </div>
+        `;
+    }
 }
 
 function renderCharts() {
@@ -202,19 +351,27 @@ function renderCharts() {
     const labelColor = isDark ? '#94a3b8' : '#64748b';
     const lang = localStorage.getItem('user_language') || 'vi';
 
-    // Gather distribution of source types
+    // Gather distribution of source types (Plain Text, Web Link, PDF Document)
     let textCount = 0;
     let linkCount = 0;
+    let pdfCount = 0;
     notebooks.forEach(nb => {
         (nb.sources || []).forEach(src => {
-            if (src.source_type === 'link') linkCount++;
-            else textCount++;
+            if (src.source_type === 'link') {
+                linkCount++;
+            } else if (src.source_type === 'file' || src.source_type === 'pdf') {
+                pdfCount++;
+            } else {
+                textCount++;
+            }
         });
     });
 
+    const t = window.t || ((k, f) => f);
     const studyMinsLabel = lang === 'en' ? 'Study Minutes' : (lang === 'jp' ? '学習時間(分)' : 'Số phút tự học');
-    const textLabel = lang === 'en' ? 'Plain Text' : (lang === 'jp' ? 'テキスト' : 'Văn bản nguồn');
-    const linkLabel = lang === 'en' ? 'Web Link' : (lang === 'jp' ? 'ウェブリンク' : 'Web Link');
+    const textLabel = t('key_tag_text', lang === 'en' ? 'Plain Text' : (lang === 'jp' ? 'テキスト' : 'Văn bản nguồn'));
+    const linkLabel = t('key_tag_link', lang === 'en' ? 'Web Link' : (lang === 'jp' ? 'ウェブリンク' : 'Web Link'));
+    const pdfLabel = t('key_tag_pdf', lang === 'en' ? 'PDF Document' : (lang === 'jp' ? 'PDFファイル' : 'Tài liệu PDF'));
 
     // 1. Weekly Rolling 7 Days Chart
     const rolling7Days = typeof getRolling7DaysStudyData === 'function' ? getRolling7DaysStudyData() : [];
@@ -222,9 +379,47 @@ function renderCharts() {
     const dayMinutesData = rolling7Days.map(item => item.minutes);
     const backgroundColors = rolling7Days.map(item => item.isToday ? '#6366f1' : (isDark ? '#4338ca' : '#4f46e5'));
 
+    // Daily Goal from Settings
+    const dailyGoalMinutes = typeof getDailyGoalMinutes === 'function' ? getDailyGoalMinutes() : 30;
+    const maxDayMinutes = Math.max(0, ...dayMinutesData);
+    const suggestedYMax = Math.max(dailyGoalMinutes + 10, maxDayMinutes + 10, 40);
+
+    // Modern Coral Sunset Orange (much cleaner, vibrant and aesthetic than dull yellow)
+    const goalLineColor = isDark ? '#fb923c' : '#f97316';
+
+    // Chart.js Plugin to draw Daily Goal horizontal line behind the bars
+    const dailyGoalLinePlugin = {
+        id: 'dailyGoalLine',
+        beforeDatasetsDraw(chart) {
+            const { ctx, chartArea, scales } = chart;
+            if (!chartArea || !scales || !scales.y) return;
+            const currentGoal = typeof getDailyGoalMinutes === 'function' ? getDailyGoalMinutes() : dailyGoalMinutes;
+            if (typeof currentGoal !== 'number' || isNaN(currentGoal) || currentGoal <= 0) return;
+
+            const yPos = scales.y.getPixelForValue(currentGoal);
+            if (yPos < chartArea.top || yPos > chartArea.bottom) return;
+
+            const isDarkCurrent = document.documentElement.classList.contains('dark');
+            const currentColor = isDarkCurrent ? '#fb923c' : '#f97316';
+
+            ctx.save();
+            ctx.strokeStyle = currentColor;
+            ctx.lineWidth = 2.5;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(chartArea.left, yPos);
+            ctx.lineTo(chartArea.right, yPos);
+            ctx.stroke();
+            ctx.restore();
+        }
+    };
+
     const hoursCtx = document.getElementById('hoursChart');
     if (hoursCtx) {
-        if (hoursChartObj) hoursChartObj.destroy();
+        if (hoursChartObj) {
+            hoursChartObj.destroy();
+            hoursChartObj = null;
+        }
         hoursChartObj = new Chart(hoursCtx, {
             type: 'bar',
             data: {
@@ -239,6 +434,7 @@ function renderCharts() {
                     categoryPercentage: 0.8
                 }]
             },
+            plugins: [dailyGoalLinePlugin],
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -260,7 +456,34 @@ function renderCharts() {
                     y: {
                         border: { dash: [4, 4] },
                         grid: { color: gridColor },
-                        ticks: { color: labelColor, beginAtZero: true, font: { size: 11 } }
+                        suggestedMax: suggestedYMax,
+                        afterBuildTicks: function(scale) {
+                            if (!scale || !Array.isArray(scale.ticks)) return;
+                            const currentGoal = typeof getDailyGoalMinutes === 'function' ? getDailyGoalMinutes() : dailyGoalMinutes;
+                            if (typeof currentGoal === 'number' && currentGoal > 0) {
+                                if (!scale.ticks.some(t => t.value === currentGoal)) {
+                                    scale.ticks.push({ value: currentGoal });
+                                    scale.ticks.sort((a, b) => a.value - b.value);
+                                }
+                            }
+                        },
+                        ticks: {
+                            color: function(context) {
+                                const currentGoal = typeof getDailyGoalMinutes === 'function' ? getDailyGoalMinutes() : dailyGoalMinutes;
+                                if (context && context.tick && context.tick.value === currentGoal) {
+                                    return isDark ? '#fb923c' : '#f97316';
+                                }
+                                return labelColor;
+                            },
+                            font: function(context) {
+                                const currentGoal = typeof getDailyGoalMinutes === 'function' ? getDailyGoalMinutes() : dailyGoalMinutes;
+                                if (context && context.tick && context.tick.value === currentGoal) {
+                                    return { size: 11, weight: '800' };
+                                }
+                                return { size: 11, weight: '500' };
+                            },
+                            beginAtZero: true
+                        }
                     }
                 }
             }
@@ -270,14 +493,18 @@ function renderCharts() {
     // 2. Type distribution Chart
     const distCtx = document.getElementById('distributionChart');
     if (distCtx) {
-        if (distChartObj) distChartObj.destroy();
+        if (distChartObj) {
+            distChartObj.destroy();
+            distChartObj = null;
+        }
+        const totalSources = textCount + linkCount + pdfCount;
         distChartObj = new Chart(distCtx, {
             type: 'doughnut',
             data: {
-                labels: [textLabel, linkLabel],
+                labels: [textLabel, linkLabel, pdfLabel],
                 datasets: [{
-                    data: [textCount || 1, linkCount],
-                    backgroundColor: ['#6366f1', '#14b8a6'],
+                    data: totalSources > 0 ? [textCount, linkCount, pdfCount] : [0, 0, 0],
+                    backgroundColor: ['#6366f1', '#14b8a6', '#f59e0b'],
                     borderWidth: isDark ? 3 : 1,
                     borderColor: isDark ? '#0f172a' : '#ffffff'
                 }]
@@ -289,6 +516,15 @@ function renderCharts() {
                     legend: {
                         position: 'bottom',
                         labels: { color: labelColor, boxWidth: 12, padding: 15, font: { size: 11, weight: '600' } }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.parsed !== undefined ? context.parsed : 0;
+                                return ` ${label}: ${value}`;
+                            }
+                        }
                     }
                 },
                 cutout: '70%'

@@ -238,6 +238,7 @@
         function renderQuizSets(quizzes) {
             const container = document.getElementById('quiz-sets-container');
             if (!container) return;
+            const t = window.t || ((k, fallback) => fallback);
 
             if (!quizzes || quizzes.length === 0) {
                 container.innerHTML = '';
@@ -251,19 +252,19 @@
                     <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                         <div>
                             <div class="flex items-center gap-2 mb-1.5">
-                                <span class="text-[10px] uppercase font-bold tracking-wide text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 px-2 py-0.5 rounded-md">Trắc nghiệm</span>
-                                <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">${quiz.attempts_count || 0} lượt làm</span>
+                                <span class="text-[10px] uppercase font-bold tracking-wide text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 px-2 py-0.5 rounded-md">${t('key_tag_quiz', 'Trắc nghiệm')}</span>
+                                <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">${quiz.attempts_count || 0} ${t('key_quiz_attempts_count', 'lượt làm')}</span>
                             </div>
                             <h4 class="font-bold text-slate-900 dark:text-white text-sm">${escapeHtml(quiz.name)}</h4>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">${escapeHtml(quiz.description || 'Không có mô tả')}</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">${escapeHtml(quiz.description || t('key_ph_notebook_desc', 'Không có mô tả'))}</p>
                         </div>
                         <div class="flex items-center gap-2 shrink-0">
                             <button onclick="openQuizPlayModal(${quiz.id})" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-1.5 rounded-xl text-xs font-semibold transition flex items-center space-x-1.5">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                <span>Làm bài</span>
+                                <span>${t('key_quiz_take_now_btn', 'Làm bài')}</span>
                             </button>
                             <button onclick="openQuizReviewModal(${quiz.id})" class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-xl text-xs font-semibold transition hover:bg-slate-200 dark:hover:bg-slate-700">
-                                <span>Chi tiết</span>
+                                <span>${t('key_btn_view_details', 'Chi tiết')}</span>
                             </button>
                         </div>
                     </div>
@@ -280,16 +281,17 @@
             if (!quizId) return;
             currentQuizPlaying = quizId;
             currentQuizAnswers = {};
+            const t = window.t || ((k, fallback) => fallback);
             const modal = document.getElementById('quiz-play-modal');
             const title = document.getElementById('quiz-play-title');
-            if (title) title.innerText = 'Làm bài trắc nghiệm';
+            if (title) title.innerText = t('key_quiz_take_now_btn', 'Làm bài trắc nghiệm');
             const content = document.getElementById('quiz-play-content');
             if (!content || !modal) return;
 
             content.innerHTML = `
                 <div class="flex flex-col items-center justify-center py-12 space-y-3">
                     <div class="w-10 h-10 rounded-full border-4 border-brand-200 border-t-brand-600 animate-spin"></div>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Đang tải câu hỏi bài tập...</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">${t('key_105', 'Đang tải câu hỏi bài tập...')}</p>
                 </div>
             `;
             modal.classList.remove('hidden');
@@ -330,8 +332,8 @@
                     if (!Array.isArray(questions) || questions.length === 0) {
                         content.innerHTML = `
                             <div class="text-center py-12 text-slate-500 dark:text-slate-400 text-xs space-y-3">
-                                <p>Bài tập chưa có câu hỏi nào.</p>
-                                <button onclick="openQuizBuilderModal(${quizId})" class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-xl text-xs font-semibold">+ Thêm câu hỏi</button>
+                                <p>${t('key_quiz_editor_empty', 'Bài tập chưa có câu hỏi nào.')}</p>
+                                <button onclick="openQuizBuilderModal(${quizId})" class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-xl text-xs font-semibold">${t('key_btn_add_question', '+ Thêm câu hỏi')}</button>
                             </div>
                         `;
                         return;
@@ -341,7 +343,7 @@
                 })
                 .catch(err => {
                     console.error('Quiz play error:', err);
-                    content.innerHTML = `<div class="text-center py-12 text-rose-500 dark:text-rose-400 text-xs">Không thể tải bài tập. Vui lòng thử lại sau.</div>`;
+                    content.innerHTML = `<div class="text-center py-12 text-rose-500 dark:text-rose-400 text-xs">${t('key_113', 'Không thể tải bài tập. Vui lòng thử lại sau.')}</div>`;
                 });
         }
 
@@ -360,6 +362,7 @@
         function renderQuizPlayContent(quizId, questions) {
             const content = document.getElementById('quiz-play-content');
             if (!content) return;
+            const t = window.t || ((k, fallback) => fallback);
 
             const total = questions.length;
 
@@ -381,13 +384,13 @@
                     <div class="quiz-question-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 space-y-4 shadow-sm" data-question-id="${question.id}">
                         <div class="flex items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-3">
                             <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-300">
-                                Câu ${idx + 1} / ${total}
+                                ${idx + 1} / ${total}
                             </span>
-                            <span id="${qId}-status" class="text-xs font-semibold text-slate-400">Chưa trả lời</span>
+                            <span id="${qId}-status" class="text-xs font-semibold text-slate-400">${t('key_quiz_unanswered_status', 'Chưa trả lời')}</span>
                         </div>
                         
                         <p class="text-sm font-semibold text-slate-900 dark:text-white leading-relaxed">
-                            ${escapeHtml(question.question_text || question.question || 'Câu hỏi chưa có nội dung')}
+                            ${escapeHtml(question.question_text || question.question || t('key_ph_quiz_desc', 'Câu hỏi chưa có nội dung'))}
                         </p>
                         
                         <div id="${qId}-options" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
@@ -403,10 +406,10 @@
             content.innerHTML = `
                 <div class="space-y-4">
                     <div class="flex items-center justify-between bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/30 rounded-2xl px-4 py-3 text-xs text-indigo-900 dark:text-indigo-300">
-                        <span class="font-medium">Chọn đáp án cho từng câu hỏi và bấm Nộp bài để lưu kết quả.</span>
+                        <span class="font-medium">${t('key_quiz_play_prompt', 'Chọn đáp án cho từng câu hỏi và bấm Nộp bài để lưu kết quả.')}</span>
                         <button type="button" onclick="retakeCurrentQuiz()" class="text-xs font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 hover:underline flex items-center space-x-1.5">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                            <span>Làm lại từ đầu</span>
+                            <span>${t('key_quiz_play_retake', 'Làm lại từ đầu')}</span>
                         </button>
                     </div>
 
@@ -416,12 +419,12 @@
                     <div id="quiz-play-footer" class="bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                             <div>
-                                <p class="font-bold text-slate-900 dark:text-white text-sm">Hoàn thành bài kiểm tra</p>
-                                <p id="quiz-play-status-text" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Đã trả lời 0 / ${total} câu hỏi.</p>
+                                <p class="font-bold text-slate-900 dark:text-white text-sm">${t('key_quiz_play_finish_title', 'Hoàn thành bài kiểm tra')}</p>
+                                <p id="quiz-play-status-text" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">${t('key_quiz_play_answered_status', 'Đã trả lời')} 0 / ${total}.</p>
                             </div>
                             <div class="flex items-center space-x-2">
                                 <button type="button" onclick="submitQuizAttempt()" class="inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-2.5 rounded-xl text-xs shadow-sm transition">
-                                    <span>Nộp bài</span>
+                                    <span>${t('key_quiz_play_submit_btn', 'Nộp bài')}</span>
                                 </button>
                             </div>
                         </div>
@@ -435,6 +438,7 @@
             const qId = `quiz-play-${questionId}`;
             const optionsContainer = document.getElementById(`${qId}-options`);
             if (!optionsContainer) return;
+            const t = window.t || ((k, fallback) => fallback);
 
             const buttons = optionsContainer.querySelectorAll('button');
             buttons.forEach(btn => {
@@ -462,7 +466,7 @@
 
             const statusSpan = document.getElementById(`${qId}-status`);
             if (statusSpan) {
-                statusSpan.innerText = isCorrect ? 'Chính xác' : 'Chưa chính xác';
+                statusSpan.innerText = isCorrect ? t('key_quiz_correct_badge', 'Chính xác') : t('key_quiz_incorrect_badge', 'Chưa chính xác');
                 statusSpan.className = `text-xs font-semibold ${isCorrect ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`;
             }
 
@@ -471,10 +475,10 @@
                 resultDiv.classList.remove('hidden');
                 if (isCorrect) {
                     resultDiv.className = 'text-xs font-semibold p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/50';
-                    resultDiv.innerText = 'Chính xác! Bạn đã chọn đáp án đúng.';
+                    resultDiv.innerText = t('key_quiz_result_correct', '✓ Chính xác! Bạn đã chọn đáp án đúng.');
                 } else {
                     resultDiv.className = 'text-xs font-semibold p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-900/50';
-                    resultDiv.innerText = `Chưa chính xác. Đáp án đúng là ${correctOption}.`;
+                    resultDiv.innerText = `${t('key_quiz_result_incorrect', '✗ Chưa chính xác. Đáp án đúng là')} ${correctOption}.`;
                 }
             }
 
@@ -488,7 +492,7 @@
             const totalQuestions = document.querySelectorAll('#quiz-play-content .quiz-question-card').length;
             const statusText = document.getElementById('quiz-play-status-text');
             if (statusText) {
-                statusText.innerText = `Đã trả lời ${answeredCount} / ${totalQuestions} câu hỏi.`;
+                statusText.innerText = `${t('key_quiz_play_answered_status', 'Đã trả lời')} ${answeredCount} / ${totalQuestions}.`;
             }
         }
 
@@ -504,10 +508,13 @@
 
         async function submitQuizAttempt() {
             if (!currentQuizPlaying) return;
+            const t = window.t || ((k, fallback) => fallback);
             const totalQuestions = document.querySelectorAll('#quiz-play-content .quiz-question-card').length;
             const answeredCount = Object.keys(currentQuizAnswers).length;
             if (answeredCount < totalQuestions) {
-                return alert(`Bạn mới trả lời ${answeredCount}/${totalQuestions} câu hỏi. Vui lòng hoàn thành tất cả các câu trước khi nộp bài.`);
+                if (!confirm(t('key_quiz_unanswered_alert', 'Bạn còn câu hỏi chưa trả lời. Bạn có chắc chắn muốn nộp bài không?'))) {
+                    return;
+                }
             }
 
             try {
@@ -526,7 +533,7 @@
                     questionCards.forEach(card => {
                         const qId = card.getAttribute('data-question-id');
                         const statusSpan = document.getElementById(`quiz-play-${qId}-status`);
-                        if (statusSpan && statusSpan.innerText === 'Chính xác') {
+                        if (statusSpan && (statusSpan.innerText === 'Chính xác' || statusSpan.innerText === t('key_quiz_correct_badge', 'Chính xác') || statusSpan.innerText === 'Correct')) {
                             score++;
                         }
                     });
@@ -563,10 +570,10 @@
                             <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
                                 <button type="button" onclick="retakeCurrentQuiz()" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs flex items-center space-x-1.5 shadow-sm transition">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                                    <span>Làm lại bài thi này</span>
+                                    <span>${t('key_quiz_retake_this_quiz', 'Làm lại bài thi này')}</span>
                                 </button>
                                 <button type="button" onclick="closeQuizPlayModal()" class="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-xs hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-                                    <span>Hoàn thành & Đóng</span>
+                                    <span>${t('key_quiz_finish_close', 'Hoàn thành & Đóng')}</span>
                                 </button>
                             </div>
                         </div>
@@ -667,15 +674,15 @@
                         <div class="space-y-4">
                             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-4">
                                 <div>
-                                    <p class="text-[10px] uppercase tracking-wider font-bold text-slate-500">Bộ câu hỏi</p>
-                                    <h4 class="font-bold text-slate-900 dark:text-white text-base mt-1">${fallback.title}</h4>
-                                    <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1">${fallback.description}</p>
+                                    <p class="text-[10px] uppercase tracking-wider font-bold text-slate-500">${t('key_tag_quiz', 'Bộ câu hỏi')}</p>
+                                    <h4 class="font-bold text-slate-900 dark:text-white text-base mt-1">${escapeHtml(fallback.title)}</h4>
+                                    <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1">${escapeHtml(fallback.description)}</p>
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <button onclick="convertGenerationToQuizSet(${quizId})" class="bg-brand-600 hover:bg-brand-700 text-white px-3.5 py-2 rounded-xl text-xs font-semibold transition flex items-center space-x-1">
-                                        <span>💾</span> <span>Lưu thành bài tập chính thức</span>
+                                        <span>💾</span> <span>${t('key_quiz_convert_official_btn', 'Lưu thành bài tập chính thức')}</span>
                                     </button>
-                                    <button onclick="openQuizGenerationEditorModal(${quizId})" class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-3 py-2 rounded-xl text-xs font-semibold transition hover:bg-slate-200 dark:hover:bg-slate-700">Sửa câu hỏi</button>
+                                    <button onclick="openQuizGenerationEditorModal(${quizId})" class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-3 py-2 rounded-xl text-xs font-semibold transition hover:bg-slate-200 dark:hover:bg-slate-700">${t('key_quiz_edit_questions_btn', 'Sửa câu hỏi')}</button>
                                 </div>
                             </div>
                             ${fallback.questions.map((question, idx) => {
@@ -684,10 +691,10 @@
                                 return `
                                     <div class="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 space-y-3">
                                         <div class="flex items-center justify-between gap-3">
-                                            <span class="text-[10px] uppercase tracking-wider font-bold text-slate-500">Câu ${idx + 1}</span>
+                                            <span class="text-[10px] uppercase tracking-wider font-bold text-slate-500">${idx + 1}</span>
                                             <span id="quiz-review-status-${generation.id}-${idx}" class="text-[10px] font-bold uppercase tracking-wide text-slate-400">&nbsp;</span>
                                         </div>
-                                        <p class="text-sm font-semibold text-slate-900 dark:text-white">${question.question_text || question.question || 'Câu hỏi chưa có nội dung'}</p>
+                                        <p class="text-sm font-semibold text-slate-900 dark:text-white">${escapeHtml(question.question_text || question.question || t('key_ph_quiz_desc', 'Câu hỏi chưa có nội dung'))}</p>
                                         <div id="quiz-review-${generation.id}-${idx}-options" class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                             ${options.map((opt, optIdx) => `
                                                 <button type="button" onclick="selectQuizReviewOption('${generation.id}-${idx}', '${String.fromCharCode(65 + optIdx)}', '${correctOption}')" id="quiz-review-${generation.id}-${idx}-opt-${optIdx}" data-explanation="${escapeHtml(question.explanation || '')}" class="w-full text-left bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3.5 py-2.5 rounded-xl text-[11px] text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition font-medium">
@@ -707,24 +714,24 @@
 
                 const questions = Array.isArray(quiz.questions) ? quiz.questions : [];
                 if (!questions.length) {
-                    content.innerHTML = '<div class="text-center py-12 text-slate-500 dark:text-slate-400 text-xs">Bộ câu hỏi này chưa có nội dung nào.</div>';
+                    content.innerHTML = `<div class="text-center py-12 text-slate-500 dark:text-slate-400 text-xs">${t('key_quiz_editor_empty', 'Bộ câu hỏi này chưa có nội dung nào.')}</div>`;
                     return;
                 }
 
-                if (title) title.innerText = quiz.name || 'Xem lại bộ câu hỏi';
+                if (title) title.innerText = quiz.name || t('key_tag_quiz', 'Xem lại bộ câu hỏi');
                 content.innerHTML = `
                     <div class="space-y-4">
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-4">
                             <div>
-                                <p class="text-[10px] uppercase tracking-wider font-bold text-slate-500">Bộ câu hỏi trắc nghiệm</p>
-                                <h4 class="font-bold text-slate-900 dark:text-white text-base mt-1">${quiz.name || 'Bộ câu hỏi'}</h4>
-                                <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1">${quiz.description || 'Không có mô tả'}</p>
+                                <p class="text-[10px] uppercase tracking-wider font-bold text-slate-500">${t('key_tag_quiz', 'Bộ câu hỏi trắc nghiệm')}</p>
+                                <h4 class="font-bold text-slate-900 dark:text-white text-base mt-1">${escapeHtml(quiz.name || t('key_tag_quiz', 'Bộ câu hỏi'))}</h4>
+                                <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-1">${escapeHtml(quiz.description || t('key_ph_notebook_desc', 'Không có mô tả'))}</p>
                             </div>
                             <div class="flex gap-2">
                                 <button onclick="openQuizPlayModal(${quiz.id})" class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center space-x-1.5 shadow-sm">
-                                    <span>🎯</span> <span>Làm bài ngay</span>
+                                    <span>🎯</span> <span>${t('key_quiz_take_now_btn', 'Làm bài ngay')}</span>
                                 </button>
-                                <button onclick="openQuizBuilderModal(${quiz.id})" class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-3.5 py-2 rounded-xl text-xs font-semibold transition hover:bg-slate-200 dark:hover:bg-slate-700">Sửa câu hỏi</button>
+                                <button onclick="openQuizBuilderModal(${quiz.id})" class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-3.5 py-2 rounded-xl text-xs font-semibold transition hover:bg-slate-200 dark:hover:bg-slate-700">${t('key_quiz_edit_questions_btn', 'Sửa câu hỏi')}</button>
                             </div>
                         </div>
                         ${questions.map((question, idx) => {
@@ -733,10 +740,10 @@
                             return `
                                 <div class="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 space-y-3">
                                     <div class="flex items-center justify-between gap-3">
-                                        <span class="text-[10px] uppercase tracking-wider font-bold text-slate-500">Câu ${idx + 1}</span>
+                                        <span class="text-[10px] uppercase tracking-wider font-bold text-slate-500">${idx + 1}</span>
                                         <span id="quiz-review-status-${quiz.id}-${idx}" class="text-[10px] font-bold uppercase tracking-wide text-slate-400">&nbsp;</span>
                                     </div>
-                                    <p class="text-sm font-semibold text-slate-900 dark:text-white">${question.question_text || 'Câu hỏi chưa có nội dung'}</p>
+                                    <p class="text-sm font-semibold text-slate-900 dark:text-white">${escapeHtml(question.question_text || t('key_ph_quiz_desc', 'Câu hỏi chưa có nội dung'))}</p>
                                     <div id="quiz-review-${quiz.id}-${idx}-options" class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                         ${options.map((opt, optIdx) => `
                                             <button type="button" onclick="selectQuizReviewOption('${quiz.id}-${idx}', '${String.fromCharCode(65 + optIdx)}', '${correctOption}')" id="quiz-review-${quiz.id}-${idx}-opt-${optIdx}" data-explanation="${escapeHtml(question.explanation || '')}" class="w-full text-left bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3.5 py-2.5 rounded-xl text-[11px] text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition font-medium">
@@ -753,7 +760,7 @@
                 `;
             } catch (err) {
                 console.error('Quiz review error:', err);
-                content.innerHTML = '<div class="text-center py-12 text-rose-500 dark:text-rose-400 text-xs">Không thể tải nội dung bộ câu hỏi. Vui lòng thử lại.</div>';
+                content.innerHTML = `<div class="text-center py-12 text-rose-500 dark:text-rose-400 text-xs">${t('key_113', 'Không thể tải nội dung bộ câu hỏi. Vui lòng thử lại.')}</div>`;
             }
         }
 
@@ -771,6 +778,7 @@
             const qId = `quiz-review-${reviewId}`;
             const optionsContainer = document.getElementById(`${qId}-options`);
             if (!optionsContainer) return;
+            const t = window.t || ((k, fallback) => fallback);
             const buttons = optionsContainer.querySelectorAll('button');
             const correctClasses = ['bg-emerald-500/10', 'dark:bg-emerald-500/20', 'border-emerald-500', 'text-emerald-700', 'dark:text-emerald-400'];
             const wrongClasses = ['bg-rose-500/10', 'dark:bg-rose-500/20', 'border-rose-500', 'text-rose-700', 'dark:text-rose-400'];
@@ -811,14 +819,14 @@
                 resultDiv.classList.remove('hidden');
                 if (isCorrect) {
                     resultDiv.className = 'text-[11px] font-bold p-3 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20';
-                    resultDiv.innerText = '✓ Chính xác!';
+                    resultDiv.innerText = t('key_quiz_result_correct', '✓ Chính xác!');
                 } else {
                     resultDiv.className = 'text-[11px] font-bold p-3 rounded-xl bg-rose-500/10 dark:bg-rose-500/20 text-rose-700 dark:text-rose-400 border border-rose-500/20';
-                    resultDiv.innerText = '✗ Chưa chính xác.';
+                    resultDiv.innerText = t('key_quiz_result_incorrect', '✗ Chưa chính xác.');
                 }
             }
             if (statusSpan) {
-                statusSpan.innerText = isCorrect ? 'Đúng' : 'Sai';
+                statusSpan.innerText = isCorrect ? t('key_quiz_correct_badge', 'Đúng') : t('key_quiz_incorrect_badge', 'Sai');
                 statusSpan.className = `text-[10px] font-bold uppercase tracking-wide ${isCorrect ? 'text-emerald-600' : 'text-rose-500'}`;
             }
 
@@ -826,25 +834,26 @@
             const explanation = selectedBtn?.dataset?.explanation || '';
             if (explanationDiv) {
                 explanationDiv.classList.remove('hidden');
-                explanationDiv.innerText = explanation ? `Giải thích: ${explanation}` : (isCorrect ? 'Bạn đã chọn đúng!' : 'Hãy đọc kỹ và thử lại lần sau.');
+                explanationDiv.innerText = explanation ? `${t('key_quiz_explanation_prefix', 'Giải thích:')} ${explanation}` : (isCorrect ? t('key_quiz_result_correct', 'Bạn đã chọn đúng!') : t('key_quiz_result_incorrect', 'Hãy đọc kỹ và thử lại lần sau.'));
             }
         }
 
         async function convertGenerationToQuizSet(generationId) {
+            const t = window.t || ((k, fallback) => fallback);
             try {
                 const res = await fetchWithCsrf(`${API_URL}/generations/${generationId}/convert_to_quiz/`, {
                     method: 'POST'
                 });
                 if (res.ok) {
                     const quizSet = await res.json();
-                    alert("Đã chuyển đổi và lưu thành bài tập Quiz chính thức thành công!");
+                    alert(t('key_tool_save_success', "Đã chuyển đổi và lưu thành bài tập Quiz chính thức thành công!"));
                     closeQuizReviewModal();
                     await loadNotebooks();
                     if (activeNotebookId) await selectNotebook(activeNotebookId, true);
                     openQuizPlayModal(quizSet.id);
                 } else {
                     const err = await res.json();
-                    alert("Lỗi khi chuyển đổi quiz: " + (err.error || JSON.stringify(err)));
+                    alert(t('key_tool_save_error', "Lỗi khi chuyển đổi quiz: ") + (err.error || JSON.stringify(err)));
                 }
             } catch (e) {
                 console.error("Convert to QuizSet error:", e);
@@ -918,6 +927,7 @@
 
         async function saveQuizGenerationEdit() {
             if (!currentQuizGenerationEditingId) return;
+            const t = window.t || ((k, fallback) => fallback);
             const questions = collectQuizGenerationEditorQuestions();
             if (!questions.length) return alert('Vui lòng thêm ít nhất một câu hỏi.');
             try {
@@ -934,7 +944,7 @@
                 closeQuizGenerationEditorModal();
                 await loadNotebooks();
                 if (activeNotebookId) await selectNotebook(activeNotebookId, true);
-                alert('Đã cập nhật bộ câu hỏi thành công!');
+                alert(t('key_tool_save_success', 'Đã cập nhật bộ câu hỏi thành công!'));
             } catch (err) {
                 console.error('Save quiz generation edit error:', err);
                 alert('Lỗi khi lưu bộ câu hỏi.');
@@ -987,40 +997,41 @@
         function renderQuizGenerationEditorForm(questions) {
             const container = document.getElementById('quiz-generation-editor-form');
             if (!container) return;
+            const t = window.t || ((k, fallback) => fallback);
             container.innerHTML = `
                 <div class="space-y-3">
                     ${questions.length ? questions.map((question, idx) => `
                         <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-4 space-y-3" data-quiz-generation-row="${idx}">
                             <div class="flex items-center justify-between">
-                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Câu hỏi ${idx + 1}</span>
-                                <button type="button" onclick="removeQuizGenerationEditorRow(${idx})" class="text-[10px] text-rose-500 hover:text-rose-700 font-semibold">Xóa</button>
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">${idx + 1}</span>
+                                <button type="button" onclick="removeQuizGenerationEditorRow(${idx})" class="text-[10px] text-rose-500 hover:text-rose-700 font-semibold">${t('key_btn_delete', 'Xóa')}</button>
                             </div>
                             <div>
-                                <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">Nội dung câu hỏi</label>
+                                <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">${t('key_flashcard_question', 'Nội dung câu hỏi')}</label>
                                 <textarea data-quiz-question rows="2" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500">${escapeHtml(question.question_text || question.question || '')}</textarea>
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 ${['A','B','C','D'].map((letter, optIdx) => `
                                     <div>
-                                        <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">Đáp án ${letter}</label>
+                                        <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">${t('key_flashcard_answer', 'Đáp án')} ${letter}</label>
                                         <input data-quiz-option="${letter}" type="text" value="${escapeHtml(normalizeQuizOption((question.options || [])[optIdx] || ''))}" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500">
                                     </div>
                                 `).join('')}
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
                                 <div>
-                                    <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">Đáp án đúng</label>
+                                    <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">${t('key_quiz_correct_badge', 'Đáp án đúng')}</label>
                                     <select data-quiz-correct-answer class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500">
                                         ${['A','B','C','D'].map((letter) => `<option value="${letter}" ${letter === (question.answer || question.correct_option || 'A') ? 'selected' : ''}>${letter}</option>`).join('')}
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">Giải thích</label>
+                                    <label class="block text-[10px] font-semibold text-slate-400 uppercase mb-1">${t('key_quiz_explanation_prefix', 'Giải thích')}</label>
                                     <textarea data-quiz-explanation rows="2" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500">${escapeHtml(question.explanation || '')}</textarea>
                                 </div>
                             </div>
                         </div>
-                    `).join('') : '<div class="text-center py-6 text-[11px] text-slate-400">Chưa có câu hỏi nào. Nhấn “+ Thêm câu hỏi” để bắt đầu.</div>'}
+                    `).join('') : `<div class="text-center py-6 text-[11px] text-slate-400">${t('key_quiz_editor_empty', 'Chưa có câu hỏi nào. Nhấn “+ Thêm câu hỏi” để bắt đầu.')}</div>`}
                 </div>
             `;
         }

@@ -41,43 +41,10 @@ function getTagBadgeClass(tagType) {
 }
 
 function filterTable() {
-    const searchInput = document.getElementById('table-search');
     const filterSelect = document.getElementById('table-filter-type');
-    if (!searchInput || !filterSelect) return;
-
-    const rawQuery = searchInput.value.toLowerCase().trim();
-    const normalizedQuery = normalizeSearchText(rawQuery);
-    const typeFilter = filterSelect.value;
-    const rows = document.querySelectorAll('#recent-activity-table-body tr');
-
-    rows.forEach(row => {
-        const cells = row.getElementsByTagName('td');
-        if (cells.length < 5) return;
-
-        const name = cells[0].innerText.toLowerCase();
-        const type = cells[1].innerText.toLowerCase();
-        const notebook = cells[2].innerText.toLowerCase();
-
-        const nameNorm = normalizeSearchText(name);
-        const typeNorm = normalizeSearchText(type);
-        const notebookNorm = normalizeSearchText(notebook);
-
-        const matchesSearch = !rawQuery 
-            || name.includes(rawQuery) || nameNorm.includes(normalizedQuery)
-            || type.includes(rawQuery) || typeNorm.includes(normalizedQuery)
-            || notebook.includes(rawQuery) || notebookNorm.includes(normalizedQuery);
-
-        let matchesType = true;
-        if (typeFilter === 'source') {
-            matchesType = typeNorm.includes('tai lieu') || type.includes('related') || type.includes('document') || type.includes('資料') || type.includes('pdf') || type.includes('link') || typeNorm.includes('van ban');
-        } else if (typeFilter === 'note') {
-            matchesType = typeNorm.includes('ghi chu') || type.includes('note') || type.includes('ノート');
-        } else if (typeFilter === 'quiz') {
-            matchesType = typeNorm.includes('trac nghiem') || typeNorm.includes('bai tap') || type.includes('quiz') || type.includes('クイズ');
-        }
-
-        row.style.display = (matchesSearch && matchesType) ? '' : 'none';
-    });
+    if (filterSelect && typeof setDashboardTableFilter === 'function') {
+        setDashboardTableFilter(filterSelect.value);
+    }
 }
 
 function handleGlobalSearch() {
@@ -89,9 +56,7 @@ function handleGlobalSearch() {
 
     const resetViewFilters = () => {
         if (activeView === 'dashboard') {
-            const tableSearch = document.getElementById('table-search');
-            if (tableSearch) tableSearch.value = '';
-            filterTable();
+            document.querySelectorAll('#recent-activity-table-body tr').forEach(row => row.style.display = '');
         } else if (activeView === 'documents') {
             document.querySelectorAll('#all-documents-list > div').forEach(doc => doc.style.display = '');
         } else if (activeView === 'study-materials') {
@@ -110,9 +75,22 @@ function handleGlobalSearch() {
     }
 
     if (activeView === 'dashboard') {
-        const tableSearch = document.getElementById('table-search');
-        if (tableSearch) tableSearch.value = rawQuery;
-        filterTable();
+        const rows = document.querySelectorAll('#recent-activity-table-body tr');
+        rows.forEach(row => {
+            const cells = row.getElementsByTagName('td');
+            if (cells.length < 5) return;
+            const name = cells[0].innerText.toLowerCase();
+            const type = cells[1].innerText.toLowerCase();
+            const notebook = cells[2].innerText.toLowerCase();
+            const nameNorm = normalizeSearchText(name);
+            const typeNorm = normalizeSearchText(type);
+            const notebookNorm = normalizeSearchText(notebook);
+            const matches = !rawQuery 
+                || name.includes(rawQuery) || nameNorm.includes(normalizedQuery)
+                || type.includes(rawQuery) || typeNorm.includes(normalizedQuery)
+                || notebook.includes(rawQuery) || notebookNorm.includes(normalizedQuery);
+            row.style.display = matches ? '' : 'none';
+        });
     } else if (activeView === 'documents') {
         const docs = document.querySelectorAll('#all-documents-list > div');
         docs.forEach(doc => {
