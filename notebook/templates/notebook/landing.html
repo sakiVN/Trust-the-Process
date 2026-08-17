@@ -53,11 +53,9 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             <!-- Brand Logo -->
             <a href="/" class="flex items-center space-x-3 group">
-                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-brand-500/20 group-hover:scale-105 transition transform">
-                    <span class="font-extrabold text-xl tracking-wider">EB</span>
-                </div>
+                <img src="{% static 'notebook/icon-set/smart.png' %}" class="w-11 h-11 object-contain drop-shadow-md transform group-hover:scale-110 group-hover:-rotate-3 transition duration-300 shrink-0" alt="EduBrain Logo" />
                 <div>
-                    <span class="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white block">EduBrain</span>
+                    <span class="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white block leading-tight">EduBrain</span>
                     <span class="text-[10px] text-brand-600 dark:text-brand-400 font-bold uppercase tracking-wider block">Smart Learning Platform</span>
                 </div>
             </a>
@@ -125,8 +123,8 @@
         <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-20 lg:pt-16 lg:pb-28">
             <div class="text-center max-w-3xl mx-auto space-y-6">
                 <!-- Welcome & Greeting Badge -->
-                <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-brand-50/80 dark:bg-brand-950/60 border border-brand-200/80 dark:border-brand-800 text-brand-700 dark:text-brand-300 shadow-sm backdrop-blur-sm">
-                    <img src="{% static 'notebook/icon-set/greeting.png' %}" class="w-6 h-6 object-contain shrink-0" alt="Chào mừng" />
+                <div class="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-brand-50/80 dark:bg-brand-950/60 border border-brand-200/80 dark:border-brand-800 text-brand-700 dark:text-brand-300 shadow-sm backdrop-blur-sm">
+                    <img src="{% static 'notebook/icon-set/fire-up.png' %}" class="w-8 h-8 -my-1.5 object-contain shrink-0 drop-shadow-md transform hover:scale-110 transition duration-200" alt="EduBrain" />
                     <span data-i18n="badge" class="text-xs sm:text-sm font-bold">Chào mừng bạn đến với EduBrain Learning Platform</span>
                 </div>
 
@@ -142,16 +140,16 @@
 
                 <!-- CTA Buttons Group -->
                 <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <a href="/getting-started/" class="w-full sm:w-auto inline-flex items-center justify-center space-x-2.5 bg-gradient-to-r from-brand-600 via-indigo-600 to-indigo-700 hover:from-brand-700 hover:to-indigo-800 text-white font-extrabold px-8 py-4 rounded-2xl text-base shadow-xl shadow-brand-500/30 transition transform hover:-translate-y-1 active:translate-y-0">
-                        <img src="{% static 'notebook/icon-set/greeting.png' %}" class="w-5 h-5 object-contain" alt="Bắt đầu" />
+                    <a href="/getting-started/" class="w-full sm:w-auto inline-flex items-center justify-center space-x-3 bg-gradient-to-r from-brand-600 via-indigo-600 to-indigo-700 hover:from-brand-700 hover:to-indigo-800 text-white font-extrabold px-8 py-3.5 rounded-2xl text-base shadow-xl shadow-brand-500/30 transition transform hover:-translate-y-1 active:translate-y-0">
+                        <img src="{% static 'notebook/icon-set/greeting.png' %}" class="w-8 h-8 -my-1 object-contain drop-shadow-md" alt="Bắt đầu" />
                         <span data-i18n="btn_hero_start">Bắt đầu sử dụng ngay</span>
                         <svg class="w-5 h-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                         </svg>
                     </a>
 
-                    <a href="/dashboard/" class="w-full sm:w-auto inline-flex items-center justify-center space-x-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold px-7 py-4 rounded-2xl text-base shadow-sm transition hover:shadow">
-                        <img src="{% static 'notebook/icon-set/dashboard.png' %}" class="w-5 h-5 object-contain" alt="Dashboard" />
+                    <a href="/dashboard/" class="w-full sm:w-auto inline-flex items-center justify-center space-x-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold px-7 py-3.5 rounded-2xl text-base shadow-sm transition hover:shadow">
+                        <img src="{% static 'notebook/icon-set/dashboard.png' %}" class="w-8 h-8 -my-1 object-contain drop-shadow-md" alt="Dashboard" />
                         <span data-i18n="btn_hero_dash">Khám phá Dashboard</span>
                     </a>
                 </div>
@@ -187,68 +185,68 @@
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
                 <!-- Feature 1 -->
-                <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-7 shadow-sm hover:shadow-lg transition space-y-4">
-                    <div class="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 flex items-center justify-center">
-                        <img src="{% static 'notebook/icon-set/notebook.png' %}" class="w-7 h-7 object-contain" alt="Sổ tay thông minh" />
+                <div class="group bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-md hover:border-brand-300 dark:hover:border-brand-700/60 transition duration-200 space-y-3.5">
+                    <div class="w-11 h-11 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-100 dark:border-indigo-900/50 flex items-center justify-center relative">
+                        <img src="{% static 'notebook/icon-set/notebook.png' %}" class="w-13 h-13 max-w-[48px] max-h-[48px] object-contain drop-shadow-md transform group-hover:scale-115 group-hover:-translate-y-0.5 transition duration-200" alt="Sổ tay thông minh" />
                     </div>
-                    <h3 data-i18n="feat_1_title" class="text-lg font-bold text-slate-900 dark:text-white">Sổ tay Thông minh (Smart Notebooks)</h3>
+                    <h3 data-i18n="feat_1_title" class="text-base font-bold text-slate-900 dark:text-white">Sổ tay Thông minh (Smart Notebooks)</h3>
                     <p data-i18n="feat_1_desc" class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
                         Tổ chức từng môn học hoặc dự án theo từng Sổ tay riêng biệt. Mỗi sổ tay chứa các tài liệu, ghi chú và bài tập liên kết chặt chẽ.
                     </p>
                 </div>
 
                 <!-- Feature 2 -->
-                <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-7 shadow-sm hover:shadow-lg transition space-y-4">
-                    <div class="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/50 flex items-center justify-center">
-                        <img src="{% static 'notebook/icon-set/quiz.png' %}" class="w-7 h-7 object-contain" alt="Trắc nghiệm thông minh" />
+                <div class="group bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-md hover:border-brand-300 dark:hover:border-brand-700/60 transition duration-200 space-y-3.5">
+                    <div class="w-11 h-11 rounded-2xl bg-amber-50 dark:bg-amber-950/60 border border-amber-100 dark:border-amber-900/50 flex items-center justify-center relative">
+                        <img src="{% static 'notebook/icon-set/quiz.png' %}" class="w-13 h-13 max-w-[48px] max-h-[48px] object-contain drop-shadow-md transform group-hover:scale-115 group-hover:-translate-y-0.5 transition duration-200" alt="Trắc nghiệm thông minh" />
                     </div>
-                    <h3 data-i18n="feat_2_title" class="text-lg font-bold text-slate-900 dark:text-white">Tự động tạo Quiz & Bài tập ôn luyện</h3>
+                    <h3 data-i18n="feat_2_title" class="text-base font-bold text-slate-900 dark:text-white">Tự động tạo Quiz & Bài tập ôn luyện</h3>
                     <p data-i18n="feat_2_desc" class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
                         Chỉ với 1 click, AI tự động quét toàn bộ giáo trình và sinh các bộ câu hỏi trắc nghiệm kèm giải thích logic sâu sắc.
                     </p>
                 </div>
 
                 <!-- Feature 3 -->
-                <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-7 shadow-sm hover:shadow-lg transition space-y-4">
-                    <div class="w-12 h-12 rounded-2xl bg-violet-50 dark:bg-violet-950/50 flex items-center justify-center">
-                        <img src="{% static 'notebook/icon-set/mindmap.png' %}" class="w-7 h-7 object-contain" alt="Mindmap" />
+                <div class="group bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-md hover:border-brand-300 dark:hover:border-brand-700/60 transition duration-200 space-y-3.5">
+                    <div class="w-11 h-11 rounded-2xl bg-violet-50 dark:bg-violet-950/60 border border-violet-100 dark:border-violet-900/50 flex items-center justify-center relative">
+                        <img src="{% static 'notebook/icon-set/mindmap.png' %}" class="w-13 h-13 max-w-[48px] max-h-[48px] object-contain drop-shadow-md transform group-hover:scale-115 group-hover:-translate-y-0.5 transition duration-200" alt="Mindmap" />
                     </div>
-                    <h3 data-i18n="feat_3_title" class="text-lg font-bold text-slate-900 dark:text-white">Sơ đồ Tư duy & Báo cáo Tóm tắt</h3>
+                    <h3 data-i18n="feat_3_title" class="text-base font-bold text-slate-900 dark:text-white">Sơ đồ Tư duy & Báo cáo Tóm tắt</h3>
                     <p data-i18n="feat_3_desc" class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
                         Tổng hợp tài liệu thành sơ đồ Mindmap sinh động kéo thả được, và tạo báo cáo tóm tắt cấu trúc rõ ràng trong vài giây.
                     </p>
                 </div>
 
                 <!-- Feature 4 -->
-                <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-7 shadow-sm hover:shadow-lg transition space-y-4">
-                    <div class="w-12 h-12 rounded-2xl bg-rose-50 dark:bg-rose-950/50 flex items-center justify-center">
-                        <img src="{% static 'notebook/icon-set/time.png' %}" class="w-7 h-7 object-contain" alt="Focus Mode" />
+                <div class="group bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-md hover:border-brand-300 dark:hover:border-brand-700/60 transition duration-200 space-y-3.5">
+                    <div class="w-11 h-11 rounded-2xl bg-rose-50 dark:bg-rose-950/60 border border-rose-100 dark:border-rose-900/50 flex items-center justify-center relative">
+                        <img src="{% static 'notebook/icon-set/time.png' %}" class="w-13 h-13 max-w-[48px] max-h-[48px] object-contain drop-shadow-md transform group-hover:scale-115 group-hover:-translate-y-0.5 transition duration-200" alt="Focus Mode" />
                     </div>
-                    <h3 data-i18n="feat_4_title" class="text-lg font-bold text-slate-900 dark:text-white">Chế độ Tập trung (Focus Mode)</h3>
+                    <h3 data-i18n="feat_4_title" class="text-base font-bold text-slate-900 dark:text-white">Chế độ Tập trung (Focus Mode)</h3>
                     <p data-i18n="feat_4_desc" class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
                         Không gian học tập không xao nhãng kết hợp đồng hồ bấm giờ trực quan, theo dõi mục tiêu và duy trì thói quen học tập mỗi ngày.
                     </p>
                 </div>
 
                 <!-- Feature 5 -->
-                <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-7 shadow-sm hover:shadow-lg transition space-y-4">
-                    <div class="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-950/50 flex items-center justify-center">
-                        <img src="{% static 'notebook/icon-set/upload.png' %}" class="w-7 h-7 object-contain" alt="Đa nguồn" />
+                <div class="group bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-md hover:border-brand-300 dark:hover:border-brand-700/60 transition duration-200 space-y-3.5">
+                    <div class="w-11 h-11 rounded-2xl bg-teal-50 dark:bg-teal-950/60 border border-teal-100 dark:border-teal-900/50 flex items-center justify-center relative">
+                        <img src="{% static 'notebook/icon-set/upload.png' %}" class="w-13 h-13 max-w-[48px] max-h-[48px] object-contain drop-shadow-md transform group-hover:scale-115 group-hover:-translate-y-0.5 transition duration-200" alt="Đa nguồn" />
                     </div>
-                    <h3 data-i18n="feat_5_title" class="text-lg font-bold text-slate-900 dark:text-white">Hỗ trợ PDF & Nguồn Đa Định dạng</h3>
+                    <h3 data-i18n="feat_5_title" class="text-base font-bold text-slate-900 dark:text-white">Hỗ trợ PDF & Nguồn Đa Định dạng</h3>
                     <p data-i18n="feat_5_desc" class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
                         Tải lên sách PDF, tài liệu nghiên cứu, link bài báo học thuật hoặc paste trực tiếp ghi chú để phân tích ngay lập tức.
                     </p>
                 </div>
 
                 <!-- Feature 6 -->
-                <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-7 shadow-sm hover:shadow-lg transition space-y-4">
-                    <div class="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 flex items-center justify-center">
-                        <img src="{% static 'notebook/icon-set/chart.png' %}" class="w-7 h-7 object-contain" alt="Tiến độ" />
+                <div class="group bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-md hover:border-brand-300 dark:hover:border-brand-700/60 transition duration-200 space-y-3.5">
+                    <div class="w-11 h-11 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-100 dark:border-emerald-900/50 flex items-center justify-center relative">
+                        <img src="{% static 'notebook/icon-set/chart.png' %}" class="w-13 h-13 max-w-[48px] max-h-[48px] object-contain drop-shadow-md transform group-hover:scale-115 group-hover:-translate-y-0.5 transition duration-200" alt="Tiến độ" />
                     </div>
-                    <h3 data-i18n="feat_6_title" class="text-lg font-bold text-slate-900 dark:text-white">Theo dõi Chuỗi & Tiến độ Học tập</h3>
+                    <h3 data-i18n="feat_6_title" class="text-base font-bold text-slate-900 dark:text-white">Theo dõi Chuỗi & Tiến độ Học tập</h3>
                     <p data-i18n="feat_6_desc" class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
                         Bảng thống kê thời gian học hàng tuần, nhắc nhở lặp lại ngắt quãng để bạn không bao giờ bị đứt chuỗi thói quen.
                     </p>
@@ -268,10 +266,10 @@
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6">
                 <!-- Step 1 -->
-                <div class="relative bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-8 shadow-sm text-center space-y-4">
-                    <div class="w-12 h-12 rounded-2xl bg-brand-600 text-white font-extrabold text-lg flex items-center justify-center mx-auto shadow-md shadow-brand-500/20">
+                <div class="relative bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-sm text-center space-y-3">
+                    <div class="w-10 h-10 rounded-xl bg-brand-600 text-white font-extrabold text-base flex items-center justify-center mx-auto shadow-md shadow-brand-500/20">
                         1
                     </div>
                     <h3 data-i18n="step_1_title" class="text-base font-bold text-slate-900 dark:text-white">Chọn Mục Đích Sử Dụng</h3>
@@ -281,8 +279,8 @@
                 </div>
 
                 <!-- Step 2 -->
-                <div class="relative bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-8 shadow-sm text-center space-y-4">
-                    <div class="w-12 h-12 rounded-2xl bg-indigo-600 text-white font-extrabold text-lg flex items-center justify-center mx-auto shadow-md shadow-indigo-500/20">
+                <div class="relative bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-sm text-center space-y-3">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white font-extrabold text-base flex items-center justify-center mx-auto shadow-md shadow-indigo-500/20">
                         2
                     </div>
                     <h3 data-i18n="step_2_title" class="text-base font-bold text-slate-900 dark:text-white">Tạo Sổ Tay & Nạp Tài Liệu</h3>
@@ -292,8 +290,8 @@
                 </div>
 
                 <!-- Step 3 -->
-                <div class="relative bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-8 shadow-sm text-center space-y-4">
-                    <div class="w-12 h-12 rounded-2xl bg-violet-600 text-white font-extrabold text-lg flex items-center justify-center mx-auto shadow-md shadow-violet-500/20">
+                <div class="relative bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-sm text-center space-y-3">
+                    <div class="w-10 h-10 rounded-xl bg-violet-600 text-white font-extrabold text-base flex items-center justify-center mx-auto shadow-md shadow-violet-500/20">
                         3
                     </div>
                     <h3 data-i18n="step_3_title" class="text-base font-bold text-slate-900 dark:text-white">Học & Luyện Tập</h3>
@@ -308,8 +306,8 @@
         <section id="study-modes" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-slate-200/70 dark:border-slate-800/80">
             <div class="bg-gradient-to-r from-brand-600 to-indigo-700 rounded-3xl p-8 sm:p-12 text-white shadow-2xl relative overflow-hidden">
                 <div class="relative z-10 max-w-2xl space-y-6">
-                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/20 text-xs font-bold backdrop-blur-sm">
-                        <img src="{% static 'notebook/icon-set/greeting.png' %}" class="w-4 h-4 object-contain" alt="Greeting" />
+                    <div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/20 text-xs font-bold backdrop-blur-sm">
+                        <img src="{% static 'notebook/icon-set/fire-up.png' %}" class="w-7 h-7 -my-1 object-contain drop-shadow" alt="Fire up" />
                         <span data-i18n="cta_badge">Dành cho mọi nhu cầu tri thức</span>
                     </div>
                     <h2 data-i18n="cta_title" class="text-3xl sm:text-4xl font-extrabold tracking-tight">
@@ -333,9 +331,7 @@
     <footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-10 transition-colors">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div class="flex items-center space-x-3">
-                <div class="w-8 h-8 rounded-xl bg-brand-600 flex items-center justify-center text-white font-bold text-xs">
-                    EB
-                </div>
+                <img src="{% static 'notebook/icon-set/smart.png' %}" class="w-8 h-8 object-contain drop-shadow-sm shrink-0" alt="EduBrain" />
                 <span data-i18n="footer_copy" class="text-xs font-bold text-slate-800 dark:text-slate-200">EduBrain &copy; 2026 - Nền tảng Học tập Thông minh</span>
             </div>
             <div class="flex items-center space-x-6 text-xs text-slate-500 dark:text-slate-400">

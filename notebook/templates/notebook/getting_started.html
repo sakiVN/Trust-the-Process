@@ -46,11 +46,9 @@
     <header class="py-5 px-4 sm:px-8 max-w-5xl mx-auto w-full flex items-center justify-between">
         <!-- Logo -->
         <a href="/" class="flex items-center space-x-3 group">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-brand-500/20 group-hover:scale-105 transition transform">
-                <span class="font-extrabold text-base">EB</span>
-            </div>
+            <img src="{% static 'notebook/icon-set/smart.png' %}" class="w-10 h-10 object-contain drop-shadow-md transform group-hover:scale-110 transition duration-300 shrink-0" alt="EduBrain Logo" />
             <div>
-                <span class="text-base font-extrabold tracking-tight text-slate-900 dark:text-white block">EduBrain</span>
+                <span class="text-base font-extrabold tracking-tight text-slate-900 dark:text-white block leading-tight">EduBrain</span>
                 <span class="text-[9px] text-brand-600 dark:text-brand-400 font-bold uppercase tracking-wider block">Smart Learning Platform</span>
             </div>
         </a>
@@ -101,8 +99,8 @@
             
             <!-- Header greeting -->
             <div class="flex items-start space-x-4 border-b border-slate-100 dark:border-slate-800 pb-6">
-                <div class="p-3 rounded-2xl bg-brand-50 dark:bg-brand-950/50 shrink-0">
-                    <img src="{% static 'notebook/icon-set/greeting.png' %}" class="w-10 h-10 object-contain" alt="Chào mừng" />
+                <div class="w-12 h-12 rounded-2xl bg-brand-50 dark:bg-brand-950/60 border border-brand-100/80 dark:border-brand-900/50 flex items-center justify-center shrink-0 relative">
+                    <img src="{% static 'notebook/icon-set/greeting.png' %}" class="w-14 h-14 max-w-[48px] max-h-[48px] object-contain drop-shadow-md" alt="Chào mừng" />
                 </div>
                 <div>
                     <span data-i18n="badge" class="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-wider font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-brand-600 dark:text-brand-300 mb-1">
