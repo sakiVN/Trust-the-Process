@@ -8,6 +8,7 @@
                 
                 // Update stats and lists
                 updateDashboardStats();
+                if (typeof updateProgressViewStats === 'function') updateProgressViewStats();
                 renderNotebooksList();
                 populateNotebookSelectors();
                 renderRecentActivityTable();

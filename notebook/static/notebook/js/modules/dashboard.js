@@ -99,34 +99,6 @@ function updateDashboardStats(forceReanimate = false) {
     if (docCountEl) docCountEl.innerText = sourcesCount;
 }
 
-function updateProgressViewStats() {
-    let sourcesCount = 0;
-    let notesCount = 0;
-    let genCount = 0;
-    let quizCount = 0;
-
-    notebooks.forEach(nb => {
-        sourcesCount += (nb.sources || []).length;
-        notesCount += (nb.notes || []).length;
-        genCount += (nb.generations || []).length;
-        quizCount += (nb.quizzes || []).length;
-    });
-
-    const lang = localStorage.getItem('user_language') || 'vi';
-    const notesUnit = lang === 'en' ? 'notes' : (lang === 'jp' ? '件' : 'bài viết');
-    const docsUnit = lang === 'en' ? 'documents' : (lang === 'jp' ? '件' : 'tài liệu');
-    const setsUnit = lang === 'en' ? 'sets' : (lang === 'jp' ? 'セット' : 'bộ');
-
-    const pNotes = document.getElementById('progress-notes-written');
-    if (pNotes) pNotes.innerText = `${notesCount} ${notesUnit}`;
-    const pSources = document.getElementById('progress-sources-count');
-    if (pSources) pSources.innerText = `${sourcesCount} ${docsUnit}`;
-    const pAiGen = document.getElementById('progress-mindmap-report-count');
-    if (pAiGen) pAiGen.innerText = `${genCount} ${docsUnit}`;
-    const pQuizFlash = document.getElementById('progress-quiz-flashcard-count');
-    if (pQuizFlash) pQuizFlash.innerText = `${quizCount} ${setsUnit}`;
-}
-
 function renderRecentActivityTable() {
     const tbody = document.getElementById('recent-activity-table-body');
     const emptyState = document.getElementById('table-empty-state');

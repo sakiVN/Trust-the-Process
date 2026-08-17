@@ -649,6 +649,7 @@ function saveDebugTimeModal(event) {
     // Refresh everything immediately
     updateFocusTimerDisplay();
     if (typeof updateDashboardStats === 'function') updateDashboardStats(true);
+    if (typeof updateProgressViewStats === 'function') updateProgressViewStats();
     if (typeof renderCharts === 'function') renderCharts();
 
     closeDebugTimeModal();

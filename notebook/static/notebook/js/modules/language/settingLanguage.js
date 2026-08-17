@@ -122,6 +122,9 @@ async function loadLanguage(lang) {
     if (typeof renderAllNotesView === 'function' && typeof activeView !== 'undefined' && activeView === 'notes') {
       renderAllNotesView();
     }
+    if (typeof updateProgressViewStats === 'function') {
+      updateProgressViewStats();
+    }
     if (typeof renderNotebooksList === 'function') {
       renderNotebooksList();
     }
