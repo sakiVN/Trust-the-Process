@@ -183,3 +183,71 @@ html.dark .focus-timer-container.goal-reached .focus-today-time-val {
         box-shadow: 0 0 35px rgba(168, 85, 247, 0.55), inset 0 0 22px rgba(236, 72, 153, 0.2);
     }
 }
+
+/* Stat Icon Thump/Bounce/Pulse Animation (Độ nảy vừa vặn, tinh tế) */
+@keyframes iconLevelPop {
+    0% {
+        transform: scale(0.7) rotate(-5deg);
+        filter: brightness(1.4) drop-shadow(0 0 8px rgba(255, 255, 255, 0.7));
+        opacity: 0.7;
+    }
+    35% {
+        transform: scale(1.26) rotate(4deg);
+        filter: brightness(1.2) drop-shadow(0 0 12px rgba(245, 158, 11, 0.6));
+        opacity: 1;
+    }
+    60% {
+        transform: scale(0.92) rotate(-1.5deg);
+    }
+    80% {
+        transform: scale(1.08) rotate(1deg);
+    }
+    100% {
+        transform: scale(1) rotate(0deg);
+        filter: brightness(1) drop-shadow(0 4px 6px rgba(0,0,0,0.15));
+        opacity: 1;
+    }
+}
+
+.stat-icon-pop {
+    animation: iconLevelPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.25) both !important;
+}
+
+@keyframes iconWrapThump {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.5);
+    }
+    35% {
+        transform: scale(1.15);
+        box-shadow: 0 0 16px 4px rgba(245, 158, 11, 0.6);
+    }
+    65% {
+        transform: scale(0.96);
+    }
+    85% {
+        transform: scale(1.04);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: none;
+    }
+}
+
+.stat-icon-wrap-thump {
+    animation: iconWrapThump 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.25) both !important;
+}
+
+/* Screen / Card Impact Shake ("đập" rung êm nhẹ card khi lên cấp) */
+@keyframes cardLevelImpact {
+    0% { transform: scale(1); }
+    25% { transform: scale(1.018) translateY(-1.5px); }
+    50% { transform: scale(0.99) translateY(0.5px); }
+    75% { transform: scale(1.008); }
+    100% { transform: scale(1) translateY(0); }
+}
+
+.stat-card-impact {
+    animation: cardLevelImpact 0.4s cubic-bezier(0.25, 1, 0.5, 1) both !important;
+}
+

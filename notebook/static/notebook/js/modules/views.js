@@ -520,7 +520,7 @@ function switchView(viewName) {
 
     // Re-render specific view resources
     if (viewName === 'dashboard') {
-        updateDashboardStats();
+        updateDashboardStats(true);
         renderRecentActivityTable();
         setTimeout(renderCharts, 100);
     } else if (viewName === 'documents') {
