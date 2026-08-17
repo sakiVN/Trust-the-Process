@@ -1,0 +1,204 @@
+<script>
+// Stop words tiếng Việt phổ biến (dùng để bỏ qua khi tính tần suất từ khóa)
+const STOP_WORDS = new Set([
+    "và", "là", "của", "có", "thì", "mà", "ở", "các", "những", "được",
+    "với", "cho", "trong", "đã", "không", "như", "này", "để", "từ",
+    "một", "sẽ", "đến", "khi", "nhưng", "theo", "về", "ra", "phải", "đó",
+    "cũng", "rất", "lên", "người", "nhất", "còn", "nhiều", "hơn", "vào",
+    "nếu", "bị", "bởi", "lại", "nào", "đang", "đều", "làm", "sau", "cùng",
+    "chỉ", "có thể", "kẻ", "tại", "sự", "nhau", "vì", "đây", "nên",
+    "trên", "dưới", "qua", "trước", "cách", "rằng", "nữa", "việc",
+    "tôi", "bạn", "anh", "chị", "em", "ông", "bà", "họ", "chúng", "nó", "ấy"
+]);
+
+// Hàm rút trích câu quan trọng (Extractive Summarization)
+function generateSummary(text, maxSentences = 5) {
+    if (!text || text.trim() === "") return [];
+
+    // 1. Tiền xử lý: Cắt văn bản thành các câu dựa vào dấu chấm, hỏi, than
+    let sentences = text.split(/[.!?。！？\n]+/);
+    sentences = sentences.map(s => s.trim()).filter(s => s.length > 0);
+
+    // 2. Tính tần suất từ khóa
+    const wordFrequencies = {};
+    for (let sentence of sentences) {
+        let tokens = sentence.toLowerCase().replace(/[.,!?()[\]{}"':;。！？、]/g, ' ').split(/\s+/);
+        let words = [];
+        for (let token of tokens) {
+            if (/[\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff]/.test(token) && token.length > 1) {
+                for (let j = 0; j < token.length - 1; j++) {
+                    words.push(token.substring(j, j + 2));
+                }
+            } else if (token.length > 0) {
+                words.push(token);
+            }
+        }
+        for (let word of words) {
+            if (word.length > 1 && !STOP_WORDS.has(word)) {
+                wordFrequencies[word] = (wordFrequencies[word] || 0) + 1;
+            }
+        }
+    }
+
+    // Bình chuẩn hóa tần suất (chia cho tần suất lớn nhất)
+    let maxFrequency = 0;
+    for (let word in wordFrequencies) {
+        if (wordFrequencies[word] > maxFrequency) {
+            maxFrequency = wordFrequencies[word];
+        }
+    }
+    
+    for (let word in wordFrequencies) {
+        wordFrequencies[word] = wordFrequencies[word] / maxFrequency;
+    }
+
+    // 3. Chấm điểm các câu (Sentence Scoring)
+    const sentenceScores = [];
+    for (let i = 0; i < sentences.length; i++) {
+        let sentence = sentences[i];
+        let tokens = sentence.toLowerCase().replace(/[.,!?()[\]{}"':;。！？、]/g, ' ').split(/\s+/);
+        let words = [];
+        for (let token of tokens) {
+            if (/[\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff]/.test(token) && token.length > 1) {
+                for (let j = 0; j < token.length - 1; j++) {
+                    words.push(token.substring(j, j + 2));
+                }
+            } else if (token.length > 0) {
+                words.push(token);
+            }
+        }
+        let score = 0;
+        let validWordCount = 0;
+        
+        for (let word of words) {
+            if (wordFrequencies[word]) {
+                score += wordFrequencies[word];
+                validWordCount++;
+            }
+        }
+        
+        // Phạt nhẹ các câu quá ngắn hoặc quá dài (Length penalty)
+        if (words.length < 5 || words.length > 50) {
+            score = score * 0.5;
+        }
+        
+        sentenceScores.push({
+            index: i,
+            text: sentence,
+            score: score
+        });
+    }
+
+    // 4. Sắp xếp và chọn các câu điểm cao nhất
+    sentenceScores.sort((a, b) => b.score - a.score);
+    
+    // Nếu văn bản ít câu hơn maxSentences, lấy tất cả
+    const numToPick = Math.min(maxSentences, sentences.length);
+    let topSentences = sentenceScores.slice(0, numToPick);
+    
+    // Sắp xếp lại các câu theo thứ tự xuất hiện ban đầu trong văn bản
+    topSentences.sort((a, b) => a.index - b.index);
+    
+    return topSentences.map(s => s.text);
+}
+
+// Lấy Top 3 từ khóa nổi bật nhất
+function getTopKeywords(text) {
+    if (!text || text.trim() === "") return [];
+    
+    let tokens = text.toLowerCase().replace(/[.,!?()[\]{}"':;\n\r。！？、]/g, ' ').split(/\s+/);
+    let words = [];
+    for (let token of tokens) {
+        if (/[\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff]/.test(token) && token.length > 1) {
+            for (let i = 0; i < token.length - 1; i++) {
+                words.push(token.substring(i, i + 2));
+            }
+        } else if (token.length > 0) {
+            words.push(token);
+        }
+    }
+    const wordFrequencies = {};
+    for (let word of words) {
+        if (word.length > 1 && !STOP_WORDS.has(word)) {
+            wordFrequencies[word] = (wordFrequencies[word] || 0) + 1;
+        }
+    }
+    
+    let sortedWords = Object.keys(wordFrequencies).sort((a, b) => wordFrequencies[b] - wordFrequencies[a]);
+    return sortedWords.slice(0, 3);
+}
+
+function generateReportHTML(rawText, title = "Tài liệu học tập") {
+    const t = window.t || ((k, f) => f);
+    const lang = localStorage.getItem('user_language') || 'vi';
+
+    if (!rawText || rawText.trim() === "") {
+        const emptyMsg = lang === 'en' ? 'Empty draft. Please provide text to summarize.' : (lang === 'jp' ? '下書きが空です。要約する内容を入力してください。' : 'Bản nháp rỗng. Vui lòng nhập nội dung để tóm tắt.');
+        return `<div class="p-4 text-center text-slate-500 text-xs">${emptyMsg}</div>`;
+    }
+
+    // Trích xuất tóm tắt và từ khóa
+    const summarySentences = generateSummary(rawText, 5);
+    const keywords = getTopKeywords(rawText);
+    
+    let pointsHtml = '';
+    summarySentences.forEach((sentence, idx) => {
+        pointsHtml += `
+            <div class="flex items-start space-x-2">
+                <span class="text-brand-500 font-bold bg-brand-50 dark:bg-brand-500/10 w-5 h-5 flex items-center justify-center rounded-full flex-shrink-0 mt-0.5 text-[10px]">${idx + 1}</span>
+                <p class="leading-relaxed">${escapeHtml(sentence)}</p>
+            </div>
+        `;
+    });
+    
+    let keywordsHtml = '';
+    keywords.forEach(kw => {
+        keywordsHtml += `<span class="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 px-2 py-1 rounded-md text-[10px] font-bold uppercase">${escapeHtml(kw)}</span>`;
+    });
+
+    const displayTitle = title ? title.toUpperCase() : t('key_doc_academic_report_title', 'BÁO CÁO TÓM TẮT TÀI LIỆU');
+    const autoGenTag = lang === 'en' ? 'Extractive Summary Report' : (lang === 'jp' ? '自動抽出要約レポート' : 'Báo cáo sinh tự động (Extractive)');
+    const coreKeywordsHeading = lang === 'en' ? 'Core Keywords' : (lang === 'jp' ? '重要キーワード' : 'Từ khóa cốt lõi');
+    const keyTakeawaysHeading = lang === 'en' ? 'Key Extracted Insights' : (lang === 'jp' ? '抽出された重要要点' : 'Điểm mấu chốt được rút trích');
+    const tfFooter = lang === 'en' ? 'Summarized automatically using the TF-Extractive sentence ranking algorithm.' : (lang === 'jp' ? 'TF-Extractiveアルゴリズムにより重要文を自動抽出しました。' : 'Được tóm tắt hoàn toàn tự động dựa trên thuật toán tính điểm ngữ nghĩa TF-Extractive.');
+
+    let html = `
+        <div class="text-left font-sans space-y-3 w-full max-w-2xl mx-auto">
+            <p class="text-xs font-semibold text-slate-500 flex items-center space-x-1.5">
+                <img src="/static/notebook/icon-set/report.png" class="w-4 h-4 object-contain" alt="Report" />
+                <span>${autoGenTag}</span>
+            </p>
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm space-y-4">
+                <h4 class="text-sm font-bold text-brand-600 dark:text-brand-400 border-b border-slate-100 dark:border-slate-800 pb-3 flex items-center space-x-2">
+                    <img src="/static/notebook/icon-set/report.png" class="w-5 h-5 object-contain shrink-0" alt="Report" />
+                    <span>${escapeHtml(displayTitle)}</span>
+                </h4>
+                
+                <div class="space-y-2">
+                    <h5 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">${coreKeywordsHeading}</h5>
+                    <div class="flex flex-wrap gap-2">
+                        ${keywordsHtml}
+                    </div>
+                </div>
+                
+                <div class="space-y-2">
+                    <h5 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mt-4">${keyTakeawaysHeading}</h5>
+                    <div class="text-[13px] text-slate-700 dark:text-slate-300 space-y-3 font-medium">
+                        ${pointsHtml}
+                    </div>
+                </div>
+                
+                <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
+                    <p class="text-[10px] text-slate-400 italic">${tfFooter}</p>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Lưu lại chuỗi HTML vào textarea ẩn để khi ấn "Lưu vào Notebook" có thể trích xuất
+    const safeHtml = html.replace(/'/g, "&#39;");
+    html += `<textarea id="report-hidden-data" class="hidden">${safeHtml}</textarea>`;
+    
+    return html;
+}
+</script>

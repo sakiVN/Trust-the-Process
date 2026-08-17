@@ -1,0 +1,142 @@
+body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* jsMind interactive custom UI styling overrides */
+        .jsmind-container {
+            height: 400px !important;
+            width: 100% !important;
+            position: relative !important;
+            background: transparent !important;
+        }
+        .jsmind-container jmnode {
+            border-radius: 12px !important;
+            padding: 10px 16px !important;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
+            font-family: inherit !important;
+            font-size: 11px !important;
+            font-weight: 600 !important;
+            border: 1px solid rgba(226, 232, 240, 0.8) !important;
+            background-color: #6366f1 !important;
+            color: #ffffff !important;
+        }
+        html.dark .jsmind-container jmnode {
+            border-color: rgba(51, 65, 85, 0.8) !important;
+        }
+        .jsmind-container jmnode.selected {
+            outline: 2px solid #10b981 !important;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.5) !important;
+        }
+        /* Custom styles for connections */
+        .jsmind-container canvas {
+            z-index: 1 !important;
+        }
+        .jsmind-container jmopt {
+            z-index: 10 !important;
+        }
+
+        /* Focus Mode and Timer Styles */
+        .focus-timer-container.goal-in-progress {
+            background: rgba(99, 102, 241, 0.08);
+            border-color: rgba(99, 102, 241, 0.25);
+        }
+        .focus-timer-container.goal-reached {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(245, 158, 11, 0.15) 100%) !important;
+            border-color: rgba(16, 185, 129, 0.6) !important;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.35), 0 0 4px rgba(245, 158, 11, 0.5) !important;
+            animation: goalPulse 3s infinite ease-in-out;
+        }
+        .focus-timer-container.goal-reached .focus-today-time-val {
+            color: #10b981 !important;
+            text-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+        }
+        html.dark .focus-timer-container.goal-reached .focus-today-time-val {
+            color: #34d399 !important;
+            text-shadow: 0 0 12px rgba(52, 211, 153, 0.6);
+        }
+
+        @keyframes goalPulse {
+            0%, 100% {
+                box-shadow: 0 0 15px rgba(16, 185, 129, 0.3), 0 0 3px rgba(245, 158, 11, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 25px rgba(16, 185, 129, 0.55), 0 0 8px rgba(245, 158, 11, 0.7);
+            }
+        }
+
+        /* Floating Action Button (FAB) */
+        .fab-glow {
+            box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.5), 0 8px 10px -6px rgba(99, 102, 241, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .fab-glow:hover {
+            transform: translateY(-4px) scale(1.03);
+            box-shadow: 0 20px 30px -10px rgba(99, 102, 241, 0.6), 0 10px 15px -5px rgba(99, 102, 241, 0.4);
+        }
+        .fab-glow.focus-active-glow {
+            animation: fabPulse 2s infinite ease-in-out;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #ec4899 100%) !important;
+        }
+
+        @keyframes fabPulse {
+            0%, 100% {
+                box-shadow: 0 0 15px rgba(124, 58, 237, 0.5), 0 0 30px rgba(79, 70, 229, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 25px rgba(236, 72, 153, 0.7), 0 0 45px rgba(124, 58, 237, 0.5);
+            }
+        }
+
+        /* MAX Weekly Goal Purple Glow & Gradient */
+        .stat-max-purple-card {
+            border-color: rgba(168, 85, 247, 0.7) !important;
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.35), inset 0 0 15px rgba(168, 85, 247, 0.12) !important;
+            animation: purpleCardAura 3s infinite ease-in-out;
+        }
+        .stat-max-purple-text {
+            background: linear-gradient(135deg, #c084fc 0%, #e879f9 45%, #f472b6 100%) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+            background-clip: text !important;
+            color: transparent !important;
+            filter: drop-shadow(0 0 10px rgba(192, 132, 252, 0.75));
+            letter-spacing: 0.03em;
+        }
+        .stat-max-purple-bar {
+            background: linear-gradient(90deg, #7c3aed 0%, #a855f7 35%, #ec4899 75%, #f43f5e 100%) !important;
+            box-shadow: 0 0 18px rgba(236, 72, 153, 0.95), 0 0 10px rgba(168, 85, 247, 0.9) !important;
+        }
+        #stat-weekly-goal-bar-text {
+            font-size: 8px;
+            font-weight: 900;
+            letter-spacing: 0.18em;
+            color: #ffffff !important;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.8), 0 0 6px rgba(255,255,255,0.6);
+        }
+
+        @keyframes purpleCardAura {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(168, 85, 247, 0.3), inset 0 0 10px rgba(168, 85, 247, 0.08);
+            }
+            50% {
+                box-shadow: 0 0 35px rgba(168, 85, 247, 0.55), inset 0 0 22px rgba(236, 72, 153, 0.2);
+            }
+        }

@@ -1,0 +1,115 @@
+{% load static %}
+<!-- 6. VIEW: PROGRESS & ANALYTICS -->
+<section id="view-progress" class="hidden space-y-6">
+  <div class="flex items-center space-x-3.5">
+    <img src="{% static 'notebook/icon-set/chart.png' %}" class="w-10 h-10 object-contain shrink-0" alt="Tiến độ & Phân tích" />
+    <div>
+      <h2 translate="key_60" class="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">Thống kê tiến độ tự học</h2>
+      <p translate="key_61" class="text-xs text-slate-400 mt-0.5">Theo dõi tiến trình hoàn thiện tài nguyên học tập của bạn.</p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+    <!-- Cột trái: Các chỉ số nỗ lực học tập -->
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+      <div>
+        <h3 translate="key_62" class="font-bold text-slate-800 dark:text-white text-sm mb-4">Các chỉ số nỗ lực học tập</h3>
+        <div class="space-y-3.5">
+          <div class="flex justify-between items-center py-0.5">
+            <span translate="key_63" class="text-xs text-slate-500">Streak dài nhất:</span>
+            <span id="progress-longest-streak" class="text-xs font-bold text-amber-500 dark:text-amber-400 flex items-center gap-1">0 ngày 🔥</span>
+          </div>
+          <div class="flex justify-between items-center py-0.5">
+            <span translate="key_67" class="text-xs text-slate-500">Tổng tài liệu tham chiếu:</span>
+            <span id="progress-sources-count" class="text-xs font-bold text-slate-700 dark:text-slate-200">0 tài liệu</span>
+          </div>
+          <div class="flex justify-between items-center py-0.5">
+            <span translate="key_65" class="text-xs text-slate-500">Tổng bộ Thẻ ghi nhớ:</span>
+            <span id="progress-flashcards-count" class="text-xs font-bold text-slate-700 dark:text-slate-200">0 bộ</span>
+          </div>
+          <div class="flex justify-between items-center py-0.5">
+            <span translate="key_69" class="text-xs text-slate-500">Tổng bộ Câu hỏi trắc nghiệm:</span>
+            <span id="progress-quizzes-count" class="text-xs font-bold text-slate-700 dark:text-slate-200">0 bộ</span>
+          </div>
+          <div class="flex justify-between items-center py-0.5">
+            <span translate="key_progress_mindmap_count" class="text-xs text-slate-500">Tổng Sơ đồ tư duy:</span>
+            <span id="progress-mindmaps-count" class="text-xs font-bold text-slate-700 dark:text-slate-200">0 sơ đồ</span>
+          </div>
+          <div class="flex justify-between items-center py-0.5">
+            <span translate="key_progress_report_count" class="text-xs text-slate-500">Tổng Báo cáo tóm tắt:</span>
+            <span id="progress-reports-count" class="text-xs font-bold text-slate-700 dark:text-slate-200">0 báo cáo</span>
+          </div>
+        </div>
+      </div>
+      <div class="border-t border-slate-100 dark:border-slate-800 pt-4 mt-6">
+        <span translate="key_71" class="text-[11px] text-slate-400">Cập nhật tự động dựa trên toàn bộ dữ liệu lưu trên tài khoản.</span>
+      </div>
+    </div>
+
+    <!-- Cột phải: Tiến độ xây dựng Tài nguyên (5 thanh tiến độ) -->
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+      <div>
+        <h3 translate="key_72" class="font-bold text-slate-800 dark:text-white text-sm mb-4">Tiến độ xây dựng Tài nguyên</h3>
+        <div class="space-y-3.5">
+          <!-- 1. Hoàn thiện Tài liệu đọc -->
+          <div>
+            <div class="flex justify-between text-xs mb-1.5">
+              <span translate="key_73" class="text-slate-600 dark:text-slate-300 font-medium">Hoàn thiện Tài liệu đọc</span>
+              <span id="progress-sources-pct" class="font-bold text-slate-800 dark:text-slate-200">0% <span id="progress-sources-fraction" class="text-[11px] text-slate-400 font-normal">(0/0)</span></span>
+            </div>
+            <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+              <div id="progress-bar-sources" class="bg-indigo-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <!-- 2. Hoàn thiện Bộ thẻ ghi nhớ (Flashcards) -->
+          <div>
+            <div class="flex justify-between text-xs mb-1.5">
+              <span translate="key_progress_bar_flashcards" class="text-slate-600 dark:text-slate-300 font-medium">Hoàn thiện Bộ thẻ ghi nhớ</span>
+              <span id="progress-flashcards-pct" class="font-bold text-slate-800 dark:text-slate-200">0% <span id="progress-flashcards-fraction" class="text-[11px] text-slate-400 font-normal">(0/0)</span></span>
+            </div>
+            <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+              <div id="progress-bar-flashcards" class="bg-purple-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <!-- 3. Hoàn thiện Bộ câu hỏi ôn tập (Quizzes) -->
+          <div>
+            <div class="flex justify-between text-xs mb-1.5">
+              <span translate="key_75" class="text-slate-600 dark:text-slate-300 font-medium">Hoàn thiện Bộ câu hỏi ôn tập</span>
+              <span id="progress-quizzes-pct" class="font-bold text-slate-800 dark:text-slate-200">0% <span id="progress-quizzes-fraction" class="text-[11px] text-slate-400 font-normal">(0/0)</span></span>
+            </div>
+            <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+              <div id="progress-bar-quizzes" class="bg-teal-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <!-- 4. Hoàn thiện Sơ đồ tư duy (Mindmap) -->
+          <div>
+            <div class="flex justify-between text-xs mb-1.5">
+              <span translate="key_77" class="text-slate-600 dark:text-slate-300 font-medium">Hoàn thiện Sơ đồ tư duy</span>
+              <span id="progress-mindmaps-pct" class="font-bold text-slate-800 dark:text-slate-200">0% <span id="progress-mindmaps-fraction" class="text-[11px] text-slate-400 font-normal">(0/0)</span></span>
+            </div>
+            <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+              <div id="progress-bar-mindmaps" class="bg-amber-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <!-- 5. Hoàn thiện Báo cáo tóm tắt (Report) -->
+          <div>
+            <div class="flex justify-between text-xs mb-1.5">
+              <span translate="key_progress_bar_reports" class="text-slate-600 dark:text-slate-300 font-medium">Hoàn thiện Báo cáo tóm tắt</span>
+              <span id="progress-reports-pct" class="font-bold text-slate-800 dark:text-slate-200">0% <span id="progress-reports-fraction" class="text-[11px] text-slate-400 font-normal">(0/0)</span></span>
+            </div>
+            <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+              <div id="progress-bar-reports" class="bg-sky-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="border-t border-slate-100 dark:border-slate-800 pt-4 mt-6">
+        <span translate="key_progress_standard_note" class="text-[11px] text-slate-400">Tiêu chuẩn: Mỗi sổ tay cần ít nhất 01 tài liệu đọc & 04 loại tài liệu học tập.</span>
+      </div>
+    </div>
+  </div>
+</section>

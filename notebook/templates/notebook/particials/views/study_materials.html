@@ -1,0 +1,58 @@
+{% load static %}
+<!-- 4. VIEW: STUDY MATERIALS -->
+<section id="view-study-materials" class="hidden space-y-6">
+  <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+    <div class="flex items-center space-x-3.5">
+      <img src="{% static 'notebook/icon-set/material.png' %}" class="w-10 h-10 object-contain shrink-0" alt="Tài nguyên học tập" />
+      <div>
+        <h2 translate="key_56" class="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">Tài nguyên học tập</h2>
+        <p translate="key_57" class="text-xs text-slate-400 mt-0.5">Tổng hợp tất cả quiz, flashcard và các tài liệu học tập đã tạo để bạn xem, làm bài và quản lý nhanh.</p>
+      </div>
+    </div>
+    <!-- Filter & Sort Toolbar -->
+    <div class="flex flex-wrap items-center gap-2.5 shrink-0">
+      <!-- Notebook Filter -->
+      <div class="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-2.5 py-1.5 shadow-sm">
+        <label for="study-materials-filter-notebook" class="text-[10px] font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap" translate="key_filter_notebook_label">Sổ tay:</label>
+        <select id="study-materials-filter-notebook" onchange="setStudyMaterialsNotebookFilter(this.value)" class="bg-transparent text-xs text-slate-700 dark:text-slate-300 focus:outline-none cursor-pointer max-w-[150px] truncate">
+          <option value="all" translate="key_filter_all_notebooks">Tất cả sổ tay</option>
+          <option value="unlinked" translate="key_filter_unlinked">Không liên kết</option>
+          <!-- Dynamically populated options -->
+        </select>
+      </div>
+
+      <!-- Type Filter -->
+      <div class="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-2.5 py-1.5 shadow-sm">
+        <label for="study-materials-filter-type" class="text-[10px] font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap" translate="key_filter_type_label">Thể loại:</label>
+        <select id="study-materials-filter-type" onchange="setStudyMaterialsTypeFilter(this.value)" class="bg-transparent text-xs text-slate-700 dark:text-slate-300 focus:outline-none cursor-pointer">
+          <option value="all" translate="key_filter_all">Tất cả</option>
+          <option value="quiz" translate="key_filter_quiz">Trắc nghiệm</option>
+          <option value="flashcards" translate="key_filter_flashcard">Flashcard</option>
+          <option value="mind_map" translate="key_filter_mindmap">Mindmap</option>
+          <option value="report" translate="key_filter_report">Report</option>
+        </select>
+      </div>
+
+      <!-- Sort Dropdown -->
+      <div class="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-2.5 py-1.5 shadow-sm">
+        <label for="study-materials-sort-select" class="text-[10px] font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap" translate="key_sort_label">Sắp xếp:</label>
+        <select id="study-materials-sort-select" onchange="setStudyMaterialsSort(this.value)" class="bg-transparent text-xs text-slate-700 dark:text-slate-300 focus:outline-none cursor-pointer">
+          <option value="date_desc" translate="key_sort_date_desc">Mới nhất</option>
+          <option value="date_asc" translate="key_sort_date_asc">Cũ nhất</option>
+          <option value="name_asc" translate="key_sort_name_asc">Tên: A → Z</option>
+          <option value="name_desc" translate="key_sort_name_desc">Tên: Z → A</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-6">
+    <div id="all-study-materials-list" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Loaded dynamically -->
+    </div>
+    <!-- Pagination -->
+    <div id="study-materials-pagination">
+      <!-- Rendered dynamically -->
+    </div>
+  </div>
+</section>

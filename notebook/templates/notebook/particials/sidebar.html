@@ -1,0 +1,81 @@
+{% load static %}
+<!-- Left Sidebar (Collapsible & Responsive) -->
+<aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col transition-all duration-300 transform -translate-x-full lg:translate-x-0">
+  <!-- Sidebar Brand Logo -->
+  <div class="px-5 py-4 flex items-center justify-between border-b border-slate-100 dark:border-slate-800">
+    <a href="/" class="flex items-center space-x-3 group">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center text-white shadow-md shadow-brand-200 dark:shadow-none group-hover:scale-105 transition transform">
+        <span class="font-extrabold text-lg">EB</span>
+      </div>
+      <div>
+        <h1 class="text-base font-bold tracking-tight text-slate-900 dark:text-white">EduBrain</h1>
+        <p class="text-[10px] text-brand-600 dark:text-brand-400 font-bold uppercase tracking-wider">NotebookLM LMS</p>
+      </div>
+    </a>
+    <!-- Collapse Button (Mobile) -->
+    <button onclick="toggleSidebar()" class="lg:hidden p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Sidebar Navigation Menu -->
+  <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+    <button onclick="switchView('dashboard')" id="nav-dashboard" class="w-full flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition bg-brand-50 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400">
+      <img src="{% static 'notebook/icon-set/dashboard.png' %}" class="w-7 h-7 object-contain shrink-0" alt="Dashboard" />
+      <span translate="key_131" class="truncate">Bảng điều khiển</span>
+    </button>
+    <button onclick="switchView('notebooks')" id="nav-notebooks" class="w-full flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
+      <img src="{% static 'notebook/icon-set/notebook.png' %}" class="w-7 h-7 object-contain shrink-0" alt="Notebooks" />
+      <span translate="key_132" class="truncate">Notebooks (Sổ tay)</span>
+    </button>
+    <button onclick="switchView('documents')" id="nav-documents" class="w-full flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
+      <img src="{% static 'notebook/icon-set/upload.png' %}" class="w-7 h-7 object-contain shrink-0" alt="Tài liệu liên quan" />
+      <span translate="key_133" class="truncate">Tài liệu liên quan</span>
+    </button>
+    <button onclick="switchView('study-materials')" id="nav-study-materials" class="w-full flex items-center justify-start space-x-2.5 px-3 py-2 rounded-xl text-xs text-left font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
+      <img src="{% static 'notebook/icon-set/material.png' %}" class="w-7 h-7 object-contain shrink-0" alt="Tài nguyên học tập" />
+      <span translate="key_134" class="truncate">Tài nguyên học tập</span>
+    </button>
+    <button onclick="switchView('progress')" id="nav-progress" class="w-full flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
+      <img src="{% static 'notebook/icon-set/chart.png' %}" class="w-7 h-7 object-contain shrink-0" alt="Tiến độ & Phân tích" />
+      <span translate="key_135" class="truncate">Tiến độ & Phân tích</span>
+    </button>
+    <button onclick="switchView('settings')" id="nav-settings" class="w-full flex items-center space-x-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
+      <img src="{% static 'notebook/icon-set/option.png' %}" class="w-7 h-7 object-contain shrink-0" alt="Cài đặt" />
+      <span translate="key_136" class="truncate">Cài đặt</span>
+    </button>
+
+    <!-- Quick Action Creators -->
+    <div class="pt-3 border-t border-slate-100 dark:border-slate-800/60 my-2">
+      <span translate="key_quick_create_header" class="block px-3 pb-1.5 text-[9px] font-bold text-slate-400 uppercase tracking-wider">⚡ Tạo nhanh</span>
+      <button onclick="openCreateModal('flashcards')" class="w-full flex items-center space-x-2.5 px-3 py-1.5 rounded-xl text-xs font-bold transition text-slate-655 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
+        <img src="{% static 'notebook/icon-set/flashcard.png' %}" class="w-6 h-6 object-contain shrink-0" alt="Tạo Flashcard" />
+        <span translate="key_137" class="truncate">Tạo Flashcard</span>
+      </button>
+      <button onclick="openCreateModal('quiz')" class="w-full flex items-center space-x-2.5 px-3 py-1.5 rounded-xl text-xs font-bold transition text-slate-655 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
+        <img src="{% static 'notebook/icon-set/quiz.png' %}" class="w-6 h-6 object-contain shrink-0" alt="Tạo Trắc nghiệm" />
+        <span translate="key_138" class="truncate">Tạo Trắc nghiệm</span>
+      </button>
+      <button onclick="openCreateModal('report')" class="w-full flex items-center space-x-2.5 px-3 py-1.5 rounded-xl text-xs font-bold transition text-slate-655 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
+        <img src="{% static 'notebook/icon-set/report.png' %}" class="w-6 h-6 object-contain shrink-0" alt="Tạo Report" />
+        <span translate="key_139" class="truncate">Tạo Report tóm tắt</span>
+      </button>
+      <button onclick="openCreateModal('mindmap')" class="w-full flex items-center space-x-2.5 px-3 py-1.5 rounded-xl text-xs font-bold transition text-slate-655 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white">
+        <img src="{% static 'notebook/icon-set/mindmap.png' %}" class="w-6 h-6 object-contain shrink-0" alt="Tạo Mindmap" />
+        <span translate="key_140" class="truncate">Tạo Mindmap</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Sidebar Quick Action CTA -->
+  <div class="p-4 border-t border-slate-100 dark:border-slate-800">
+    <button onclick="openNewNotebookModal()" class="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-semibold py-2.5 px-4 rounded-xl text-xs shadow-lg shadow-brand-100 dark:shadow-none transition transform hover:-translate-y-0.5">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+      </svg>
+      <span translate="key_141">Tạo Notebook mới</span>
+    </button>
+  </div>
+</aside>

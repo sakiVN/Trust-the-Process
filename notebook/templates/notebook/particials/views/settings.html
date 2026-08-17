@@ -1,0 +1,61 @@
+{% load static %}
+<!-- 7. VIEW: SETTINGS -->
+<section id="view-settings" class="hidden space-y-6">
+  <div class="flex items-center space-x-3.5">
+    <img src="{% static 'notebook/icon-set/option.png' %}" class="w-10 h-10 object-contain shrink-0" alt="Cài đặt" />
+    <div>
+      <h2 translate="key_79" class="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">Cài đặt hệ thống</h2>
+      <p translate="key_80" class="text-xs text-slate-400 mt-0.5">Quản lý hồ sơ cá nhân và cấu hình ứng dụng.</p>
+    </div>
+  </div>
+
+  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm max-w-2xl">
+    <form onsubmit="saveSettings(event)" class="space-y-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label translate="key_81" class="block text-xs font-semibold text-slate-500 uppercase mb-1">Tên hiển thị</label>
+          <input id="input-display-name" type="text" value="{{ user.first_name|default:user.username }}" data-translate-placeholder="key_ph_user_name" placeholder="nhập tên người dùng" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-brand-500" />
+        </div>
+        <div>
+          <label translate="key_82" class="block text-xs font-semibold text-slate-500 uppercase mb-1">Email</label>
+          <input id="input-user-email" type="email" value="{{ user.email }}" data-translate-placeholder="key_ph_user_email" placeholder="nhập địa chỉ email" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-brand-500" />
+        </div>
+        <div>
+          <label translate="key_83" class="block text-xs font-semibold text-slate-500 uppercase mb-1">Quyền hạn tài khoản</label>
+          <select id="select-user-role" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-brand-500">
+            <option value="Học sinh" translate="key_opt_role_student">Học sinh (K12)</option>
+            <option value="Sinh viên" translate="key_opt_role_university">Sinh viên (Đại học / Cao đẳng)</option>
+            <option value="Giáo viên" translate="key_opt_role_teacher">Giáo viên / Giảng viên</option>
+            <option value="Nhà nghiên cứu" translate="key_opt_role_researcher">Nhà nghiên cứu / Chuyên gia</option>
+            <option value="Người tự học" translate="key_opt_role_self">Người tự học / Đi làm</option>
+          </select>
+        </div>
+        <div>
+          <label translate="key_96" class="block text-xs font-semibold text-slate-500 uppercase mb-1">Mục đích sử dụng chính</label>
+          <select id="select-user-purpose" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-brand-500">
+            <option value="Học tập & Nghiên cứu thường nhật" translate="key_opt_purpose_study">Học tập & Nghiên cứu thường nhật</option>
+            <option value="Ôn thi cấp tốc & Luyện đề" translate="key_opt_purpose_exam">Ôn thi cấp tốc & Luyện đề trắc nghiệm</option>
+            <option value="Tập trung sâu & Quản lý tri thức" translate="key_opt_purpose_focus">Tập trung sâu & Quản lý tri thức</option>
+            <option value="Lưu trữ & Tổng hợp tài liệu" translate="key_opt_purpose_storage">Lưu trữ & Tổng hợp tài liệu PDF</option>
+            <option value="Nâng cao tư duy phản biện" translate="key_opt_purpose_critique">Nâng cao tư duy phản biện & Viết luận</option>
+            <option value="Giảng dạy & Soạn giáo án" translate="key_opt_purpose_teach">Giảng dạy & Soạn giáo án / Bài tập</option>
+          </select>
+        </div>
+        <div class="sm:col-span-2">
+          <label translate="key_label_goal" class="block text-xs font-semibold text-slate-500 uppercase mb-1">Mục tiêu tự học mỗi ngày (Focus Mode Goal)</label>
+          <select id="select-daily-goal" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-brand-500">
+            <option value="15 phút" translate="key_opt_goal_15">15 phút / ngày (Nhẹ nhàng)</option>
+            <option value="30 phút" translate="key_opt_goal_30">30 phút / ngày (Khuyến nghị)</option>
+            <option value="45 phút" translate="key_opt_goal_45">45 phút / ngày (Tập trung vừa)</option>
+            <option value="60 phút" translate="key_opt_goal_60">60 phút / ngày (Chuyên sâu)</option>
+            <option value="90 phút" translate="key_opt_goal_90">90 phút / ngày (Nâng cao)</option>
+            <option value="120+ phút" translate="key_opt_goal_120">2+ giờ / ngày (Ôn thi cao độ)</option>
+          </select>
+        </div>
+        <div class="flex justify-end items-center pt-4 sm:col-span-2">
+          <button type="submit" translate="key_87" class="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-6 py-2.5 rounded-xl text-sm transition cursor-pointer shadow-md shadow-brand-500/20">Lưu thay đổi</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>

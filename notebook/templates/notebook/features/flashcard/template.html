@@ -1,0 +1,42 @@
+<script>
+function getFlashcardMockHTML(title) {
+    const t = window.t || ((k, f) => f);
+    const lang = localStorage.getItem('user_language') || 'vi';
+    const sampleQ = lang === 'jp' ? `「${title}」とは何ですか？` : (lang === 'en' ? `What is ${title}?` : `${title} là gì?`);
+    const sampleA = lang === 'jp' ? `これは「${title}」のサンプル解説です。` : (lang === 'en' ? `This is a sample explanatory answer for ${title}.` : `Đây là câu trả lời mẫu cho ${title}.`);
+    
+    return `
+    <div class="space-y-4 font-sans text-center">
+        <p class="text-xs font-semibold text-slate-500 flex items-center justify-center space-x-1.5">
+            <img src="/static/notebook/icon-set/flashcard.png" class="w-4 h-4 object-contain" alt="Flashcard" />
+            <span>${t('key_note_topic_prefix', 'Chủ đề:')} ${escapeHtml(title)}</span>
+        </p>
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6">
+            <div id="tool-front-1">
+                <div class="text-[10px] font-bold text-slate-400 uppercase mb-3">
+                    ${t('key_flashcard_question', 'Question')}
+                </div>
+                <div class="text-sm font-bold text-slate-800 dark:text-slate-200">
+                    ${escapeHtml(sampleQ)}
+                </div>
+            </div>
+            <div id="tool-back-1" class="hidden">
+                <div class="text-[10px] font-bold text-brand-500 uppercase mb-3">
+                    ${t('key_flashcard_answer', 'Answer')}
+                </div>
+                <div class="text-sm text-slate-700 dark:text-slate-300">
+                    ${escapeHtml(sampleA)}
+                </div>
+            </div>
+            <button
+            id="tool-btn-1"
+            onclick="flipToolCard(1)"
+            class="mt-4 bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition shadow"
+            >
+                ${t('key_btn_flip', 'Lật thẻ')}
+            </button>
+        </div>
+    </div>
+    `;
+}
+</script>

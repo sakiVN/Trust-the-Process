@@ -1,0 +1,519 @@
+<!-- Create Notebook Modal (dialog popups) -->
+<div id="new-notebook-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
+  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4 transform scale-95 transition-transform duration-300">
+    <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+      <h3 translate="key_94" class="font-extrabold text-slate-900 dark:text-white text-base">Khởi tạo Sổ tay tự học mới</h3>
+      <button onclick="closeNewNotebookModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div class="space-y-3">
+      <div>
+        <label translate="key_95" class="block text-xs font-semibold text-slate-500 uppercase mb-1">Tên sổ tay học tập</label>
+        <input type="text" id="new-notebook-name" data-translate-placeholder="key_ph_notebook_name" placeholder="Ví dụ: Lịch sử kinh tế Đông Á" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+      </div>
+      <div>
+        <label translate="key_96" class="block text-xs font-semibold text-slate-500 uppercase mb-1">Mục tiêu học tập / Mô tả</label>
+        <textarea id="new-notebook-desc" rows="3" data-translate-placeholder="key_ph_notebook_desc" placeholder="Ví dụ: Tự tổng hợp thông tin, thảo luận phản biện cùng hệ thống tự động..." class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"></textarea>
+      </div>
+    </div>
+    <div class="flex justify-end space-x-3 pt-2">
+      <button onclick="closeNewNotebookModal()" translate="key_97" class="px-4 py-2 border border-slate-200 dark:border-slate-800 rounded-xl text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition">Hủy bỏ</button>
+      <button onclick="handleCreateNotebook()" translate="key_98" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-sm font-semibold transition">Xác nhận tạo</button>
+    </div>
+  </div>
+</div>
+
+<!-- Shared Tool Modal (Popup Dialog for Quick Creators) -->
+<div id="tool-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
+  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-4xl p-6 shadow-2xl space-y-4 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+      <div class="flex items-center space-x-3.5">
+        <img id="modal-icon" src="/static/notebook/icon-set/mindmap.png" class="w-12 h-12 object-contain shrink-0" alt="Tool Icon" />
+        <div>
+          <h3 id="modal-title" translate="key_99" class="font-extrabold text-slate-900 dark:text-white text-base">Tạo Sơ đồ tư duy</h3>
+          <p id="modal-subtitle" translate="key_100" class="text-[10px] text-slate-400">Nhập chủ đề học tập để sinh sơ đồ tư duy tương tác</p>
+        </div>
+      </div>
+      <button onclick="closeToolModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="space-y-4">
+      <!-- Simple Input Form -->
+      <form id="tool-form" onsubmit="handleToolSubmit(event)" class="space-y-4">
+        <div>
+          <label translate="key_101" class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 pl-1">Chủ đề học tập</label>
+          <input type="text" id="tool-input-title" required data-translate-placeholder="key_ph_tool_title" placeholder="Nhập tiêu đề hoặc tên chủ đề..." class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 transition text-slate-700 dark:text-slate-300 font-medium" />
+          <textarea id="tool-input-text" data-translate-placeholder="key_ph_tool_text" placeholder="Dán văn bản có cấu trúc:\nQ: Câu hỏi?\nA: Đáp án 1\nB: Đáp án 2 (*)\nC: Đáp án 3\nD: Đáp án 4\nEXP: Giải thích chi tiết" class="w-full hidden h-48 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 transition text-slate-700 dark:text-slate-300 font-medium whitespace-pre-wrap"></textarea>
+        </div>
+        <div>
+          <label translate="key_102" class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 pl-1">Lưu vào Sổ tay (tùy chọn)</label>
+          <select id="tool-notebook-select" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 transition text-slate-700 dark:text-slate-300">
+            <option value="" translate="key_103">Không liên kết</option>
+          </select>
+        </div>
+
+        <div class="flex justify-end pt-2">
+          <button type="submit" id="tool-submit-btn" class="bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-bold py-2.5 px-6 rounded-xl text-xs transition shadow-md shadow-brand-100 dark:shadow-none flex items-center space-x-2"><span translate="key_104">Bắt đầu tạo</span></button>
+        </div>
+      </form>
+
+      <!-- Loading State Indicator -->
+      <div id="tool-loading" class="hidden flex flex-col items-center justify-center py-10 space-y-4">
+        <div class="w-12 h-12 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin"></div>
+        <div class="text-center">
+          <p translate="key_105" class="font-bold text-slate-800 dark:text-slate-200 text-sm">Đang xử lý tài liệu...</p>
+          <p translate="key_tool_loading_sub" class="text-[10px] text-slate-400 mt-1">Đang phân tích cấu trúc và chuẩn bị dữ liệu học tập</p>
+        </div>
+      </div>
+
+      <!-- Output Results Section -->
+      <div id="tool-output-section" class="hidden space-y-4 animate-fade-in">
+        <div class="border-t border-slate-100 dark:border-slate-800 pt-6">
+          <div class="flex justify-between items-center mb-3">
+            <h4 translate="key_106" class="font-bold text-slate-800 dark:text-white text-xs">🎉 Kết quả của bạn (Bản mẫu)</h4>
+            <div class="flex items-center space-x-3">
+              <button onclick="saveToolResult()" class="text-[10px] text-emerald-600 dark:text-emerald-500 hover:underline font-bold" translate="key_107">💾 Lưu vào Notebook</button>
+              <button onclick="copyToolResult()" class="text-[10px] text-brand-600 hover:underline font-semibold" translate="key_108">Sao chép kết quả</button>
+            </div>
+          </div>
+          <div id="tool-output-content" class="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 min-h-[150px] overflow-auto">
+            <!-- Mock markup injected here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Quiz Builder Modal -->
+<div id="quiz-builder-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4 overflow-y-auto">
+  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-5xl p-6 shadow-2xl space-y-4 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+      <div>
+        <h3 translate="key_109" class="font-extrabold text-slate-900 dark:text-white text-base">Tạo bộ câu hỏi trắc nghiệm</h3>
+        <p translate="key_110" class="text-[10px] text-slate-400">Nhập câu hỏi, đáp án, và đáp án đúng để lưu bài tập dưới dạng tài liệu.</p>
+      </div>
+      <button onclick="closeQuizBuilderModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div class="space-y-4">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div>
+          <label translate="key_111" class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Tên bộ câu hỏi</label>
+          <input id="quiz-builder-name" type="text" data-translate-placeholder="key_ph_quiz_name" placeholder="Ví dụ: Kiểm tra Sinh học chương 1" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 transition text-slate-700 dark:text-slate-300" />
+        </div>
+        <div>
+          <label translate="key_112" class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Chọn sổ tay</label>
+          <select id="quiz-builder-notebook" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 transition text-slate-700 dark:text-slate-300">
+            <option value="" translate="key_103">Không liên kết</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label translate="key_113" class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Mô tả ngắn</label>
+        <textarea id="quiz-builder-desc" rows="2" data-translate-placeholder="key_ph_quiz_desc" placeholder="Mô tả nội dung bài tập hoặc chủ đề ôn luyện" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 transition text-slate-700 dark:text-slate-300"></textarea>
+      </div>
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <span translate="key_114" class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Danh sách câu hỏi</span>
+          <button onclick="addQuizQuestionRow()" class="text-[10px] bg-brand-600 hover:bg-brand-700 text-white font-semibold px-3 py-2 rounded-xl transition" translate="key_115">+ Thêm câu hỏi</button>
+        </div>
+        <div id="quiz-questions-container" class="space-y-4"></div>
+      </div>
+      <div class="flex justify-end gap-3 pt-2">
+        <button onclick="closeQuizBuilderModal()" class="px-4 py-2 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition" translate="key_116">Hủy</button>
+        <button onclick="saveQuizBuilder()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-semibold transition" translate="key_117">Lưu bộ câu hỏi</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Quiz Play Modal -->
+<div id="quiz-play-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4 overflow-y-auto">
+  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-4xl p-6 shadow-2xl space-y-4 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+      <div>
+        <h3 id="quiz-play-title" translate="key_118" class="font-extrabold text-slate-900 dark:text-white text-base">Làm bài trắc nghiệm</h3>
+        <p id="quiz-play-subtitle" translate="key_119" class="text-[10px] text-slate-400">Trả lời từng câu, hệ thống sẽ thông báo ngay kết quả mỗi câu.</p>
+      </div>
+      <button onclick="closeQuizPlayModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div id="quiz-play-content" class="space-y-6"></div>
+  </div>
+</div>
+
+<!-- Quiz Review Modal -->
+<div id="quiz-review-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4 overflow-y-auto">
+  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-4xl p-6 shadow-2xl space-y-4 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+      <div>
+        <h3 id="quiz-review-title" translate="key_120" class="font-extrabold text-slate-900 dark:text-white text-base">Xem lại bộ câu hỏi</h3>
+        <p translate="key_121" class="text-[10px] text-slate-400">Ôn lại đáp án, giải thích và chỉnh sửa bộ câu hỏi nếu cần.</p>
+      </div>
+      <button onclick="closeQuizReviewModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div id="quiz-review-content" class="space-y-5"></div>
+  </div>
+</div>
+
+<!-- Flashcard Review Modal -->
+<div id="flashcard-review-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4 overflow-y-auto">
+  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-4xl p-6 shadow-2xl space-y-4 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+      <div>
+        <h3 translate="key_122" class="font-extrabold text-slate-900 dark:text-white text-base">Xem lại Flashcards</h3>
+        <p translate="key_123" class="text-[10px] text-slate-400">Lật thẻ để xem đáp án và chỉnh sửa nội dung nếu cần.</p>
+      </div>
+      <button onclick="closeFlashcardReviewModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div id="flashcard-review-content" class="space-y-4"></div>
+  </div>
+</div>
+
+<!-- Flashcard Editor Modal -->
+<div id="flashcard-editor-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4 overflow-y-auto">
+  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-3xl p-6 shadow-2xl space-y-4 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+      <div>
+        <h3 translate="key_124" class="font-extrabold text-slate-900 dark:text-white text-base">Chỉnh sửa Flashcard</h3>
+        <p translate="key_125" class="text-[10px] text-slate-400">Sửa câu hỏi và đáp án theo giao diện thân thiện, thêm hoặc xóa thẻ khi cần.</p>
+      </div>
+      <button onclick="closeFlashcardEditorModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div class="flex justify-end">
+      <button onclick="addFlashcardEditorRow()" class="px-3 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-[10px] font-semibold transition" translate="key_126">+ Thêm flashcard</button>
+    </div>
+    <div id="flashcard-editor-form" class="space-y-3"></div>
+    <div class="flex justify-end gap-3 pt-2">
+      <button onclick="closeFlashcardEditorModal()" class="px-4 py-2 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition" translate="key_116">Hủy</button>
+      <button onclick="saveFlashcardEdit()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-semibold transition" translate="key_127">Lưu chỉnh sửa</button>
+    </div>
+  </div>
+</div>
+
+<!-- Quiz Generation Editor Modal -->
+<div id="quiz-generation-editor-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4 overflow-y-auto">
+  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-5xl p-6 shadow-2xl space-y-4 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+      <div class="flex items-center space-x-3.5">
+        <img src="/static/notebook/icon-set/quiz.png" class="w-12 h-12 object-contain shrink-0" alt="Quiz" />
+        <div>
+          <h3 translate="key_128" class="font-extrabold text-slate-900 dark:text-white text-base">Chỉnh sửa bộ câu hỏi</h3>
+          <p translate="key_129" class="text-[10px] text-slate-400">Sửa câu hỏi, đáp án và giải thích theo giao diện trực quan, thêm hoặc xóa câu hỏi khi cần.</p>
+        </div>
+      </div>
+      <button onclick="closeQuizGenerationEditorModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+      </button>
+    </div>
+    <div class="flex justify-end">
+      <button onclick="addQuizGenerationEditorRow()" class="px-3 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-[10px] font-semibold transition" translate="key_130">+ Thêm câu hỏi</button>
+    </div>
+    <div id="quiz-generation-editor-form" class="space-y-3"></div>
+    <div class="flex justify-end gap-3 pt-2">
+      <button onclick="closeQuizGenerationEditorModal()" class="px-4 py-2 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition" translate="key_116">Hủy</button>
+      <button onclick="saveQuizGenerationEdit()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-semibold transition" translate="key_127">Lưu chỉnh sửa</button>
+    </div>
+  </div>
+</div>
+
+<!-- Report Review Modal -->
+<div id="report-review-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4 overflow-y-auto">
+  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-4xl p-6 shadow-2xl space-y-4 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+      <div class="flex items-center space-x-3.5">
+        <img src="/static/notebook/icon-set/report.png" class="w-12 h-12 object-contain shrink-0" alt="Report" />
+        <div>
+          <h3 id="report-review-title" translate="key_report_summary_title" class="font-extrabold text-slate-900 dark:text-white text-base">Xem Báo cáo tóm tắt</h3>
+          <p id="report-review-subtitle" translate="key_report_summary_sub" class="text-[10px] text-slate-400">Báo cáo tóm tắt học thuật trích xuất từ tài liệu học tập</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-2">
+        <button onclick="copyReportReviewContent()" class="text-xs bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-xl font-semibold transition flex items-center space-x-1">
+          <span>📋</span> <span translate="key_btn_copy">Sao chép</span>
+        </button>
+        <button onclick="closeReportReviewModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
+      </div>
+    </div>
+    <div id="report-review-content" class="space-y-4 p-2">
+      <!-- Report content injected here -->
+    </div>
+  </div>
+</div>
+
+<!-- Mindmap Review Modal -->
+<div id="mindmap-review-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4 overflow-y-auto">
+  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-5xl p-6 shadow-2xl space-y-4 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+      <div class="flex items-center space-x-3.5">
+        <img src="/static/notebook/icon-set/mindmap.png" class="w-12 h-12 object-contain shrink-0" alt="Mindmap" />
+        <div>
+          <h3 id="mindmap-review-title" translate="key_48" class="font-extrabold text-slate-900 dark:text-white text-base">Xem & Chỉnh sửa Sơ đồ tư duy</h3>
+          <p id="mindmap-review-subtitle" translate="key_49" class="text-[10px] text-slate-400">Tương tác trực quan: kéo thả, thêm nhánh con, sửa tên, đổi màu và lưu lại</p>
+        </div>
+      </div>
+      <button onclick="closeMindmapReviewModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+      </button>
+    </div>
+    <div class="space-y-3 text-left w-full">
+      <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-100/60 dark:bg-slate-900/40 p-2.5 rounded-2xl border border-slate-200 dark:border-slate-800/80">
+        <div class="flex items-center space-x-2">
+          <button onclick="addJsMindChildNode('review-modal')" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-1.5 px-3 rounded-lg text-[10px] transition shadow flex items-center space-x-1">
+            <span>➕</span> <span translate="key_btn_add_child">Nhánh con</span>
+          </button>
+          <button onclick="editJsMindNodeName('review-modal')" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-1.5 px-3 rounded-lg text-[10px] transition shadow flex items-center space-x-1">
+            <span>✏️</span> <span translate="key_btn_edit_name">Sửa tên</span>
+          </button>
+          <button onclick="removeJsMindNode('review-modal')" class="bg-rose-500 hover:bg-rose-600 text-white font-bold py-1.5 px-3 rounded-lg text-[10px] transition shadow flex items-center space-x-1">
+            <span>🗑️</span> <span translate="key_btn_remove_node">Xóa nhánh</span>
+          </button>
+          <button onclick="saveMindmapReviewEdit()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 px-3.5 rounded-lg text-[10px] transition shadow flex items-center space-x-1">
+            <span>💾</span> <span translate="key_btn_save_changes">Lưu thay đổi</span>
+          </button>
+        </div>
+        <div class="flex items-center space-x-1.5 pl-2 border-l border-slate-200 dark:border-slate-700">
+          <span translate="key_mindmap_color_label" class="text-[9px] font-bold text-slate-400 uppercase">Màu:</span>
+          <button onclick="changeJsMindNodeColor('review-modal', '#6366f1')" class="w-4 h-4 rounded-full bg-[#6366f1] hover:scale-110 transition ring-1 ring-white/50"></button>
+          <button onclick="changeJsMindNodeColor('review-modal', '#10b981')" class="w-4 h-4 rounded-full bg-[#10b981] hover:scale-110 transition ring-1 ring-white/50"></button>
+          <button onclick="changeJsMindNodeColor('review-modal', '#f43f5e')" class="w-4 h-4 rounded-full bg-[#f43f5e] hover:scale-110 transition ring-1 ring-white/50"></button>
+          <button onclick="changeJsMindNodeColor('review-modal', '#f59e0b')" class="w-4 h-4 rounded-full bg-[#f59e0b] hover:scale-110 transition ring-1 ring-white/50"></button>
+          <button onclick="changeJsMindNodeColor('review-modal', '#1e293b')" class="w-4 h-4 rounded-full bg-[#1e293b] hover:scale-110 transition ring-1 ring-white/50"></button>
+        </div>
+      </div>
+      <div class="relative w-full border border-slate-200 dark:border-slate-800 rounded-3xl overflow-hidden bg-slate-50 dark:bg-slate-950">
+        <div class="absolute top-2.5 left-3 text-[9px] font-bold text-slate-400 z-10 select-none" translate="key_mindmap_hint">Đúp chuột để sửa chữ, kéo rê để di chuyển</div>
+        <div id="mindmap-review-canvas" style="width:100%;height:450px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Contextual AI Toolbar -->
+<div id="contextual-ai-toolbar" class="hidden absolute z-[90] bg-white dark:bg-slate-900 shadow-xl dark:shadow-2xl rounded-xl border border-slate-200 dark:border-slate-700 p-1.5 flex items-center space-x-1.5 transition-all duration-200 select-none" style="top: 0; left: 0;">
+  <button onclick="triggerContextAction('explain')" class="flex items-center space-x-1.5 px-2.5 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white text-xs font-semibold transition group">
+    <span>💡</span>
+    <span class="group-hover:text-slate-900 dark:group-hover:text-white" translate="key_ai_explain">Giải thích</span>
+  </button>
+  <div class="w-px h-4 bg-slate-200 dark:bg-slate-700"></div>
+  <button onclick="triggerContextAction('translate')" class="flex items-center space-x-1.5 px-2.5 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white text-xs font-semibold transition group">
+    <span>🌐</span>
+    <span class="group-hover:text-slate-900 dark:group-hover:text-white" translate="key_ai_translate">Dịch</span>
+  </button>
+  <div class="w-px h-4 bg-slate-200 dark:bg-slate-700"></div>
+  <button onclick="triggerContextAction('flashcard')" class="flex items-center space-x-1.5 px-2.5 py-1.5 bg-brand-50 hover:bg-brand-600 text-brand-600 hover:text-white dark:bg-brand-500/20 dark:text-brand-300 dark:hover:bg-brand-600 dark:hover:text-white rounded-lg text-xs font-bold transition group">
+    <span>🔖</span>
+    <span class="group-hover:text-white" translate="key_ai_save_flashcard">Lưu Flashcard</span>
+  </button>
+</div>
+
+<!-- Contextual AI Result Modal -->
+<div id="contextual-result-modal" class="hidden fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm items-center justify-center p-4">
+  <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden flex flex-col border border-slate-200 dark:border-slate-800 animate-[fadeIn_0.2s_ease-out]">
+    <div class="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-900/50">
+      <h3 class="font-bold text-slate-800 dark:text-slate-100 flex items-center space-x-2 text-sm">
+        <span id="contextual-result-icon">✨</span>
+        <span id="contextual-result-title" translate="key_ai_result_title">Kết quả AI</span>
+      </h3>
+      <button onclick="closeContextualModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition bg-slate-200/50 dark:bg-slate-800 p-1.5 rounded-lg">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+      </button>
+    </div>
+    <div class="p-5 overflow-y-auto max-h-[60vh]">
+      <div id="contextual-result-content" class="text-xs text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">
+        <!-- Content here -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Document Read Modal -->
+<div id="document-read-modal" class="hidden fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm items-center justify-center p-4 sm:p-6">
+  <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-4xl w-full h-full max-h-[85vh] shadow-2xl flex flex-col border border-slate-200 dark:border-slate-800 animate-[fadeIn_0.2s_ease-out]">
+    <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-900/80 rounded-t-3xl shrink-0">
+      <div class="min-w-0 pr-4">
+        <h3 id="document-read-title" class="font-bold text-slate-800 dark:text-slate-100 text-base truncate">Tiêu đề tài liệu</h3>
+        <p id="document-read-notebook" class="text-xs text-brand-500 font-semibold mt-0.5 truncate">Sổ tay</p>
+      </div>
+      <button onclick="closeDocumentModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-2 rounded-xl shrink-0">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+      </button>
+    </div>
+    <div class="p-6 sm:p-8 overflow-y-auto flex-1 custom-scrollbar bg-white dark:bg-slate-950">
+      <div id="document-read-content" class="w-full">
+        <!-- Content injected here -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Upload Source Quick Modal (From All Documents View) -->
+<div id="quick-upload-source-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4 overflow-y-auto">
+  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-lg p-6 shadow-2xl space-y-4 transform transition-all duration-300">
+    <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+      <div class="flex items-center space-x-3">
+        <img src="/static/notebook/icon-set/upload.png" class="w-10 h-10 object-contain shrink-0" alt="Upload" />
+        <h3 translate="key_quick_upload_title" class="font-extrabold text-slate-900 dark:text-white text-base">Tải lên tài liệu liên quan</h3>
+      </div>
+      <button onclick="closeQuickUploadModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+      </button>
+    </div>
+    <form id="quick-upload-form" onsubmit="handleQuickUploadSource(event)" class="space-y-4">
+      <div>
+        <label translate="key_112" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Chọn Sổ tay</label>
+        <select id="quick-upload-notebook" required class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 text-slate-700 dark:text-slate-300 transition"></select>
+      </div>
+      <div>
+        <label translate="key_34" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Tên tài liệu / Chủ đề</label>
+        <input type="text" id="quick-upload-title" required data-translate-placeholder="key_ph_source_title" placeholder="Ví dụ: Tài liệu ôn thi Đại số" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 transition text-slate-700 dark:text-slate-300" />
+      </div>
+      <div>
+        <label translate="key_35" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Loại tài nguyên</label>
+        <select id="quick-upload-type" onchange="toggleQuickUploadInputs()" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 text-slate-700 dark:text-slate-300 transition">
+          <option value="text" translate="key_opt_text">Văn bản (Plain Text)</option>
+          <option value="link" translate="key_opt_link">Trang web (Link)</option>
+          <option value="file" translate="key_opt_file">Tài liệu PDF (File PDF)</option>
+        </select>
+      </div>
+      <div id="quick-upload-url-container" class="hidden">
+        <label translate="key_39" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">URL liên kết</label>
+        <input type="url" id="quick-upload-url" data-translate-placeholder="key_ph_source_url" placeholder="https://example.com/tai-lieu" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 transition text-slate-700 dark:text-slate-300" />
+      </div>
+      <div id="quick-upload-file-container" class="hidden">
+        <label translate="key_40" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Tải lên file PDF</label>
+        <input type="file" id="quick-upload-file" accept=".pdf" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 text-slate-700 dark:text-slate-300 transition" />
+      </div>
+      <div id="quick-upload-content-container">
+        <label translate="key_41" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Nội dung văn bản</label>
+        <textarea id="quick-upload-content" rows="4" data-translate-placeholder="key_ph_source_content" placeholder="Sao chép nội dung văn bản học tập vào đây..." class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 transition text-slate-700 dark:text-slate-300"></textarea>
+      </div>
+      <div class="flex justify-end gap-3 pt-2">
+        <button type="button" onclick="closeQuickUploadModal()" class="px-4 py-2 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition" translate="key_btn_cancel">Hủy</button>
+        <button type="submit" class="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-semibold transition shadow-md shadow-brand-100 dark:shadow-none" translate="key_btn_save_source">Lưu tài liệu</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Debug Study Time Modal -->
+<div id="debug-time-modal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4">
+  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-lg p-6 shadow-2xl space-y-5 transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
+    <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+      <div class="flex items-center space-x-3">
+        <div class="p-2.5 rounded-xl bg-amber-500/10 text-amber-500 text-lg">
+          🛠️
+        </div>
+        <div>
+          <h3 translate="key_debug_title" class="font-extrabold text-slate-900 dark:text-white text-base">Debug Thời Gian Tự Học (7 Ngày)</h3>
+          <p translate="key_debug_subtitle" class="text-xs text-slate-400">Chỉnh sửa số phút tự học theo từng ngày để kiểm tra các mốc tiến độ</p>
+        </div>
+      </div>
+      <button onclick="closeDebugTimeModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+      </button>
+    </div>
+
+    <!-- Quick Presets -->
+    <div class="space-y-2">
+      <span translate="key_debug_presets_title" class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">⚡ Chọn nhanh các mốc tiến độ tuần:</span>
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        <button type="button" onclick="applyDebugPreset('0')" class="px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-slate-400 text-xs font-semibold text-slate-600 dark:text-slate-300 transition cursor-pointer">
+          ⚪ 0% (Xám)
+        </button>
+        <button type="button" onclick="applyDebugPreset('75')" class="px-2.5 py-1.5 rounded-xl border border-amber-300 dark:border-amber-700 bg-amber-50/50 dark:bg-amber-950/20 text-xs font-semibold text-amber-600 dark:text-amber-400 transition cursor-pointer">
+          🟡 75% (Vàng)
+        </button>
+        <button type="button" onclick="applyDebugPreset('130')" class="px-2.5 py-1.5 rounded-xl border border-emerald-300 dark:border-emerald-700 bg-emerald-50/50 dark:bg-emerald-950/20 text-xs font-semibold text-emerald-600 dark:text-emerald-400 transition cursor-pointer">
+          🟢 130% (Xanh lá)
+        </button>
+        <button type="button" onclick="applyDebugPreset('230')" class="px-2.5 py-1.5 rounded-xl border border-blue-300 dark:border-blue-700 bg-blue-50/50 dark:bg-blue-950/20 text-xs font-semibold text-blue-600 dark:text-blue-400 transition cursor-pointer">
+          🔵 230% (Xanh dương)
+        </button>
+        <button type="button" onclick="applyDebugPreset('340')" class="px-2.5 py-1.5 rounded-xl border border-purple-300 dark:border-purple-700 bg-purple-50/50 dark:bg-purple-950/20 text-xs font-semibold text-purple-600 dark:text-purple-300 transition cursor-pointer">
+          🟣 340% (MAX Tím)
+        </button>
+        <button type="button" onclick="applyDebugPreset('reset_default')" class="px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold text-slate-500 dark:text-slate-400 transition cursor-pointer">
+          🔄 Mặc định
+        </button>
+      </div>
+    </div>
+
+    <!-- 7 Day Inputs Form -->
+    <form id="debug-time-form" onsubmit="saveDebugTimeModal(event)" class="space-y-3">
+      <div id="debug-days-input-list" class="space-y-2.5 max-h-60 overflow-y-auto pr-1">
+        <!-- Dynamic Day Rows will be rendered here by openDebugTimeModal() -->
+      </div>
+
+      <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center">
+        <span id="debug-preview-total" class="text-xs font-bold text-brand-600 dark:text-brand-400">Tổng: 0 phút (0%)</span>
+        <div class="flex gap-2">
+          <button type="button" onclick="closeDebugTimeModal()" translate="key_btn_cancel" class="px-4 py-2 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer">Hủy</button>
+          <button type="submit" translate="key_btn_save_changes" class="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-semibold transition shadow-md shadow-brand-500/20 cursor-pointer">Lưu thay đổi</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Global In-Web Confirmation Modal -->
+<div id="global-confirm-modal" class="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4 transition-all duration-200">
+  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-md p-6 shadow-2xl space-y-4 transform transition-all duration-200">
+    <div class="flex items-start space-x-4">
+      <div id="global-confirm-icon-box" class="w-12 h-12 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-100 dark:border-rose-900/50 flex items-center justify-center text-rose-500 shrink-0 shadow-sm">
+        <svg id="global-confirm-icon-danger" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+        </svg>
+        <svg id="global-confirm-icon-info" class="w-6 h-6 hidden text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      <div class="min-w-0 flex-1">
+        <h3 id="global-confirm-title" class="font-extrabold text-slate-900 dark:text-white text-base leading-snug">
+          Xác nhận xóa
+        </h3>
+        <p id="global-confirm-message" class="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
+          Bạn có chắc chắn muốn thực hiện hành động này?
+        </p>
+      </div>
+    </div>
+    
+    <div class="flex justify-end items-center space-x-3 pt-3 border-t border-slate-100 dark:border-slate-800/80">
+      <button type="button" id="global-confirm-cancel-btn" class="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 active:scale-95 transition cursor-pointer">
+        Hủy bỏ
+      </button>
+      <button type="button" id="global-confirm-btn" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 active:scale-95 text-white rounded-xl text-xs font-bold transition shadow-md shadow-rose-500/25 cursor-pointer">
+        Xác nhận xóa
+      </button>
+    </div>
+  </div>
+</div>
+

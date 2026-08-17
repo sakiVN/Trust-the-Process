@@ -1,0 +1,555 @@
+// Documents view state
+let currentDocumentsPage = 1;
+let documentsSortBy = 'date_desc';
+const DOCUMENTS_PER_PAGE = 20;
+
+function setDocumentsSort(sortBy) {
+    documentsSortBy = sortBy;
+    currentDocumentsPage = 1; // Reset to page 1 on sort change
+    renderAllDocumentsView();
+}
+
+function setDocumentsPage(page) {
+    currentDocumentsPage = page;
+    renderAllDocumentsView();
+    // Scroll to top of documents list
+    const container = document.getElementById('all-documents-list');
+    if (container) container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderAllDocumentsView() {
+    const container = document.getElementById('all-documents-list');
+    if (!container) return;
+    
+    const t = window.t || ((k, f) => f);
+    const lang = localStorage.getItem('user_language') || 'vi';
+    const localeStr = lang === 'en' ? 'en-US' : (lang === 'jp' ? 'ja-JP' : 'vi-VN');
+
+    // Only collect sources — no quizzes
+    let allSources = [];
+    notebooks.forEach(nb => {
+        const sources = nb.sources || [];
+        sources.forEach(src => {
+            allSources.push({ ...src, notebookName: nb.name, notebookId: nb.id, type: 'source' });
+        });
+    });
+
+    // Sync sort dropdown
+    const sortSelect = document.getElementById('documents-sort-select');
+    if (sortSelect && sortSelect.value !== documentsSortBy) {
+        sortSelect.value = documentsSortBy;
+    }
+
+    // Sort
+    allSources.sort((a, b) => {
+        if (documentsSortBy === 'name_asc') {
+            return (a.title || '').localeCompare(b.title || '', lang);
+        } else if (documentsSortBy === 'name_desc') {
+            return (b.title || '').localeCompare(a.title || '', lang);
+        } else if (documentsSortBy === 'date_asc') {
+            return new Date(a.created_at || 0) - new Date(b.created_at || 0);
+        } else { // date_desc (default)
+            return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+        }
+    });
+
+    // Pagination calculation
+    const totalItems = allSources.length;
+    const totalPages = Math.max(1, Math.ceil(totalItems / DOCUMENTS_PER_PAGE));
+    if (currentDocumentsPage > totalPages) currentDocumentsPage = totalPages;
+    if (currentDocumentsPage < 1) currentDocumentsPage = 1;
+    const startIdx = (currentDocumentsPage - 1) * DOCUMENTS_PER_PAGE;
+    const endIdx = startIdx + DOCUMENTS_PER_PAGE;
+    const pageItems = allSources.slice(startIdx, endIdx);
+
+    // Render items
+    if (totalItems === 0) {
+        container.innerHTML = `<div class="col-span-full text-xs text-slate-400 text-center py-12">${t('key_25', 'Không có tài liệu nào.')}</div>`;
+    } else {
+        container.innerHTML = pageItems.map(src => {
+            const labelText = src.source_type === 'file' ? t('key_tag_pdf', 'File PDF') : (src.source_type === 'link' ? t('key_tag_link', 'Trang web') : t('key_tag_text', 'Văn bản'));
+            
+            return `
+            <div onclick="openDocumentModal(${src.id})" class="cursor-pointer bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-3 hover:scale-[1.01] hover:shadow-md transition hover:border-brand-300 dark:hover:border-brand-700">
+                <div class="flex justify-between items-start gap-3">
+                    <div class="min-w-0">
+                        <span class="inline-flex items-center gap-1.5 text-[9px] uppercase tracking-wider font-bold px-2.5 py-0.5 rounded-full ${src.source_type === 'link' ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' : (src.source_type === 'file' ? 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' : 'bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300')}">
+                            <img src="/static/notebook/icon-set/upload.png" class="w-3.5 h-3.5 object-contain shrink-0" alt="Icon" />
+                            <span>${labelText}</span>
+                        </span>
+                        <h4 class="font-bold text-slate-850 dark:text-white text-sm mt-2 truncate">${src.title}</h4>
+                    </div>
+                    <div class="flex items-center space-x-2 shrink-0">
+                        <button onclick="event.stopPropagation(); openDocumentModal(${src.id});" class="text-xs bg-brand-500 hover:bg-brand-600 text-white rounded-xl px-3 py-1.5 font-bold transition shadow-sm flex items-center space-x-1"><span>📖</span> <span>${t('key_btn_read_now', 'Đọc ngay')}</span></button>
+                        <button onclick="event.stopPropagation(); switchView('notebooks'); selectNotebook(${src.notebookId});" class="text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-slate-600 dark:text-slate-350 hover:bg-slate-100 font-semibold transition opacity-80 hover:opacity-100">${t('key_btn_view_notebook', 'Sổ tay')}</button>
+                        <button onclick="event.stopPropagation(); deleteSource(${src.id})" class="p-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-500 transition opacity-80 hover:opacity-100" title="${t('key_btn_delete', 'Xóa tài liệu')}">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        </button>
+                    </div>
+                </div>
+                ${src.file_path ? `<a href="${src.file_path}" target="_blank" onclick="event.stopPropagation()" class="text-[10px] text-brand-500 hover:underline truncate block mt-1 flex items-center space-x-1"><img src="/static/notebook/icon-set/upload.png" class="w-3.5 h-3.5 object-contain" /><span>${t('key_btn_open_pdf', 'Tải xuống file PDF')}</span></a>` : ''}
+                <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-3 bg-slate-50 dark:bg-slate-900/40 p-3 rounded-xl border border-slate-100 dark:border-slate-800">${src.content}</p>
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center text-[10px] text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-800 gap-2">
+                    <span>${t('key_btn_view_notebook', 'Sổ tay')}: <strong>${src.notebookName}</strong></span>
+                    <span>${new Date(src.created_at || Date.now()).toLocaleDateString(localeStr)}</span>
+                </div>
+            </div>
+            `;
+        }).join('');
+    }
+
+    // Render pagination (always visible)
+    const paginationContainer = document.getElementById('documents-pagination');
+    if (paginationContainer) {
+        const showingStart = totalItems === 0 ? 0 : startIdx + 1;
+        const showingEnd = Math.min(endIdx, totalItems);
+
+        let pageButtons = '';
+        // Determine range of page numbers to show (max 5 at a time)
+        let rangeStart = Math.max(1, currentDocumentsPage - 2);
+        let rangeEnd = Math.min(totalPages, rangeStart + 4);
+        if (rangeEnd - rangeStart < 4) rangeStart = Math.max(1, rangeEnd - 4);
+
+        for (let p = rangeStart; p <= rangeEnd; p++) {
+            if (p === currentDocumentsPage) {
+                pageButtons += `<button class="w-8 h-8 rounded-lg text-xs font-bold bg-brand-600 text-white shadow-sm">${p}</button>`;
+            } else {
+                pageButtons += `<button onclick="setDocumentsPage(${p})" class="w-8 h-8 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">${p}</button>`;
+            }
+        }
+
+        paginationContainer.innerHTML = `
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+                <span class="text-[11px] text-slate-400">
+                    ${t('key_pagination_display', 'Hiển thị')} <strong>${showingStart}-${showingEnd}</strong> ${t('key_of', '/')} <strong>${totalItems}</strong> ${t('key_total_docs_count', 'tài liệu')}
+                </span>
+                <div class="flex items-center gap-1.5">
+                    <button onclick="setDocumentsPage(${currentDocumentsPage - 1})" ${currentDocumentsPage <= 1 ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg text-xs font-semibold transition ${currentDocumentsPage <= 1 ? 'text-slate-300 dark:text-slate-700 cursor-not-allowed' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}">
+                        ${t('key_prev_page', 'Trước')}
+                    </button>
+                    ${pageButtons}
+                    <button onclick="setDocumentsPage(${currentDocumentsPage + 1})" ${currentDocumentsPage >= totalPages ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg text-xs font-semibold transition ${currentDocumentsPage >= totalPages ? 'text-slate-300 dark:text-slate-700 cursor-not-allowed' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}">
+                        ${t('key_next_page', 'Sau')}
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+}
+
+
+// Study Materials view state
+let currentStudyMaterialsPage = 1;
+let studyMaterialsSortBy = 'date_desc';
+let studyMaterialsNotebookFilter = 'all';
+let studyMaterialsTypeFilter = 'all';
+const STUDY_MATERIALS_PER_PAGE = 20;
+
+function setStudyMaterialsSort(sortBy) {
+    studyMaterialsSortBy = sortBy;
+    currentStudyMaterialsPage = 1;
+    renderStudyMaterialsView();
+}
+
+function setStudyMaterialsNotebookFilter(nbFilter) {
+    studyMaterialsNotebookFilter = nbFilter;
+    currentStudyMaterialsPage = 1;
+    renderStudyMaterialsView();
+}
+
+function setStudyMaterialsTypeFilter(typeFilter) {
+    studyMaterialsTypeFilter = typeFilter;
+    currentStudyMaterialsPage = 1;
+    renderStudyMaterialsView();
+}
+
+function setStudyMaterialsPage(page) {
+    currentStudyMaterialsPage = page;
+    renderStudyMaterialsView();
+    const container = document.getElementById('all-study-materials-list');
+    if (container) container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+async function deleteStudyMaterial(id, materialType) {
+    const t = window.t || ((k, f) => f);
+    const confirmed = await showConfirmModal({
+        title: t('key_confirm_delete_title', "Xác nhận xóa tài nguyên"),
+        message: t('key_confirm_delete_material', "Bạn có chắc chắn muốn xóa tài nguyên học tập này? Hành động này không thể hoàn tác."),
+        confirmText: t('key_btn_delete', "Xóa"),
+        cancelText: t('key_cancel', "Hủy"),
+        isDanger: true
+    });
+    if (!confirmed) return;
+
+    try {
+        const endpoint = materialType === 'quiz' ? `${API_URL}/quizzes/${id}/` : `${API_URL}/generations/${id}/`;
+        const res = await fetchWithCsrf(endpoint, {
+            method: 'DELETE'
+        });
+        if (res.ok) {
+            showToastNotification(t('key_alert_deleted_material', "Đã xóa tài nguyên học tập thành công!"), 'success');
+            await loadNotebooks();
+            if (activeNotebookId) {
+                await selectNotebook(activeNotebookId, true);
+            }
+            if (activeView === 'study-materials') {
+                renderStudyMaterialsView();
+            }
+        } else {
+            showToastNotification(t('key_error_delete_material', "Không thể xóa tài nguyên. Vui lòng thử lại."), 'error');
+        }
+    } catch (err) {
+        console.error("Lỗi khi xóa tài nguyên học tập:", err);
+        showToastNotification(t('key_error_delete_material', "Không thể xóa tài nguyên. Vui lòng thử lại."), 'error');
+    }
+}
+
+function renderStudyMaterialsView() {
+    const container = document.getElementById('all-study-materials-list');
+    const paginationContainer = document.getElementById('study-materials-pagination');
+    if (!container) return;
+
+    const t = window.t || ((k, f) => f);
+    const lang = localStorage.getItem('user_language') || 'vi';
+    const localeStr = lang === 'en' ? 'en-US' : (lang === 'jp' ? 'ja-JP' : 'vi-VN');
+
+    // Populate notebook dropdown dynamically
+    const nbSelect = document.getElementById('study-materials-filter-notebook');
+    if (nbSelect) {
+        const currentVal = studyMaterialsNotebookFilter;
+        nbSelect.innerHTML = `
+            <option value="all" ${currentVal === 'all' ? 'selected' : ''}>${t('key_filter_all_notebooks', 'Tất cả sổ tay')}</option>
+            <option value="unlinked" ${currentVal === 'unlinked' ? 'selected' : ''}>${t('key_filter_unlinked', 'Không liên kết')}</option>
+            ${(notebooks || []).map(nb => `<option value="${nb.id}" ${String(currentVal) === String(nb.id) ? 'selected' : ''}>${escapeHtml(nb.name)}</option>`).join('')}
+        `;
+    }
+
+    // Sync type & sort dropdowns
+    const typeSelect = document.getElementById('study-materials-filter-type');
+    if (typeSelect && typeSelect.value !== studyMaterialsTypeFilter) {
+        typeSelect.value = studyMaterialsTypeFilter;
+    }
+    const sortSelect = document.getElementById('study-materials-sort-select');
+    if (sortSelect && sortSelect.value !== studyMaterialsSortBy) {
+        sortSelect.value = studyMaterialsSortBy;
+    }
+
+    const generationLabel = {
+        quiz: t('key_tag_quiz', 'Trắc nghiệm'),
+        flashcards: t('key_tag_flashcards', 'Flashcards'),
+        mind_map: t('key_tag_mindmap', 'Mind Map'),
+        report: t('key_tag_report', 'Báo cáo'),
+        audio_overview: t('key_tag_audio', 'Audio Overview'),
+        presentation: t('key_tag_presentation', 'Presentation'),
+        video_overview: t('key_tag_video', 'Video Overview'),
+        infographics: t('key_tag_infographic', 'Infographics'),
+        data_table: t('key_tag_data_table', 'Data Table')
+    };
+
+    const typeIconMap = {
+        quiz: '/static/notebook/icon-set/quiz.png',
+        flashcards: '/static/notebook/icon-set/flashcard.png',
+        mind_map: '/static/notebook/icon-set/mindmap.png',
+        report: '/static/notebook/icon-set/report.png'
+    };
+
+    const badgeColorMap = {
+        quiz: 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/50',
+        flashcards: 'bg-sky-50 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300 border border-sky-200/60 dark:border-sky-800/50',
+        mind_map: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/50',
+        report: 'bg-rose-50 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800/50'
+    };
+    const defaultBadgeColor = 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/50';
+
+    let allMaterials = [];
+    (notebooks || []).forEach(nb => {
+        (nb.quizzes || []).forEach(quiz => {
+            allMaterials.push({
+                id: quiz.id,
+                name: quiz.name,
+                title: quiz.name,
+                notebookName: nb.name,
+                notebookId: nb.id,
+                materialType: 'quiz',
+                genType: 'quiz',
+                description: quiz.description,
+                questions: quiz.questions,
+                created_at: quiz.created_at,
+                date: new Date(quiz.updated_at || quiz.created_at || Date.now())
+            });
+        });
+        (nb.generations || []).forEach(gen => {
+            if (gen.generation_type === 'quiz') {
+                return; // Avoid duplicate with QuizSet
+            }
+            allMaterials.push({
+                id: gen.id,
+                name: gen.generation_type,
+                title: generationLabel[gen.generation_type] || gen.generation_type,
+                content: gen.content,
+                notebookName: nb.name,
+                notebookId: nb.id,
+                materialType: 'generation',
+                genType: gen.generation_type,
+                created_at: gen.created_at,
+                date: new Date(gen.created_at || Date.now())
+            });
+        });
+    });
+
+    // 1. Filter by Notebook
+    if (studyMaterialsNotebookFilter === 'unlinked') {
+        allMaterials = allMaterials.filter(item => !item.notebookId);
+    } else if (studyMaterialsNotebookFilter !== 'all') {
+        allMaterials = allMaterials.filter(item => String(item.notebookId) === String(studyMaterialsNotebookFilter));
+    }
+
+    // 2. Filter by Type
+    if (studyMaterialsTypeFilter !== 'all') {
+        allMaterials = allMaterials.filter(item => item.genType === studyMaterialsTypeFilter);
+    }
+
+    // 3. Sort
+    allMaterials.sort((a, b) => {
+        if (studyMaterialsSortBy === 'name_asc') {
+            return (a.title || '').localeCompare(b.title || '', lang);
+        } else if (studyMaterialsSortBy === 'name_desc') {
+            return (b.title || '').localeCompare(a.title || '', lang);
+        } else if (studyMaterialsSortBy === 'date_asc') {
+            return a.date - b.date;
+        } else { // date_desc (default)
+            return b.date - a.date;
+        }
+    });
+
+    // 4. Pagination calculation
+    const totalItems = allMaterials.length;
+    const totalPages = Math.max(1, Math.ceil(totalItems / STUDY_MATERIALS_PER_PAGE));
+    if (currentStudyMaterialsPage > totalPages) currentStudyMaterialsPage = totalPages;
+    if (currentStudyMaterialsPage < 1) currentStudyMaterialsPage = 1;
+    const startIdx = (currentStudyMaterialsPage - 1) * STUDY_MATERIALS_PER_PAGE;
+    const endIdx = startIdx + STUDY_MATERIALS_PER_PAGE;
+    const pageItems = allMaterials.slice(startIdx, endIdx);
+
+    // 5. Render list
+    if (totalItems === 0) {
+        container.innerHTML = `<div class="col-span-full text-xs text-slate-400 text-center py-12">${t('key_57', 'Chưa có tài nguyên học tập nào.')}</div>`;
+    } else {
+        container.innerHTML = pageItems.map(item => {
+            const isQuiz = item.materialType === 'quiz';
+            const label = isQuiz ? t('key_tag_quiz', 'Trắc nghiệm') : (generationLabel[item.genType] || t('key_32', 'Tài liệu học tập'));
+            const title = isQuiz ? item.name : `${item.genType ? (generationLabel[item.genType] || item.genType) : t('key_32', 'Tài liệu học tập')}`;
+            const iconSrc = isQuiz ? typeIconMap.quiz : (typeIconMap[item.genType] || '/static/notebook/icon-set/material.png');
+            const badgeColor = badgeColorMap[item.genType] || defaultBadgeColor;
+
+            let summary = t('key_113', 'Không có mô tả nội dung.');
+            if (isQuiz) {
+                summary = item.description || `${(item.questions || []).length} ${t('key_114', 'câu hỏi trắc nghiệm đã tạo.')}`;
+            } else if (item.content) {
+                try {
+                    const cleaned = String(item.content).replace(/```/g, '').replace(/<[^>]*>/g, '').trim();
+                    summary = cleaned.length > 130 ? `${cleaned.slice(0, 130)}...` : cleaned;
+                } catch (e) {
+                    summary = String(item.content).slice(0, 130);
+                }
+            }
+
+            let actionButton = '';
+            if (isQuiz) {
+                actionButton = `
+                    <button onclick="openQuizBuilderModal(${item.id})" class="text-xs bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold px-3 py-1.5 rounded-xl transition">${t('key_btn_view_edit', 'Xem & Sửa')}</button>
+                    <button onclick="openQuizPlayModal(${item.id})" class="text-xs bg-brand-600 hover:bg-brand-700 text-white font-semibold px-3.5 py-1.5 rounded-xl transition shadow-sm">${t('key_btn_practice', 'Làm bài')}</button>
+                `;
+            } else if (item.genType === 'flashcards') {
+                actionButton = `
+                    <button onclick="openFlashcardEditorModal(${item.id})" class="text-xs bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold px-3 py-1.5 rounded-xl transition">${t('key_btn_view_edit', 'Xem & Sửa')}</button>
+                    <button onclick="openFlashcardReviewModal(${item.id})" class="text-xs bg-brand-600 hover:bg-brand-700 text-white font-semibold px-3.5 py-1.5 rounded-xl transition shadow-sm">${t('key_122', 'Luyện tập')}</button>
+                `;
+            } else if (item.genType === 'quiz') {
+                actionButton = `
+                    <button onclick="openQuizGenerationEditorModal(${item.id})" class="text-xs bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold px-3 py-1.5 rounded-xl transition">${t('key_btn_view_edit', 'Xem & Sửa')}</button>
+                    <button onclick="openQuizReviewModal(${item.id})" class="text-xs bg-brand-600 hover:bg-brand-700 text-white font-semibold px-3.5 py-1.5 rounded-xl transition shadow-sm">${t('key_btn_practice', 'Làm bài')}</button>
+                `;
+            } else if (item.genType === 'mind_map') {
+                actionButton = `<button onclick="openMindmapReviewModal(${item.id})" class="text-xs bg-brand-600 hover:bg-brand-700 text-white font-semibold px-3.5 py-1.5 rounded-xl transition shadow-sm">${t('key_btn_view_edit', 'Xem & Sửa')}</button>`;
+            } else if (item.genType === 'report') {
+                actionButton = `<button onclick="openReportReviewModal(${item.id})" class="text-xs bg-brand-600 hover:bg-brand-700 text-white font-semibold px-3.5 py-1.5 rounded-xl transition shadow-sm">${t('key_report_summary_title', 'Xem Báo cáo')}</button>`;
+            } else {
+                actionButton = `<button onclick="switchView('notebooks'); selectNotebook(${item.notebookId});" class="text-xs bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold px-3 py-1.5 rounded-xl transition">${t('key_btn_view_notebook', 'Sổ tay')}</button>`;
+            }
+
+            return `
+                <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4 hover:shadow-md transition">
+                    <div class="flex items-start justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3">
+                        <div class="flex items-center space-x-3 min-w-0">
+                            <img src="${iconSrc}" class="w-9 h-9 object-contain shrink-0" alt="${label}" />
+                            <div class="min-w-0">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider ${badgeColor}">
+                                    ${label}
+                                </span>
+                                <h4 class="font-bold text-slate-850 dark:text-white text-sm mt-1 truncate" title="${escapeHtml(title)}">${escapeHtml(title)}</h4>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            ${actionButton}
+                            <button onclick="event.stopPropagation(); deleteStudyMaterial(${item.id}, '${item.materialType}')" class="p-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-500 transition opacity-80 hover:opacity-100 shrink-0" title="${t('key_btn_delete', 'Xóa tài liệu')}">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-3 bg-slate-50 dark:bg-slate-900/40 p-3 rounded-xl border border-slate-100 dark:border-slate-800">${summary}</p>
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center text-[10px] text-slate-400 pt-3 border-t border-slate-100 dark:border-slate-800 mt-3 gap-2">
+                        <span>${t('key_btn_view_notebook', 'Sổ tay')}: <strong>${item.notebookName || t('key_103', 'Không liên kết')}</strong></span>
+                        <span>${new Date(item.created_at || Date.now()).toLocaleDateString(localeStr)}</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // 6. Render pagination (always visible)
+    if (paginationContainer) {
+        const showingStart = totalItems === 0 ? 0 : startIdx + 1;
+        const showingEnd = Math.min(endIdx, totalItems);
+
+        let pageButtons = '';
+        let rangeStart = Math.max(1, currentStudyMaterialsPage - 2);
+        let rangeEnd = Math.min(totalPages, rangeStart + 4);
+        if (rangeEnd - rangeStart < 4) rangeStart = Math.max(1, rangeEnd - 4);
+
+        for (let p = rangeStart; p <= rangeEnd; p++) {
+            if (p === currentStudyMaterialsPage) {
+                pageButtons += `<button class="w-8 h-8 rounded-lg text-xs font-bold bg-brand-600 text-white shadow-sm">${p}</button>`;
+            } else {
+                pageButtons += `<button onclick="setStudyMaterialsPage(${p})" class="w-8 h-8 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">${p}</button>`;
+            }
+        }
+
+        paginationContainer.innerHTML = `
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+                <span class="text-[11px] text-slate-400">
+                    ${t('key_pagination_display', 'Hiển thị')} <strong>${showingStart}-${showingEnd}</strong> ${t('key_of', '/')} <strong>${totalItems}</strong> ${t('key_total_docs_count', 'tài liệu')}
+                </span>
+                <div class="flex items-center gap-1.5">
+                    <button onclick="setStudyMaterialsPage(${currentStudyMaterialsPage - 1})" ${currentStudyMaterialsPage <= 1 ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg text-xs font-semibold transition ${currentStudyMaterialsPage <= 1 ? 'text-slate-300 dark:text-slate-700 cursor-not-allowed' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}">
+                        ${t('key_prev_page', 'Trước')}
+                    </button>
+                    ${pageButtons}
+                    <button onclick="setStudyMaterialsPage(${currentStudyMaterialsPage + 1})" ${currentStudyMaterialsPage >= totalPages ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg text-xs font-semibold transition ${currentStudyMaterialsPage >= totalPages ? 'text-slate-300 dark:text-slate-700 cursor-not-allowed' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}">
+                        ${t('key_next_page', 'Sau')}
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+}
+
+function renderAllNotesView() {
+    const container = document.getElementById('all-notes-list');
+    if (!container) return;
+    
+    const t = window.t || ((k, f) => f);
+
+    let allNotes = [];
+    notebooks.forEach(nb => {
+        const notes = nb.notes || [];
+        notes.forEach(note => {
+            allNotes.push({ ...note, notebookName: nb.name, notebookId: nb.id });
+        });
+    });
+
+    if (allNotes.length === 0) {
+        container.innerHTML = `<div class="text-xs text-slate-400 text-center py-12">${t('key_25', 'Không có ghi chú nào.')}</div>`;
+        return;
+    }
+
+    container.innerHTML = allNotes.map(note => `
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4 hover:scale-[1.005] hover:shadow-md transition">
+            <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+                <div>
+                    <h4 class="font-bold text-slate-850 dark:text-white text-sm">${note.title}</h4>
+                    <span class="text-[10px] text-slate-400 mt-1 block">${t('key_21', 'Thuộc Sổ tay')}: <strong>${note.notebookName}</strong></span>
+                </div>
+                <button onclick="switchView('notebooks'); selectNotebook(${note.notebookId});" class="text-[10px] bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1 text-slate-600 dark:text-slate-300 font-semibold hover:bg-slate-100 dark:hover:bg-slate-700">${t('key_btn_view_detail', 'Xem chi tiết')}</button>
+            </div>
+            ${note.is_locked ? `
+                <div class="bg-rose-50/50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-350 p-4 rounded-xl text-xs flex items-center space-x-2">
+                    <span>🔒</span>
+                    <span>${t('key_status_drafting', 'Bài viết phản biện đang ở trạng thái Khóa. Hãy truy cập Sổ tay để mở khóa cùng AI.')}</span>
+                </div>
+            ` : `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-slate-50 dark:bg-slate-950 p-3.5 rounded-xl border border-slate-150/40 dark:border-slate-800 text-xs">
+                        <span class="text-[9px] text-slate-400 uppercase font-bold block mb-1">${t('key_18', 'Ý kiến của bạn')}</span>
+                        <p class="text-slate-750 dark:text-slate-300 line-clamp-4">${note.initial_content}</p>
+                    </div>
+                    <div class="bg-indigo-50/30 dark:bg-indigo-950/10 p-3.5 rounded-xl border border-indigo-100/50 dark:border-indigo-900/30 text-xs">
+                        <span class="text-[9px] text-indigo-500 uppercase font-bold block mb-1">${t('key_58', 'Phân tích Logic')}</span>
+                        <p class="text-slate-750 dark:text-slate-300 line-clamp-4">${note.ai_rebuttal}</p>
+                    </div>
+                </div>
+            `}
+        </div>
+    `).join('');
+}
+
+function switchView(viewName) {
+    activeView = viewName;
+    
+    if (viewName === 'dashboard') {
+        fetchNotifications();
+    }
+    
+    // Toggle view visibility
+    ['dashboard', 'notebooks', 'documents', 'study-materials', 'notes', 'progress', 'settings'].forEach(v => {
+        const el = document.getElementById(`view-${v}`);
+        if (el) {
+            el.classList.toggle('hidden', v !== viewName);
+        }
+        
+        // Toggle active styles on navbar links
+        const navBtn = document.getElementById(`nav-${v}`);
+        if (navBtn) {
+            if (v === viewName) {
+                navBtn.className = "w-full flex items-center justify-start space-x-2.5 px-3 py-2 rounded-xl text-xs text-left font-semibold transition bg-brand-50 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400 shadow-sm";
+            } else {
+                navBtn.className = "w-full flex items-center justify-start space-x-2.5 px-3 py-2 rounded-xl text-xs text-left font-semibold transition text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white";
+            }
+        }
+    });
+
+    // Re-render specific view resources
+    if (viewName === 'dashboard') {
+        updateDashboardStats();
+        renderRecentActivityTable();
+        setTimeout(renderCharts, 100);
+    } else if (viewName === 'documents') {
+        renderAllDocumentsView();
+    } else if (viewName === 'study-materials') {
+        renderStudyMaterialsView();
+    } else if (viewName === 'notes') {
+        renderAllNotesView();
+    } else if (viewName === 'progress') {
+        updateProgressViewStats();
+    }
+    
+    // Auto close mobile sidebar
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar && !sidebar.classList.contains('-translate-x-full')) {
+        sidebar.classList.add('-translate-x-full');
+    }
+}
+
+window.renderAllDocumentsView = renderAllDocumentsView;
+window.renderStudyMaterialsView = renderStudyMaterialsView;
+window.renderAllNotesView = renderAllNotesView;
+window.switchView = switchView;
+window.setDocumentsSort = setDocumentsSort;
+window.setDocumentsPage = setDocumentsPage;
+window.setStudyMaterialsSort = setStudyMaterialsSort;
+window.setStudyMaterialsNotebookFilter = setStudyMaterialsNotebookFilter;
+window.setStudyMaterialsTypeFilter = setStudyMaterialsTypeFilter;
+window.setStudyMaterialsPage = setStudyMaterialsPage;
+window.deleteStudyMaterial = deleteStudyMaterial;
+
+

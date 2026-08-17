@@ -1,0 +1,190 @@
+{% load static %}
+<!-- 1. VIEW: DASHBOARD -->
+<section id="view-dashboard" class="space-y-8">
+  <!-- Welcome Title -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="flex items-center space-x-3.5">
+      <img src="{% static 'notebook/icon-set/greeting.png' %}" class="w-12 h-12 object-contain shrink-0" alt="Chào mừng" />
+      <div>
+        <div class="flex items-center gap-2">
+          <h2 id="dashboard-welcome-heading" translate="key_0" class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Chào mừng bạn quay lại, Linh!</h2>
+          <span id="dashboard-user-purpose-badge" class="hidden sm:inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-brand-50 text-brand-700 dark:bg-brand-950/60 dark:text-brand-300 border border-brand-200/60 dark:border-brand-800">
+            Học tập
+          </span>
+        </div>
+        <p id="dashboard-welcome-sub" translate="key_1" class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Dưới đây là tóm tắt tiến độ và các tài liệu học tập của bạn.</p>
+      </div>
+    </div>
+    <!-- Quick Settings Link -->
+    <button type="button" onclick="switchView('settings')" class="inline-flex items-center space-x-1.5 text-xs font-semibold text-brand-600 dark:text-brand-400 bg-brand-50/60 dark:bg-brand-950/40 hover:bg-brand-100 dark:hover:bg-brand-900/40 px-3.5 py-2 rounded-xl border border-brand-200/60 dark:border-brand-800 transition cursor-pointer">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+      </svg>
+      <span translate="key_custom_goal">Tùy chỉnh mục tiêu học</span>
+    </button>
+  </div>
+
+  <!-- Stat Cards (Order: 1. Thời gian học -> 2. Mục tiêu tuần -> 3. Số sổ tay -> 4. Tài liệu tải lên) -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <!-- Stat Card 1: Thời gian học (hôm nay) -->
+    <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex items-center space-x-4 hover:shadow-md hover:scale-[1.01] transition duration-200">
+      <div class="p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 flex items-center justify-center shrink-0">
+        <img src="{% static 'notebook/icon-set/time.png' %}" class="w-8 h-8 object-contain shrink-0" alt="Thời gian học" />
+      </div>
+      <div class="min-w-0 flex-1">
+        <span translate="key_2" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">Thời gian học</span>
+        <span id="stat-today-study-time" class="block text-2xl font-extrabold text-slate-800 dark:text-white mt-0.5">0 phút</span>
+        <div id="stat-study-vs-yesterday" class="text-[11px] font-bold text-emerald-500 flex items-center mt-0.5">
+          <svg class="w-3.5 h-3.5 mr-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+          </svg>
+          <span id="stat-study-vs-yesterday-text">+0% so với hôm qua</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stat Card 2: Mục tiêu tuần (% hoàn thành) -->
+    <div id="stat-weekly-goal-card" class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex items-center space-x-4 hover:shadow-md hover:scale-[1.01] transition duration-200">
+      <div id="stat-weekly-goal-icon-wrap" class="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/50 flex items-center justify-center shrink-0">
+        <img src="{% static 'notebook/icon-set/fire-up.png' %}" class="w-8 h-8 object-contain shrink-0" alt="Mục tiêu tuần" />
+      </div>
+      <div class="min-w-0 flex-1">
+        <span translate="key_weekly_goal_completion" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">Mục tiêu tuần</span>
+        <span id="stat-weekly-goal-pct" class="block text-2xl font-extrabold text-slate-800 dark:text-white mt-0.5">0%</span>
+        <div id="stat-weekly-goal-track" class="w-full bg-slate-100 dark:bg-slate-800 h-2.5 rounded-full mt-2 overflow-hidden relative">
+          <!-- Layer 1: Vàng (0 - 100%) -->
+          <div id="stat-goal-layer-1" class="absolute inset-y-0 left-0 h-full stat-tier-yellow-bar rounded-full transition-all duration-300" style="width: 0%; z-index: 1;"></div>
+          <!-- Layer 2: Xanh lá (101 - 200%) -->
+          <div id="stat-goal-layer-2" class="absolute inset-y-0 left-0 h-full stat-tier-green-bar rounded-full transition-all duration-300" style="width: 0%; z-index: 2;"></div>
+          <!-- Layer 3: Xanh dương (201 - 300%) -->
+          <div id="stat-goal-layer-3" class="absolute inset-y-0 left-0 h-full stat-tier-blue-bar rounded-full transition-all duration-300" style="width: 0%; z-index: 3;"></div>
+          <!-- Layer 4: Tím Gradient Neon (> 300% & MAX) -->
+          <div id="stat-goal-layer-4" class="absolute inset-y-0 left-0 h-full stat-max-purple-bar rounded-full transition-all duration-300 flex items-center justify-center" style="width: 0%; z-index: 4;">
+            <span id="stat-weekly-goal-bar-text" class="hidden text-[8px] font-black tracking-widest text-white uppercase select-none leading-none drop-shadow">MAX</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stat Card 3: Số Sổ tay -->
+    <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex items-center space-x-4 hover:shadow-md hover:scale-[1.01] transition duration-200">
+      <div class="p-2.5 rounded-xl bg-violet-50 dark:bg-violet-950/50 flex items-center justify-center shrink-0">
+        <img src="{% static 'notebook/icon-set/notebook.png' %}" class="w-8 h-8 object-contain shrink-0" alt="Số Sổ tay" />
+      </div>
+      <div class="min-w-0 flex-1">
+        <span translate="key_5" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">Số Sổ tay (Notebooks)</span>
+        <span id="stat-notebooks-count" class="block text-2xl font-extrabold text-slate-800 dark:text-white mt-0.5">0</span>
+        <span translate="key_6" class="text-[11px] text-slate-400 font-medium block mt-1">Đang quản lý</span>
+      </div>
+    </div>
+
+    <!-- Stat Card 4: Tài liệu tải lên -->
+    <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex items-center space-x-4 hover:shadow-md hover:scale-[1.01] transition duration-200">
+      <div class="p-2.5 rounded-xl bg-teal-50 dark:bg-teal-950/50 flex items-center justify-center shrink-0">
+        <img src="{% static 'notebook/icon-set/upload.png' %}" class="w-8 h-8 object-contain shrink-0" alt="Tài liệu tải lên" />
+      </div>
+      <div class="min-w-0 flex-1">
+        <span translate="key_7" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">Tài liệu tải lên</span>
+        <span id="stat-documents-count" class="block text-2xl font-extrabold text-slate-800 dark:text-white mt-0.5">0</span>
+        <span translate="key_8" class="text-[11px] text-slate-400 font-medium block mt-1">PDF, Links & Text</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts & Analytics Section -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Hours Chart -->
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm lg:col-span-2">
+      <div class="flex items-center justify-between mb-4">
+        <h3 translate="key_10" class="font-bold text-slate-800 dark:text-white text-base">Thời lượng tự học hàng tuần</h3>
+        <div class="flex items-center space-x-2">
+          <span translate="key_11" class="text-xs text-slate-400">7 ngày gần nhất</span>
+          <button type="button" onclick="openDebugTimeModal()" class="inline-flex items-center text-[11px] font-bold text-slate-400 hover:text-brand-600 dark:hover:text-brand-400 bg-slate-100/80 dark:bg-slate-800/80 hover:bg-brand-50 dark:hover:bg-brand-950/40 px-2 py-1 rounded-lg border border-slate-200/60 dark:border-slate-700/60 transition cursor-pointer" title="Debug / Chỉnh sửa thời gian học 7 ngày">
+            <span>🛠️ Debug</span>
+          </button>
+        </div>
+      </div>
+      <div class="h-64 relative">
+        <canvas id="hoursChart"></canvas>
+      </div>
+    </div>
+    <!-- Type Distribution -->
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+      <div class="flex items-center justify-between mb-4">
+        <h3 translate="key_12" class="font-bold text-slate-800 dark:text-white text-base">Phân bổ loại tài liệu</h3>
+        <span translate="key_13" class="text-xs text-slate-400">Tổng tài liệu</span>
+      </div>
+      <div class="h-64 relative flex items-center justify-center">
+        <canvas id="distributionChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Activity & Table Section -->
+  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+      <div>
+        <h3 translate="key_14" class="font-bold text-slate-800 dark:text-white text-base">Tài liệu & Ghi chú gần đây</h3>
+        <p translate="key_15" class="text-xs text-slate-400 mt-1">Danh sách tổng hợp tài nguyên của các Sổ tay</p>
+      </div>
+      <!-- Table Filter and Sort -->
+      <div class="flex flex-wrap items-center gap-3">
+        <select id="table-filter-type" onchange="setDashboardTableFilter(this.value)" class="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs focus:outline-none text-slate-600 dark:text-slate-400 cursor-pointer">
+          <option value="all" translate="key_filter_all">Tất cả</option>
+          <option value="source" translate="key_filter_source">Tài liệu liên quan</option>
+          <option value="quiz" translate="key_filter_quiz">Trắc nghiệm</option>
+          <option value="report" translate="key_filter_report">Report</option>
+          <option value="flashcards" translate="key_filter_flashcard">Flashcard</option>
+          <option value="mind_map" translate="key_filter_mindmap">Mindmap</option>
+        </select>
+        <!-- Sort Dropdown -->
+        <div class="flex items-center gap-1.5">
+          <label for="table-sort-select" class="text-[10px] font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap" translate="key_sort_label">Sắp xếp:</label>
+          <select id="table-sort-select" onchange="setDashboardTableSort(this.value)" class="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs focus:outline-none text-slate-600 dark:text-slate-400 cursor-pointer">
+            <option value="date_desc" translate="key_sort_date_desc">Mới nhất</option>
+            <option value="date_asc" translate="key_sort_date_asc">Cũ nhất</option>
+            <option value="name_asc" translate="key_sort_name_asc">Tên: A → Z</option>
+            <option value="name_desc" translate="key_sort_name_desc">Tên: Z → A</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Responsive Table -->
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm border-collapse">
+        <thead>
+          <tr class="border-b border-slate-100 dark:border-slate-800 text-slate-400 text-xs font-bold uppercase tracking-wider">
+            <th translate="key_19" class="py-3.5 px-4">Tên tài liệu / ghi chú</th>
+            <th translate="key_20" class="py-3.5 px-4">Loại</th>
+            <th translate="key_21" class="py-3.5 px-4">Thuộc Sổ tay</th>
+            <th translate="key_22" class="py-3.5 px-4">Ngày tạo</th>
+            <th translate="key_23" class="py-3.5 px-4">Trạng thái</th>
+            <th translate="key_24" class="py-3.5 px-4 text-right">Thao tác</th>
+          </tr>
+        </thead>
+        <tbody id="recent-activity-table-body" class="divide-y divide-slate-100 dark:divide-slate-800/50">
+          <!-- Dynamic rows / Skeleton -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Table Pagination -->
+    <div id="dashboard-table-pagination" class="mt-4">
+      <!-- Rendered dynamically -->
+    </div>
+
+    <!-- Empty / Loading States -->
+    <div id="table-empty-state" class="hidden py-12 flex flex-col items-center justify-center text-center space-y-3">
+      <div class="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0a2 2 0 01-2 2H6a2 2 0 01-2-2m16 0V9a2 2 0 00-2-2H6a2 2 0 00-2 2v3m16 0h-3m-3 0H7" />
+        </svg>
+      </div>
+      <div>
+        <p translate="key_25" class="font-bold text-slate-700 dark:text-slate-300 text-sm">Chưa có hoạt động nào</p>
+        <p translate="key_26" class="text-xs text-slate-400 mt-1">Hãy tạo một Sổ tay và thêm tài nguyên tài liệu để bắt đầu.</p>
+      </div>
+    </div>
+  </div>
+</section>
