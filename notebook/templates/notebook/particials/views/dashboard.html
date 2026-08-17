@@ -28,8 +28,8 @@
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6">
     <!-- Stat Card 1: Thời gian học (hôm nay) -->
     <div class="group bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-sm flex items-center space-x-3.5 hover:shadow-md hover:border-brand-300 dark:hover:border-brand-700/60 transition duration-200">
-      <div class="w-11 h-11 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-100/80 dark:border-indigo-900/50 flex items-center justify-center shrink-0 relative">
-        <img src="{% static 'notebook/icon-set/time.png' %}" class="w-13 h-13 max-w-[46px] max-h-[46px] object-contain shrink-0 drop-shadow-md transform group-hover:scale-110 transition duration-200" alt="Thời gian học" />
+      <div class="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-100/80 dark:border-indigo-900/50 flex items-center justify-center shrink-0 relative">
+        <img src="{% static 'notebook/icon-set/time.png' %}" class="w-9.5 h-9.5 max-w-[40px] max-h-[40px] object-contain shrink-0 drop-shadow-md transform group-hover:scale-110 transition duration-200" alt="Thời gian học" />
       </div>
       <div class="min-w-0 flex-1">
         <span translate="key_2" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">Thời gian học</span>
@@ -44,9 +44,16 @@
     </div>
 
     <!-- Stat Card 2: Mục tiêu tuần (% hoàn thành) -->
-    <div id="stat-weekly-goal-card" class="group bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-sm flex items-center space-x-3.5 hover:shadow-md hover:border-brand-300 dark:hover:border-brand-700/60 transition duration-200">
-      <div id="stat-weekly-goal-icon-wrap" class="w-11 h-11 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-100/80 dark:border-amber-900/50 flex items-center justify-center shrink-0 relative">
-        <img src="{% static 'notebook/icon-set/fire-up.png' %}" class="w-13 h-13 max-w-[46px] max-h-[46px] object-contain shrink-0 drop-shadow-md transform group-hover:scale-110 transition duration-200" alt="Mục tiêu tuần" />
+    <div id="stat-weekly-goal-card" onclick="updateDashboardStats(true)" title="Nhấn để phát lại animation tiến trình" class="group bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-sm flex items-center space-x-3.5 hover:shadow-md hover:border-brand-300 dark:hover:border-brand-700/60 transition duration-200 cursor-pointer select-none">
+      <div id="stat-weekly-goal-icon-wrap" class="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-100/80 dark:border-amber-900/50 flex items-center justify-center shrink-0 relative transition-all duration-300">
+        <img id="stat-weekly-goal-icon"
+             data-icon-lv1="{% static 'notebook/icon-set/lv1fire.png' %}"
+             data-icon-lv2="{% static 'notebook/icon-set/lv2fire.png' %}"
+             data-icon-lv3="{% static 'notebook/icon-set/lv3fire.png' %}"
+             data-icon-lv4="{% static 'notebook/icon-set/purplefire.png' %}"
+             src="{% static 'notebook/icon-set/lv1fire.png' %}"
+             class="w-9.5 h-9.5 max-w-[40px] max-h-[40px] object-contain shrink-0 drop-shadow-md transform group-hover:scale-110 transition duration-200 relative z-10"
+             alt="Mục tiêu tuần" />
       </div>
       <div class="min-w-0 flex-1">
         <span translate="key_weekly_goal_completion" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">Mục tiêu tuần</span>
@@ -68,8 +75,8 @@
 
     <!-- Stat Card 3: Số Sổ tay -->
     <div class="group bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-sm flex items-center space-x-3.5 hover:shadow-md hover:border-brand-300 dark:hover:border-brand-700/60 transition duration-200">
-      <div class="w-11 h-11 rounded-xl bg-violet-50 dark:bg-violet-950/60 border border-violet-100/80 dark:border-violet-900/50 flex items-center justify-center shrink-0 relative">
-        <img src="{% static 'notebook/icon-set/notebook.png' %}" class="w-13 h-13 max-w-[46px] max-h-[46px] object-contain shrink-0 drop-shadow-md transform group-hover:scale-110 transition duration-200" alt="Số Sổ tay" />
+      <div class="w-12 h-12 rounded-xl bg-violet-50 dark:bg-violet-950/60 border border-violet-100/80 dark:border-violet-900/50 flex items-center justify-center shrink-0 relative">
+        <img src="{% static 'notebook/icon-set/notebook.png' %}" class="w-9.5 h-9.5 max-w-[40px] max-h-[40px] object-contain shrink-0 drop-shadow-md transform group-hover:scale-110 transition duration-200" alt="Số Sổ tay" />
       </div>
       <div class="min-w-0 flex-1">
         <span translate="key_5" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">Số Sổ tay (Notebooks)</span>
@@ -80,8 +87,8 @@
 
     <!-- Stat Card 4: Tài liệu tải lên -->
     <div class="group bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-sm flex items-center space-x-3.5 hover:shadow-md hover:border-brand-300 dark:hover:border-brand-700/60 transition duration-200">
-      <div class="w-11 h-11 rounded-xl bg-teal-50 dark:bg-teal-950/60 border border-teal-100/80 dark:border-teal-900/50 flex items-center justify-center shrink-0 relative">
-        <img src="{% static 'notebook/icon-set/upload.png' %}" class="w-13 h-13 max-w-[46px] max-h-[46px] object-contain shrink-0 drop-shadow-md transform group-hover:scale-110 transition duration-200" alt="Tài liệu tải lên" />
+      <div class="w-12 h-12 rounded-xl bg-teal-50 dark:bg-teal-950/60 border border-teal-100/80 dark:border-teal-900/50 flex items-center justify-center shrink-0 relative">
+        <img src="{% static 'notebook/icon-set/upload.png' %}" class="w-9.5 h-9.5 max-w-[40px] max-h-[40px] object-contain shrink-0 drop-shadow-md transform group-hover:scale-110 transition duration-200" alt="Tài liệu tải lên" />
       </div>
       <div class="min-w-0 flex-1">
         <span translate="key_7" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider truncate">Tài liệu tải lên</span>

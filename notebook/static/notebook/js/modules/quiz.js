@@ -736,7 +736,8 @@
                             </div>
                             <div class="flex gap-2">
                                 <button onclick="openQuizPlayModal(${quiz.id})" class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center space-x-1.5 shadow-sm">
-                                    <span>🎯</span> <span>${t('key_quiz_take_now_btn', 'Làm bài ngay')}</span>
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    <span>${t('key_quiz_take_now_btn', 'Làm bài ngay')}</span>
                                 </button>
                                 <button onclick="openQuizBuilderModal(${quiz.id})" class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-3.5 py-2 rounded-xl text-xs font-semibold transition hover:bg-slate-200 dark:hover:bg-slate-700">${t('key_quiz_edit_questions_btn', 'Sửa câu hỏi')}</button>
                             </div>

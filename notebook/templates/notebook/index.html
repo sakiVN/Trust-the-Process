@@ -20,28 +20,50 @@
     <script src="https://cdn.jsdelivr.net/npm/jsmind@0.6.4/es6/jsmind.draggable-node.js"></script>
     
     
-    <script src="{% static 'notebook/js/state.js' %}?v=2.4"></script>
-    <script src="{% static 'notebook/js/modules/utils.js' %}?v=2.4"></script>
-    <script src="{% static 'notebook/js/modules/api.js' %}?v=2.4"></script>
-    <script src="{% static 'notebook/js/modules/theme.js' %}?v=2.4"></script>
-    <script src="{% static 'notebook/js/modules/notebooks.js' %}?v=2.4"></script>
-    <script src="{% static 'notebook/js/modules/sources.js' %}?v=2.4"></script>
-    <script src="{% static 'notebook/js/modules/quiz.js' %}?v=2.4"></script>
-    <script src="{% static 'notebook/js/modules/flashcards.js' %}?v=2.4"></script>
-    <script src="{% static 'notebook/js/modules/mindmap.js' %}?v=2.4"></script>
-    <script src="{% static 'notebook/js/modules/dashboard.js' %}?v=2.4"></script>
-    <script src="{% static 'notebook/js/modules/progress.js' %}?v=2.4"></script>
-    <script src="{% static 'notebook/js/modules/views.js' %}?v=2.4"></script>
-    <script src="{% static 'notebook/js/modules/notes.js' %}?v=2.4"></script>
-    <script src="{% static 'notebook/js/modules/generations.js' %}?v=2.4"></script>
-    <script src="{% static 'notebook/js/modules/modals.js' %}?v=2.4"></script>
-    <script src="{% static 'notebook/js/modules/notifications.js' %}?v=2.4"></script>
-    <script src="{% static 'notebook/js/modules/search.js' %}?v=2.4"></script>
-    <script src="{% static 'notebook/js/modules/focus.js' %}?v=2.4"></script>
-    <script src="{% static 'notebook/js/modules/settings.js' %}?v=2.4"></script>
-    <script src="{% static 'notebook/js/modules/context.js' %}?v=2.4"></script>
-    <script src="{% static 'notebook/js/modules/language/settingLanguage.js' %}?v=2.4"></script>
-    <script src="{% static 'notebook/js/init.js' %}?v=2.4"></script>
+    <script src="{% static 'notebook/js/state.js' %}?v=3.3"></script>
+    <script src="{% static 'notebook/js/modules/utils.js' %}?v=3.3"></script>
+    <script src="{% static 'notebook/js/modules/api.js' %}?v=3.3"></script>
+    <script src="{% static 'notebook/js/modules/theme.js' %}?v=3.3"></script>
+    <script src="{% static 'notebook/js/modules/notebooks.js' %}?v=3.3"></script>
+    <script src="{% static 'notebook/js/modules/sources.js' %}?v=3.3"></script>
+    <script src="{% static 'notebook/js/modules/quiz.js' %}?v=3.3"></script>
+    <script src="{% static 'notebook/js/modules/flashcards.js' %}?v=3.3"></script>
+    <script src="{% static 'notebook/js/modules/mindmap.js' %}?v=3.3"></script>
+    <script src="{% static 'notebook/js/modules/dashboard.js' %}?v=3.3"></script>
+    <script src="{% static 'notebook/js/modules/progress.js' %}?v=3.3"></script>
+    <script src="{% static 'notebook/js/modules/views.js' %}?v=3.3"></script>
+    <script src="{% static 'notebook/js/modules/notes.js' %}?v=3.3"></script>
+    <script src="{% static 'notebook/js/modules/generations.js' %}?v=3.3"></script>
+    <script src="{% static 'notebook/js/modules/modals.js' %}?v=3.3"></script>
+    <script src="{% static 'notebook/js/modules/notifications.js' %}?v=3.3"></script>
+    <script src="{% static 'notebook/js/modules/search.js' %}?v=3.3"></script>
+    <script src="{% static 'notebook/js/modules/focus.js' %}?v=3.3"></script>
+    <script src="{% static 'notebook/js/modules/settings.js' %}?v=3.3"></script>
+    <script src="{% static 'notebook/js/modules/context.js' %}?v=3.3"></script>
+    <script src="{% static 'notebook/js/modules/language/settingLanguage.js' %}?v=3.3"></script>
+    <script src="{% static 'notebook/js/init.js' %}?v=3.3"></script>
+
+    <script>
+      // Global fallback for flipCard to ensure instant availability
+      window.flipCard = function(cardKey) {
+        var front = document.getElementById('front-' + cardKey);
+        var back = document.getElementById('back-' + cardKey);
+        var btnText = document.getElementById('flip-btn-text-' + cardKey);
+        var t = window.t || function(k, fb) { return fb; };
+        if (front && back) {
+          var isFlipped = front.classList.contains('hidden');
+          if (isFlipped) {
+            front.classList.remove('hidden');
+            back.classList.add('hidden');
+            if (btnText) btnText.innerText = t('key_btn_flip', 'Lật thẻ');
+          } else {
+            front.classList.add('hidden');
+            back.classList.remove('hidden');
+            if (btnText) btnText.innerText = t('key_flashcard_viewing_question', 'Quay lại câu hỏi');
+          }
+        }
+      };
+    </script>
 
 
     <!-- Google Fonts -->
@@ -75,7 +97,7 @@
             }
         }
     </script>
-    <link rel="stylesheet" href="{% static 'notebook/css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'notebook/css/base.css' %}?v=3.3">
     <style>
       /* Tier 1: Vàng (1-100%) */
       .stat-tier-yellow-bar {
@@ -154,6 +176,74 @@
               box-shadow: 0 0 35px rgba(168, 85, 247, 0.55), inset 0 0 22px rgba(236, 72, 153, 0.2);
           }
       }
+
+      /* Stat Icon Thump/Bounce/Pulse Animation (Độ nảy vừa vặn, tinh tế) */
+      @keyframes iconLevelPop {
+          0% {
+              transform: scale(0.7) rotate(-5deg);
+              filter: brightness(1.4) drop-shadow(0 0 8px rgba(255, 255, 255, 0.7));
+              opacity: 0.7;
+          }
+          35% {
+              transform: scale(1.26) rotate(4deg);
+              filter: brightness(1.2) drop-shadow(0 0 12px rgba(245, 158, 11, 0.6));
+              opacity: 1;
+          }
+          60% {
+              transform: scale(0.92) rotate(-1.5deg);
+          }
+          80% {
+              transform: scale(1.08) rotate(1deg);
+          }
+          100% {
+              transform: scale(1) rotate(0deg);
+              filter: brightness(1) drop-shadow(0 4px 6px rgba(0,0,0,0.15));
+              opacity: 1;
+          }
+      }
+
+      .stat-icon-pop {
+          animation: iconLevelPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.25) both !important;
+      }
+
+      @keyframes iconWrapThump {
+          0% {
+              transform: scale(0.95);
+              box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.5);
+          }
+          35% {
+              transform: scale(1.15);
+              box-shadow: 0 0 16px 4px rgba(245, 158, 11, 0.6);
+          }
+          65% {
+              transform: scale(0.96);
+          }
+          85% {
+              transform: scale(1.04);
+          }
+          100% {
+              transform: scale(1);
+              box-shadow: none;
+          }
+      }
+
+      .stat-icon-wrap-thump {
+          animation: iconWrapThump 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.25) both !important;
+      }
+
+      /* Screen / Card Impact Shake ("đập" rung êm nhẹ card khi lên cấp) */
+      @keyframes cardLevelImpact {
+          0% { transform: scale(1); }
+          25% { transform: scale(1.018) translateY(-1.5px); }
+          50% { transform: scale(0.99) translateY(0.5px); }
+          75% { transform: scale(1.008); }
+          100% { transform: scale(1) translateY(0); }
+      }
+
+      .stat-card-impact {
+          animation: cardLevelImpact 0.4s cubic-bezier(0.25, 1, 0.5, 1) both !important;
+      }
+
       /* FAB Glow */
       .fab-glow {
           box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.5), 0 8px 10px -6px rgba(99, 102, 241, 0.3);

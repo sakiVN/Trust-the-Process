@@ -179,7 +179,7 @@
                                             </button>
                                         </div>
                                         ${items.slice(0, 3).map((f, idx) => `
-                                            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 text-center space-y-3 shadow-sm">
+                                            <div onclick="flipCard('${gen.id}-${idx}')" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 text-center space-y-3 shadow-sm cursor-pointer hover:border-brand-300 dark:hover:border-brand-700/60 transition">
                                                 <div id="front-${gen.id}-${idx}">
                                                     <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">${idx + 1} / ${items.length} (${t('key_flashcard_question', 'Câu hỏi')})</div>
                                                     <div class="text-xs font-semibold text-slate-900 dark:text-white">${escapeHtml(f.question || '')}</div>
@@ -190,9 +190,9 @@
                                                     <div class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">${escapeHtml(f.answer || '')}</div>
                                                 </div>
 
-                                                <button onclick="flipCard('${gen.id}-${idx}')" class="mt-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-4 py-1.5 rounded-xl text-xs font-medium transition flex items-center justify-center space-x-1.5 mx-auto">
+                                                <button type="button" onclick="event.stopPropagation(); flipCard('${gen.id}-${idx}')" class="mt-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-4 py-1.5 rounded-xl text-xs font-medium transition flex items-center justify-center space-x-1.5 mx-auto cursor-pointer">
                                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                                                    <span>${t('key_btn_flip', 'Lật thẻ')}</span>
+                                                    <span id="flip-btn-text-${gen.id}-${idx}">${t('key_btn_flip', 'Lật thẻ')}</span>
                                                 </button>
                                             </div>
                                         `).join('')}
@@ -443,4 +443,25 @@
                 }
             });
         }
+
+        function flipCard(cardKey) {
+            const front = document.getElementById(`front-${cardKey}`);
+            const back = document.getElementById(`back-${cardKey}`);
+            const btnText = document.getElementById(`flip-btn-text-${cardKey}`);
+            const t = window.t || ((k, fallback) => fallback);
+
+            if (front && back) {
+                const isFlipped = front.classList.contains('hidden');
+                if (isFlipped) {
+                    front.classList.remove('hidden');
+                    back.classList.add('hidden');
+                    if (btnText) btnText.innerText = t('key_btn_flip', 'Lật thẻ');
+                } else {
+                    front.classList.add('hidden');
+                    back.classList.remove('hidden');
+                    if (btnText) btnText.innerText = t('key_flashcard_viewing_question', 'Quay lại câu hỏi');
+                }
+            }
+        }
+        window.flipCard = flipCard;
 

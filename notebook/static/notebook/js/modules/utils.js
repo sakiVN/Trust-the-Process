@@ -150,3 +150,24 @@
             });
         }
 
+        function flipCard(cardKey) {
+            const front = document.getElementById(`front-${cardKey}`);
+            const back = document.getElementById(`back-${cardKey}`);
+            const btnText = document.getElementById(`flip-btn-text-${cardKey}`);
+            const t = window.t || ((k, fallback) => fallback);
+
+            if (front && back) {
+                const isFlipped = front.classList.contains('hidden');
+                if (isFlipped) {
+                    front.classList.remove('hidden');
+                    back.classList.add('hidden');
+                    if (btnText) btnText.innerText = t('key_btn_flip', 'Lật thẻ');
+                } else {
+                    front.classList.add('hidden');
+                    back.classList.remove('hidden');
+                    if (btnText) btnText.innerText = t('key_flashcard_viewing_question', 'Quay lại câu hỏi');
+                }
+            }
+        }
+        window.flipCard = flipCard;
+

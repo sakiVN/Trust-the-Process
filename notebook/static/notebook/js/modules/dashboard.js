@@ -552,11 +552,53 @@ function renderTableSkeleton() {
 /**
  * ============================================================================
  * SEQUENTIAL STACKED FILLING ANIMATION ENGINE (Weekly Goal Progress)
- * Fills tier-by-tier: 0->100% (Vàng) -> 100->200% (Xanh lá đè Vàng) ->
- * 200->300% (Xanh dương đè Xanh lá) -> >300% (Tím gradient phát sáng & MAX)
+ * Fills tier-by-tier: 0->100% (Vàng - Lv1) -> 100->200% (Xanh lá - Lv2) ->
+ * 200->300% (Xanh dương - Lv3) -> >=300% (Tím gradient neon & MAX - Lv4)
  * ============================================================================
  */
 let currentWeeklyAnimRunId = 0;
+
+/**
+ * Helper to update weekly goal flame icon based on progress level (1 to 4)
+ * and trigger the pulse / thump ("đập") animation on level changes.
+ */
+function setGoalIconLevel(level, triggerAnimation = true) {
+    const iconEl = document.getElementById('stat-weekly-goal-icon');
+    const wrapEl = document.getElementById('stat-weekly-goal-icon-wrap');
+    const cardEl = document.getElementById('stat-weekly-goal-card');
+    if (!iconEl) return;
+
+    const fallbackSrc = level === 4 ? '/static/notebook/icon-set/purplefire.png' : `/static/notebook/icon-set/lv${level}fire.png`;
+    const iconSrc = iconEl.getAttribute(`data-icon-lv${level}`) || fallbackSrc;
+    const currentLevel = iconEl.getAttribute('data-current-level');
+    const isLevelChange = currentLevel !== String(level);
+
+    iconEl.src = iconSrc;
+    iconEl.setAttribute('data-current-level', String(level));
+
+    // Lv1 does NOT thump/pop ("không cần đập"); only Lv2, Lv3, Lv4 thump when leveling up
+    if (level > 1 && (triggerAnimation || isLevelChange)) {
+        iconEl.classList.remove('stat-icon-pop');
+        void iconEl.offsetWidth; // Force DOM reflow to restart CSS animation
+        iconEl.classList.add('stat-icon-pop');
+
+        if (wrapEl) {
+            wrapEl.classList.remove('stat-icon-wrap-thump');
+            void wrapEl.offsetWidth; // Force DOM reflow
+            wrapEl.classList.add('stat-icon-wrap-thump');
+        }
+
+        if (cardEl) {
+            cardEl.classList.remove('stat-card-impact');
+            void cardEl.offsetWidth; // Force DOM reflow
+            cardEl.classList.add('stat-card-impact');
+        }
+    } else {
+        iconEl.classList.remove('stat-icon-pop');
+        if (wrapEl) wrapEl.classList.remove('stat-icon-wrap-thump');
+        if (cardEl) cardEl.classList.remove('stat-card-impact');
+    }
+}
 
 async function animateWeeklyGoalSequence(targetPct) {
     const runId = ++currentWeeklyAnimRunId;
@@ -589,7 +631,8 @@ async function animateWeeklyGoalSequence(targetPct) {
     if (targetPct <= 0) {
         goalPctEl.innerText = "0%";
         goalPctEl.className = "block text-2xl font-extrabold text-slate-400 dark:text-slate-500 mt-0.5";
-        goalIconWrapEl.className = "p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0";
+        goalIconWrapEl.className = "w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center shrink-0 relative transition-all duration-300";
+        setGoalIconLevel(1, false);
         return;
     }
 
@@ -615,25 +658,30 @@ async function animateWeeklyGoalSequence(targetPct) {
     };
 
     // ------------------------------------------------------------------------
-    // STAGE 1: 0% -> min(targetPct, 100%) [VÀNG - Amber]
+    // STAGE 1: 0% -> min(targetPct, 100%) [VÀNG - Amber - Level 1 Icon (Không đập)]
     // ------------------------------------------------------------------------
     const stage1Target = Math.min(targetPct, 100);
     goalCardEl.classList.remove('stat-max-purple-card', 'stat-tier-green-card', 'stat-tier-blue-card');
     goalPctEl.className = "block text-2xl font-extrabold text-amber-500 dark:text-amber-400 mt-0.5";
-    goalIconWrapEl.className = "p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/50 flex items-center justify-center shrink-0";
+    goalIconWrapEl.className = "w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-100/80 dark:border-amber-900/50 flex items-center justify-center shrink-0 relative transition-all duration-300";
+    setGoalIconLevel(1, false);
 
-    await wait(20);
+    await wait(30);
     if (runId !== currentWeeklyAnimRunId) return;
 
-    l1.style.transition = "width 350ms cubic-bezier(0.25, 1, 0.5, 1)";
+    l1.style.transition = "width 450ms cubic-bezier(0.25, 1, 0.5, 1)";
     l1.style.width = `${stage1Target}%`;
-    await Promise.all([countNumber(0, stage1Target, 350), wait(350)]);
+    await Promise.all([countNumber(0, stage1Target, 450), wait(450)]);
     if (runId !== currentWeeklyAnimRunId) return;
 
-    if (targetPct <= 100) return;
+    if (targetPct < 100) return;
+
+    // Micro pause & Level up impact 1 -> 2
+    await wait(120);
+    if (runId !== currentWeeklyAnimRunId) return;
 
     // ------------------------------------------------------------------------
-    // STAGE 2: 100% -> min(targetPct, 200%) [XANH LÁ - Emerald Glow & Gradient]
+    // STAGE 2: 100% -> min(targetPct, 200%) [XANH LÁ - Emerald - Level 2 Icon]
     // ------------------------------------------------------------------------
     const stage2Target = Math.min(targetPct, 200);
     const stage2Fill = stage2Target - 100;
@@ -641,20 +689,25 @@ async function animateWeeklyGoalSequence(targetPct) {
     goalCardEl.classList.remove('stat-max-purple-card', 'stat-tier-blue-card');
     goalCardEl.classList.add('stat-tier-green-card');
     goalPctEl.className = "block text-2xl font-extrabold stat-tier-green-text mt-0.5";
-    goalIconWrapEl.className = "p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 flex items-center justify-center shrink-0 shadow-sm shadow-emerald-500/20";
+    goalIconWrapEl.className = "w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/80 dark:border-emerald-900/50 flex items-center justify-center shrink-0 relative shadow-sm shadow-emerald-500/20 transition-all duration-300";
+    setGoalIconLevel(2, true);
 
-    await wait(20);
+    await wait(30);
     if (runId !== currentWeeklyAnimRunId) return;
 
-    l2.style.transition = "width 350ms cubic-bezier(0.25, 1, 0.5, 1)";
+    l2.style.transition = "width 450ms cubic-bezier(0.25, 1, 0.5, 1)";
     l2.style.width = `${stage2Fill}%`;
-    await Promise.all([countNumber(100, stage2Target, 350), wait(350)]);
+    await Promise.all([countNumber(100, stage2Target, 450), wait(450)]);
     if (runId !== currentWeeklyAnimRunId) return;
 
-    if (targetPct <= 200) return;
+    if (targetPct < 200) return;
+
+    // Micro pause & Level up impact 2 -> 3
+    await wait(120);
+    if (runId !== currentWeeklyAnimRunId) return;
 
     // ------------------------------------------------------------------------
-    // STAGE 3: 200% -> min(targetPct, 300%) [XANH DƯƠNG - Blue Glow & Gradient]
+    // STAGE 3: 200% -> min(targetPct, 300%) [XANH DƯƠNG - Blue - Level 3 Icon]
     // ------------------------------------------------------------------------
     const stage3Target = Math.min(targetPct, 300);
     const stage3Fill = stage3Target - 200;
@@ -662,32 +715,38 @@ async function animateWeeklyGoalSequence(targetPct) {
     goalCardEl.classList.remove('stat-max-purple-card', 'stat-tier-green-card');
     goalCardEl.classList.add('stat-tier-blue-card');
     goalPctEl.className = "block text-2xl font-extrabold stat-tier-blue-text mt-0.5";
-    goalIconWrapEl.className = "p-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/50 flex items-center justify-center shrink-0 shadow-sm shadow-blue-500/20";
+    goalIconWrapEl.className = "w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200/80 dark:border-blue-900/50 flex items-center justify-center shrink-0 relative shadow-sm shadow-blue-500/20 transition-all duration-300";
+    setGoalIconLevel(3, true);
 
-    await wait(20);
+    await wait(30);
     if (runId !== currentWeeklyAnimRunId) return;
 
-    l3.style.transition = "width 350ms cubic-bezier(0.25, 1, 0.5, 1)";
+    l3.style.transition = "width 450ms cubic-bezier(0.25, 1, 0.5, 1)";
     l3.style.width = `${stage3Fill}%`;
-    await Promise.all([countNumber(200, stage3Target, 350), wait(350)]);
+    await Promise.all([countNumber(200, stage3Target, 450), wait(450)]);
     if (runId !== currentWeeklyAnimRunId) return;
 
-    if (targetPct <= 300) return;
+    if (targetPct < 300) return;
+
+    // Micro pause & Level up impact 3 -> 4
+    await wait(120);
+    if (runId !== currentWeeklyAnimRunId) return;
 
     // ------------------------------------------------------------------------
-    // STAGE 4: > 300% -> targetPct [TÍM - MAX Ultra Neon Glow & Gradient]
+    // STAGE 4: >= 300% -> targetPct [TÍM - MAX Neon - Level 4 Icon]
     // ------------------------------------------------------------------------
     goalCardEl.classList.remove('stat-tier-green-card', 'stat-tier-blue-card');
     goalCardEl.classList.add('stat-max-purple-card');
     goalPctEl.className = "block text-2xl font-extrabold stat-max-purple-text mt-0.5";
-    goalIconWrapEl.className = "p-2.5 rounded-xl bg-purple-100 dark:bg-purple-950/80 flex items-center justify-center shrink-0 shadow-sm shadow-purple-500/30";
+    goalIconWrapEl.className = "w-12 h-12 rounded-xl bg-purple-100 dark:bg-purple-950/80 border border-purple-300/80 dark:border-purple-800/60 flex items-center justify-center shrink-0 relative shadow-sm shadow-purple-500/30 transition-all duration-300";
+    setGoalIconLevel(4, true);
 
-    await wait(20);
+    await wait(30);
     if (runId !== currentWeeklyAnimRunId) return;
 
-    l4.style.transition = "width 400ms cubic-bezier(0.25, 1, 0.5, 1)";
+    l4.style.transition = "width 500ms cubic-bezier(0.25, 1, 0.5, 1)";
     l4.style.width = "100%";
-    await Promise.all([countNumber(300, targetPct, 400), wait(400)]);
+    await Promise.all([countNumber(300, targetPct, 500), wait(500)]);
     if (runId !== currentWeeklyAnimRunId) return;
 
     if (goalBarTextEl) {
@@ -722,33 +781,37 @@ function setWeeklyGoalDirect(targetPct) {
     if (targetPct <= 0) {
         goalPctEl.innerText = "0%";
         goalPctEl.className = "block text-2xl font-extrabold text-slate-400 dark:text-slate-500 mt-0.5";
-        goalIconWrapEl.className = "p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0";
+        goalIconWrapEl.className = "w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center shrink-0 relative transition-all duration-300";
+        setGoalIconLevel(1, false);
         l1.style.width = "0%";
         l2.style.width = "0%";
         l3.style.width = "0%";
         l4.style.width = "0%";
-    } else if (targetPct <= 100) {
+    } else if (targetPct < 100) {
         goalPctEl.innerText = `${targetPct}%`;
         goalPctEl.className = "block text-2xl font-extrabold text-amber-500 dark:text-amber-400 mt-0.5";
-        goalIconWrapEl.className = "p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/50 flex items-center justify-center shrink-0";
+        goalIconWrapEl.className = "w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-100/80 dark:border-amber-900/50 flex items-center justify-center shrink-0 relative transition-all duration-300";
+        setGoalIconLevel(1, false);
         l1.style.width = `${targetPct}%`;
         l2.style.width = "0%";
         l3.style.width = "0%";
         l4.style.width = "0%";
-    } else if (targetPct <= 200) {
+    } else if (targetPct < 200) {
         goalCardEl.classList.add('stat-tier-green-card');
         goalPctEl.className = "block text-2xl font-extrabold stat-tier-green-text mt-0.5";
         goalPctEl.innerText = `${targetPct}%`;
-        goalIconWrapEl.className = "p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 flex items-center justify-center shrink-0 shadow-sm shadow-emerald-500/20";
+        goalIconWrapEl.className = "w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/80 dark:border-emerald-900/50 flex items-center justify-center shrink-0 relative shadow-sm shadow-emerald-500/20 transition-all duration-300";
+        setGoalIconLevel(2, false);
         l1.style.width = "100%";
         l2.style.width = `${targetPct - 100}%`;
         l3.style.width = "0%";
         l4.style.width = "0%";
-    } else if (targetPct <= 300) {
+    } else if (targetPct < 300) {
         goalCardEl.classList.add('stat-tier-blue-card');
         goalPctEl.className = "block text-2xl font-extrabold stat-tier-blue-text mt-0.5";
         goalPctEl.innerText = `${targetPct}%`;
-        goalIconWrapEl.className = "p-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/50 flex items-center justify-center shrink-0 shadow-sm shadow-blue-500/20";
+        goalIconWrapEl.className = "w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200/80 dark:border-blue-900/50 flex items-center justify-center shrink-0 relative shadow-sm shadow-blue-500/20 transition-all duration-300";
+        setGoalIconLevel(3, false);
         l1.style.width = "100%";
         l2.style.width = "100%";
         l3.style.width = `${targetPct - 200}%`;
@@ -757,7 +820,8 @@ function setWeeklyGoalDirect(targetPct) {
         goalCardEl.classList.add('stat-max-purple-card');
         goalPctEl.className = "block text-2xl font-extrabold stat-max-purple-text mt-0.5";
         goalPctEl.innerText = `${targetPct}%`;
-        goalIconWrapEl.className = "p-2.5 rounded-xl bg-purple-100 dark:bg-purple-950/80 flex items-center justify-center shrink-0 shadow-sm shadow-purple-500/30";
+        goalIconWrapEl.className = "w-12 h-12 rounded-xl bg-purple-100 dark:bg-purple-950/80 border border-purple-300/80 dark:border-purple-800/60 flex items-center justify-center shrink-0 relative shadow-sm shadow-purple-500/30 transition-all duration-300";
+        setGoalIconLevel(4, false);
         l1.style.width = "100%";
         l2.style.width = "100%";
         l3.style.width = "100%";
@@ -765,4 +829,13 @@ function setWeeklyGoalDirect(targetPct) {
         if (goalBarTextEl) goalBarTextEl.classList.remove('hidden');
     }
 }
+
+// Global exports for testing and replaying anytime
+window.setGoalIconLevel = setGoalIconLevel;
+window.animateWeeklyGoalSequence = animateWeeklyGoalSequence;
+window.setWeeklyGoalDirect = setWeeklyGoalDirect;
+window.updateDashboardStats = updateDashboardStats;
+
+
+
 
