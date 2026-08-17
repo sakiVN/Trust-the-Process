@@ -512,7 +512,14 @@
             const totalQuestions = document.querySelectorAll('#quiz-play-content .quiz-question-card').length;
             const answeredCount = Object.keys(currentQuizAnswers).length;
             if (answeredCount < totalQuestions) {
-                if (!confirm(t('key_quiz_unanswered_alert', 'Bạn còn câu hỏi chưa trả lời. Bạn có chắc chắn muốn nộp bài không?'))) {
+                const confirmed = await showConfirmModal({
+                    title: t('key_confirm_submit_quiz_title', 'Chưa hoàn thành bài trắc nghiệm'),
+                    message: t('key_quiz_unanswered_alert', 'Bạn còn câu hỏi chưa trả lời. Bạn có chắc chắn muốn nộp bài không?'),
+                    confirmText: t('key_submit_anyway', 'Vẫn nộp bài'),
+                    cancelText: t('key_continue_test', 'Làm tiếp'),
+                    isDanger: false
+                });
+                if (!confirmed) {
                     return;
                 }
             }

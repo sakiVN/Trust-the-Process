@@ -117,14 +117,21 @@
         async function deleteActiveNotebook() {
             if (!activeNotebookId) return;
             const t = window.t || ((k, f) => f);
-            if (!confirm(t('key_confirm_delete_nb', "Bạn có chắc chắn muốn xóa SỔ TAY này? Toàn bộ tài liệu, ghi chú và các câu hỏi AI đi kèm sẽ bị xóa vĩnh viễn và không thể khôi phục."))) return;
+            const confirmed = await showConfirmModal({
+                title: t('key_confirm_delete_title', "Xác nhận xóa sổ tay"),
+                message: t('key_confirm_delete_nb', "Bạn có chắc chắn muốn xóa SỔ TAY này? Toàn bộ tài liệu, ghi chú và các câu hỏi AI đi kèm sẽ bị xóa vĩnh viễn và không thể khôi phục."),
+                confirmText: t('key_btn_delete', "Xóa vĩnh viễn"),
+                cancelText: t('key_cancel', "Hủy"),
+                isDanger: true
+            });
+            if (!confirmed) return;
             
             try {
                 const res = await fetchWithCsrf(`${API_URL}/notebooks/${activeNotebookId}/`, {
                     method: 'DELETE'
                 });
                 if (res.ok) {
-                    alert(t('key_alert_deleted_nb', "Đã xóa Sổ tay thành công!"));
+                    showToastNotification(t('key_alert_deleted_nb', "Đã xóa Sổ tay thành công!"), 'success');
                     activeNotebookId = null;
                     
                     // Hide workspace
@@ -137,10 +144,11 @@
                     await loadNotebooks();
                     switchView('notebooks');
                 } else {
-                    alert("Không thể xóa Sổ tay. Vui lòng thử lại.");
+                    showToastNotification("Không thể xóa Sổ tay. Vui lòng thử lại.", 'error');
                 }
             } catch (err) {
                 console.error("Lỗi khi xóa Sổ tay:", err);
+                showToastNotification("Không thể xóa Sổ tay. Vui lòng thử lại.", 'error');
             }
         }
 

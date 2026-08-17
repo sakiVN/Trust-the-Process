@@ -218,6 +218,8 @@
   "key_exit_focus": "集中モード終了",
   "key_focus_timer_prefix": "学習中:",
   "key_goal_reached": "目標達成！",
+  "key_focus_fullscreen_timer": "全画面表示＆タイマー",
+  "key_focus_fab_tooltip": "集中モードの開始/終了（全画面表示＆タイマー）",
   "key_vs_yesterday": "前日比",
   "key_label_goal": "1日の自習目標時間 (集中モード)",
   "key_opt_goal_15": "15分 / 日 (手軽)",
@@ -372,5 +374,15 @@
   "key_filter_unlinked": "未リンク",
   "key_confirm_delete_material": "この学習教材を削除してもよろしいですか？この操作は元に戻せません。",
   "key_alert_deleted_material": "学習教材を正常に削除しました！",
-  "key_error_delete_material": "教材の削除に失敗しました。再試行してください。"
+  "key_error_delete_material": "教材の削除に失敗しました。再試行してください。",
+  "key_confirm_title": "操作の確認",
+  "key_confirm_delete_title": "削除の確認",
+  "key_confirm_default_msg": "この操作を実行してもよろしいですか？",
+  "key_confirm_delete_doc": "この資料を削除してもよろしいですか？この操作は元に戻せません。",
+  "key_confirm_delete_gen": "このAI教材を削除してもよろしいですか？この操作は元に戻せません。",
+  "key_alert_deleted_doc": "資料を正常に削除しました！",
+  "key_alert_deleted_gen": "AI教材を正常に削除しました！",
+  "key_confirm_submit_quiz_title": "未回答の質問があります",
+  "key_submit_anyway": "そのまま提出",
+  "key_continue_test": "続ける"
 }

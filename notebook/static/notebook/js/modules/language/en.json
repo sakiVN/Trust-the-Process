@@ -218,6 +218,8 @@
   "key_exit_focus": "Exit Focus",
   "key_focus_timer_prefix": "Studying:",
   "key_goal_reached": "Goal Reached!",
+  "key_focus_fullscreen_timer": "Fullscreen & Stopwatch",
+  "key_focus_fab_tooltip": "Toggle Focus Mode (Fullscreen & Stopwatch)",
   "key_vs_yesterday": "vs yesterday",
   "key_label_goal": "Daily Self-Study Goal (Focus Mode Goal)",
   "key_opt_goal_15": "15 mins / day (Light)",
@@ -372,5 +374,15 @@
   "key_filter_unlinked": "Unlinked",
   "key_confirm_delete_material": "Are you sure you want to delete this study resource? This action cannot be undone.",
   "key_alert_deleted_material": "Study resource deleted successfully!",
-  "key_error_delete_material": "Failed to delete resource. Please try again."
+  "key_error_delete_material": "Failed to delete resource. Please try again.",
+  "key_confirm_title": "Confirm Action",
+  "key_confirm_delete_title": "Confirm Delete",
+  "key_confirm_default_msg": "Are you sure you want to proceed with this action?",
+  "key_confirm_delete_doc": "Are you sure you want to delete this document? This action cannot be undone.",
+  "key_confirm_delete_gen": "Are you sure you want to delete this AI resource? This action cannot be undone.",
+  "key_alert_deleted_doc": "Document deleted successfully!",
+  "key_alert_deleted_gen": "AI resource deleted successfully!",
+  "key_confirm_submit_quiz_title": "Unanswered Questions",
+  "key_submit_anyway": "Submit Anyway",
+  "key_continue_test": "Continue"
 }

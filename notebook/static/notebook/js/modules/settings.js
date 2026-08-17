@@ -41,8 +41,52 @@ function setupUserSettings() {
             'Người tự học': { vi: 'Người tự học', en: 'Self-learner', jp: '独学者' },
         };
 
+        const purposeMap = {
+            'Học tập & Nghiên cứu thường nhật': {
+                full: { vi: 'Học tập & Nghiên cứu thường nhật', en: 'Daily Study & Research', jp: '日常学習・研究' },
+                badge: { vi: 'Học tập', en: 'Daily Study', jp: '日常学習' }
+            },
+            'Ôn thi cấp tốc & Luyện đề': {
+                full: { vi: 'Ôn thi cấp tốc & Luyện đề trắc nghiệm', en: 'Exam Cramming & Quiz Prep', jp: '直前試験対策・問題演習' },
+                badge: { vi: 'Ôn thi cấp tốc', en: 'Exam Prep', jp: '試験対策' }
+            },
+            'Tập trung sâu & Quản lý tri thức': {
+                full: { vi: 'Tập trung sâu & Quản lý tri thức', en: 'Deep Focus & Knowledge Management', jp: '集中ナレッジ管理' },
+                badge: { vi: 'Tập trung sâu', en: 'Deep Focus', jp: '集中ナレッジ' }
+            },
+            'Lưu trữ & Tổng hợp tài liệu': {
+                full: { vi: 'Lưu trữ & Tổng hợp tài liệu PDF', en: 'PDF Document Archiving', jp: '資料・PDF保存' },
+                badge: { vi: 'Lưu trữ tài liệu', en: 'Document Archiving', jp: '資料保存' }
+            },
+            'Nâng cao tư duy phản biện': {
+                full: { vi: 'Nâng cao tư duy phản biện & Viết luận', en: 'Critical Thinking & Essay Logic', jp: '批判的論理思考・論文執筆' },
+                badge: { vi: 'Tư duy phản biện', en: 'Critical Thinking', jp: '批判的思考' }
+            },
+            'Giảng dạy & Soạn giáo án': {
+                full: { vi: 'Giảng dạy & Soạn giáo án / Bài tập', en: 'Teaching & Lesson Planning', jp: '授業・指導準備' },
+                badge: { vi: 'Giảng dạy', en: 'Teaching', jp: '授業指導' }
+            }
+        };
+
         const currentLang = localStorage.getItem('user_language') || 'vi';
         const displayRole = (roleMap[role] && roleMap[role][currentLang]) ? roleMap[role][currentLang] : role;
+
+        // Match purpose from purposeMap
+        let purposeEntry = purposeMap[purpose];
+        if (!purposeEntry) {
+            const matchedKey = Object.keys(purposeMap).find(k => purpose.startsWith(k) || k.startsWith(purpose) || purpose.includes(k) || k.includes(purpose));
+            if (matchedKey) {
+                purposeEntry = purposeMap[matchedKey];
+            }
+        }
+
+        const displayPurposeFull = (purposeEntry && purposeEntry.full[currentLang]) 
+            ? purposeEntry.full[currentLang] 
+            : (window.t ? window.t(purpose, purpose) : purpose);
+
+        const displayPurposeBadge = (purposeEntry && purposeEntry.badge[currentLang]) 
+            ? purposeEntry.badge[currentLang] 
+            : (purpose.includes('&') ? purpose.split('&')[0].trim() : purpose);
 
         // 1. Header Elements
         const headerName = document.getElementById('header-user-name');
@@ -55,7 +99,7 @@ function setupUserSettings() {
         if (headerRole) headerRole.textContent = displayRole;
         if (headerAvatar && avatar) headerAvatar.src = avatar;
         if (dropdownName) dropdownName.textContent = name;
-        if (dropdownPurpose) dropdownPurpose.textContent = purpose;
+        if (dropdownPurpose) dropdownPurpose.textContent = displayPurposeFull;
 
         // 2. Dashboard Welcome Banner in current language
         const welcomeHeading = document.getElementById('dashboard-welcome-heading');
@@ -70,8 +114,8 @@ function setupUserSettings() {
         }
 
         const purposeBadge = document.getElementById('dashboard-user-purpose-badge');
-        if (purposeBadge && purpose) {
-            purposeBadge.textContent = purpose.split('&')[0].trim();
+        if (purposeBadge) {
+            purposeBadge.textContent = displayPurposeBadge;
         }
 
         // 3. Settings Form Inputs

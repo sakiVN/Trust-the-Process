@@ -218,6 +218,8 @@
   "key_exit_focus": "Thoát Focus",
   "key_focus_timer_prefix": "Đang học:",
   "key_goal_reached": "Đã đạt mục tiêu!",
+  "key_focus_fullscreen_timer": "Toàn màn hình & Bấm giờ",
+  "key_focus_fab_tooltip": "Bật / Thoát Focus Mode (Phóng to toàn màn hình & Bấm giờ)",
   "key_vs_yesterday": "so với hôm qua",
   "key_label_goal": "Mục tiêu tự học mỗi ngày (Focus Mode Goal)",
   "key_opt_goal_15": "15 phút / ngày (Nhẹ nhàng)",
@@ -372,5 +374,15 @@
   "key_filter_unlinked": "Không liên kết",
   "key_confirm_delete_material": "Bạn có chắc chắn muốn xóa tài nguyên học tập này? Hành động này không thể hoàn tác.",
   "key_alert_deleted_material": "Đã xóa tài nguyên học tập thành công!",
-  "key_error_delete_material": "Không thể xóa tài nguyên. Vui lòng thử lại."
+  "key_error_delete_material": "Không thể xóa tài nguyên. Vui lòng thử lại.",
+  "key_confirm_title": "Xác nhận hành động",
+  "key_confirm_delete_title": "Xác nhận xóa",
+  "key_confirm_default_msg": "Bạn có chắc chắn muốn thực hiện hành động này?",
+  "key_confirm_delete_doc": "Bạn có chắc chắn muốn xóa tài liệu này? Hành động này không thể hoàn tác.",
+  "key_confirm_delete_gen": "Bạn có chắc chắn muốn xóa tài nguyên AI này? Hành động này không thể hoàn tác.",
+  "key_alert_deleted_doc": "Đã xóa tài liệu thành công!",
+  "key_alert_deleted_gen": "Đã xóa tài nguyên AI thành công!",
+  "key_confirm_submit_quiz_title": "Chưa hoàn thành bài trắc nghiệm",
+  "key_submit_anyway": "Vẫn nộp bài",
+  "key_continue_test": "Làm tiếp"
 }

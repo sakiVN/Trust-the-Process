@@ -176,14 +176,21 @@
 
         async function deleteSource(id) {
             const t = window.t || ((k, f) => f);
-            if (!confirm(t('key_confirm_delete_nb', "Bạn có chắc chắn muốn xóa tài liệu này? Hành động này không thể hoàn tác."))) return;
+            const confirmed = await showConfirmModal({
+                title: t('key_confirm_delete_title', "Xác nhận xóa tài liệu"),
+                message: t('key_confirm_delete_doc', "Bạn có chắc chắn muốn xóa tài liệu này? Hành động này không thể hoàn tác."),
+                confirmText: t('key_btn_delete', "Xóa"),
+                cancelText: t('key_cancel', "Hủy"),
+                isDanger: true
+            });
+            if (!confirmed) return;
             
             try {
                 const res = await fetchWithCsrf(`${API_URL}/sources/${id}/`, {
                     method: 'DELETE'
                 });
                 if (res.ok) {
-                    alert(t('key_alert_deleted_nb', "Đã xóa tài liệu liên quan thành công!"));
+                    showToastNotification(t('key_alert_deleted_doc', "Đã xóa tài liệu liên quan thành công!"), 'success');
                     // Refresh data
                     await loadNotebooks();
                     if (activeNotebookId) {
@@ -193,10 +200,11 @@
                         renderAllDocumentsView();
                     }
                 } else {
-                    alert("Không thể xóa tài liệu. Vui lòng thử lại.");
+                    showToastNotification("Không thể xóa tài liệu. Vui lòng thử lại.", 'error');
                 }
             } catch (err) {
                 console.error("Lỗi khi xóa tài liệu:", err);
+                showToastNotification("Không thể xóa tài liệu. Vui lòng thử lại.", 'error');
             }
         }
 

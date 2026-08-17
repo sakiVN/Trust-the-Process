@@ -258,9 +258,13 @@ function updateFocusTimerDisplay() {
     if (badgeEl) {
         if (isGoalReached) {
             badgeEl.classList.remove('hidden');
-            badgeEl.innerHTML = `🎉 <span translate="key_goal_reached">Đã đạt mục tiêu!</span>`;
+            badgeEl.classList.add('inline-flex');
+            const t = window.t || ((k, f) => f);
+            const goalText = t('key_goal_reached', 'Đã đạt mục tiêu!');
+            badgeEl.innerHTML = `<img src="/static/notebook/icon-set/smart.png" class="w-4 h-4 object-contain shrink-0 mr-1" alt="Goal" /><span>${goalText}</span>`;
         } else {
             badgeEl.classList.add('hidden');
+            badgeEl.classList.remove('inline-flex');
         }
     }
 

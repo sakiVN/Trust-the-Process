@@ -589,7 +589,7 @@ async function animateWeeklyGoalSequence(targetPct) {
     if (targetPct <= 0) {
         goalPctEl.innerText = "0%";
         goalPctEl.className = "block text-2xl font-extrabold text-slate-400 dark:text-slate-500 mt-0.5";
-        goalIconWrapEl.className = "p-3.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 shrink-0";
+        goalIconWrapEl.className = "p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0";
         return;
     }
 
@@ -620,7 +620,7 @@ async function animateWeeklyGoalSequence(targetPct) {
     const stage1Target = Math.min(targetPct, 100);
     goalCardEl.classList.remove('stat-max-purple-card', 'stat-tier-green-card', 'stat-tier-blue-card');
     goalPctEl.className = "block text-2xl font-extrabold text-amber-500 dark:text-amber-400 mt-0.5";
-    goalIconWrapEl.className = "p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 shrink-0";
+    goalIconWrapEl.className = "p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/50 flex items-center justify-center shrink-0";
 
     await wait(20);
     if (runId !== currentWeeklyAnimRunId) return;
@@ -641,7 +641,7 @@ async function animateWeeklyGoalSequence(targetPct) {
     goalCardEl.classList.remove('stat-max-purple-card', 'stat-tier-blue-card');
     goalCardEl.classList.add('stat-tier-green-card');
     goalPctEl.className = "block text-2xl font-extrabold stat-tier-green-text mt-0.5";
-    goalIconWrapEl.className = "p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 shrink-0 shadow-sm shadow-emerald-500/20";
+    goalIconWrapEl.className = "p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 flex items-center justify-center shrink-0 shadow-sm shadow-emerald-500/20";
 
     await wait(20);
     if (runId !== currentWeeklyAnimRunId) return;
@@ -662,7 +662,7 @@ async function animateWeeklyGoalSequence(targetPct) {
     goalCardEl.classList.remove('stat-max-purple-card', 'stat-tier-green-card');
     goalCardEl.classList.add('stat-tier-blue-card');
     goalPctEl.className = "block text-2xl font-extrabold stat-tier-blue-text mt-0.5";
-    goalIconWrapEl.className = "p-3.5 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 shrink-0 shadow-sm shadow-blue-500/20";
+    goalIconWrapEl.className = "p-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/50 flex items-center justify-center shrink-0 shadow-sm shadow-blue-500/20";
 
     await wait(20);
     if (runId !== currentWeeklyAnimRunId) return;
@@ -680,7 +680,7 @@ async function animateWeeklyGoalSequence(targetPct) {
     goalCardEl.classList.remove('stat-tier-green-card', 'stat-tier-blue-card');
     goalCardEl.classList.add('stat-max-purple-card');
     goalPctEl.className = "block text-2xl font-extrabold stat-max-purple-text mt-0.5";
-    goalIconWrapEl.className = "p-3.5 rounded-xl bg-purple-100 dark:bg-purple-950/80 text-purple-400 dark:text-purple-300 shrink-0 shadow-sm shadow-purple-500/30";
+    goalIconWrapEl.className = "p-2.5 rounded-xl bg-purple-100 dark:bg-purple-950/80 flex items-center justify-center shrink-0 shadow-sm shadow-purple-500/30";
 
     await wait(20);
     if (runId !== currentWeeklyAnimRunId) return;
@@ -722,7 +722,7 @@ function setWeeklyGoalDirect(targetPct) {
     if (targetPct <= 0) {
         goalPctEl.innerText = "0%";
         goalPctEl.className = "block text-2xl font-extrabold text-slate-400 dark:text-slate-500 mt-0.5";
-        goalIconWrapEl.className = "p-3.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 shrink-0";
+        goalIconWrapEl.className = "p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0";
         l1.style.width = "0%";
         l2.style.width = "0%";
         l3.style.width = "0%";
@@ -730,7 +730,7 @@ function setWeeklyGoalDirect(targetPct) {
     } else if (targetPct <= 100) {
         goalPctEl.innerText = `${targetPct}%`;
         goalPctEl.className = "block text-2xl font-extrabold text-amber-500 dark:text-amber-400 mt-0.5";
-        goalIconWrapEl.className = "p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 shrink-0";
+        goalIconWrapEl.className = "p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/50 flex items-center justify-center shrink-0";
         l1.style.width = `${targetPct}%`;
         l2.style.width = "0%";
         l3.style.width = "0%";
@@ -739,7 +739,7 @@ function setWeeklyGoalDirect(targetPct) {
         goalCardEl.classList.add('stat-tier-green-card');
         goalPctEl.className = "block text-2xl font-extrabold stat-tier-green-text mt-0.5";
         goalPctEl.innerText = `${targetPct}%`;
-        goalIconWrapEl.className = "p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 shrink-0 shadow-sm shadow-emerald-500/20";
+        goalIconWrapEl.className = "p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 flex items-center justify-center shrink-0 shadow-sm shadow-emerald-500/20";
         l1.style.width = "100%";
         l2.style.width = `${targetPct - 100}%`;
         l3.style.width = "0%";
@@ -748,7 +748,7 @@ function setWeeklyGoalDirect(targetPct) {
         goalCardEl.classList.add('stat-tier-blue-card');
         goalPctEl.className = "block text-2xl font-extrabold stat-tier-blue-text mt-0.5";
         goalPctEl.innerText = `${targetPct}%`;
-        goalIconWrapEl.className = "p-3.5 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 shrink-0 shadow-sm shadow-blue-500/20";
+        goalIconWrapEl.className = "p-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/50 flex items-center justify-center shrink-0 shadow-sm shadow-blue-500/20";
         l1.style.width = "100%";
         l2.style.width = "100%";
         l3.style.width = `${targetPct - 200}%`;
@@ -757,7 +757,7 @@ function setWeeklyGoalDirect(targetPct) {
         goalCardEl.classList.add('stat-max-purple-card');
         goalPctEl.className = "block text-2xl font-extrabold stat-max-purple-text mt-0.5";
         goalPctEl.innerText = `${targetPct}%`;
-        goalIconWrapEl.className = "p-3.5 rounded-xl bg-purple-100 dark:bg-purple-950/80 text-purple-400 dark:text-purple-300 shrink-0 shadow-sm shadow-purple-500/30";
+        goalIconWrapEl.className = "p-2.5 rounded-xl bg-purple-100 dark:bg-purple-950/80 flex items-center justify-center shrink-0 shadow-sm shadow-purple-500/30";
         l1.style.width = "100%";
         l2.style.width = "100%";
         l3.style.width = "100%";

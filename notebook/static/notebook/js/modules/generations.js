@@ -289,24 +289,32 @@
 
         async function deleteGeneration(id) {
             const t = window.t || ((k, f) => f);
-            if (!confirm(t('key_confirm_delete_nb', "Bạn có chắc chắn muốn xóa tài nguyên AI này?"))) return;
+            const confirmed = await showConfirmModal({
+                title: t('key_confirm_delete_title', "Xác nhận xóa tài nguyên"),
+                message: t('key_confirm_delete_gen', "Bạn có chắc chắn muốn xóa tài nguyên AI này? Hành động này không thể hoàn tác."),
+                confirmText: t('key_btn_delete', "Xóa"),
+                cancelText: t('key_cancel', "Hủy"),
+                isDanger: true
+            });
+            if (!confirmed) return;
             
             try {
                 const res = await fetchWithCsrf(`${API_URL}/generations/${id}/`, {
                     method: 'DELETE'
                 });
                 if (res.ok) {
-                    alert(t('key_alert_deleted_nb', "Đã xóa tài nguyên AI thành công!"));
+                    showToastNotification(t('key_alert_deleted_gen', "Đã xóa tài nguyên AI thành công!"), 'success');
                     // Refresh data
                     await loadNotebooks();
                     if (activeNotebookId) {
                         await selectNotebook(activeNotebookId, true);
                     }
                 } else {
-                    alert("Không thể xóa tài nguyên. Vui lòng thử lại.");
+                    showToastNotification("Không thể xóa tài nguyên. Vui lòng thử lại.", 'error');
                 }
             } catch (err) {
                 console.error("Lỗi khi xóa tài nguyên AI:", err);
+                showToastNotification("Không thể xóa tài nguyên. Vui lòng thử lại.", 'error');
             }
         }
 

@@ -172,7 +172,14 @@ function setStudyMaterialsPage(page) {
 
 async function deleteStudyMaterial(id, materialType) {
     const t = window.t || ((k, f) => f);
-    if (!confirm(t('key_confirm_delete_material', "Bạn có chắc chắn muốn xóa tài nguyên học tập này? Hành động này không thể hoàn tác."))) return;
+    const confirmed = await showConfirmModal({
+        title: t('key_confirm_delete_title', "Xác nhận xóa tài nguyên"),
+        message: t('key_confirm_delete_material', "Bạn có chắc chắn muốn xóa tài nguyên học tập này? Hành động này không thể hoàn tác."),
+        confirmText: t('key_btn_delete', "Xóa"),
+        cancelText: t('key_cancel', "Hủy"),
+        isDanger: true
+    });
+    if (!confirmed) return;
 
     try {
         const endpoint = materialType === 'quiz' ? `${API_URL}/quizzes/${id}/` : `${API_URL}/generations/${id}/`;
@@ -180,7 +187,7 @@ async function deleteStudyMaterial(id, materialType) {
             method: 'DELETE'
         });
         if (res.ok) {
-            alert(t('key_alert_deleted_material', "Đã xóa tài nguyên học tập thành công!"));
+            showToastNotification(t('key_alert_deleted_material', "Đã xóa tài nguyên học tập thành công!"), 'success');
             await loadNotebooks();
             if (activeNotebookId) {
                 await selectNotebook(activeNotebookId, true);
@@ -189,10 +196,11 @@ async function deleteStudyMaterial(id, materialType) {
                 renderStudyMaterialsView();
             }
         } else {
-            alert(t('key_error_delete_material', "Không thể xóa tài nguyên. Vui lòng thử lại."));
+            showToastNotification(t('key_error_delete_material', "Không thể xóa tài nguyên. Vui lòng thử lại."), 'error');
         }
     } catch (err) {
         console.error("Lỗi khi xóa tài nguyên học tập:", err);
+        showToastNotification(t('key_error_delete_material', "Không thể xóa tài nguyên. Vui lòng thử lại."), 'error');
     }
 }
 
