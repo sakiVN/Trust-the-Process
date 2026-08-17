@@ -100,21 +100,24 @@ class NotebookViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
             
-        # Collect sources specific to the requested generation type/category
+        # Collect sources: try specific category first, otherwise fallback to all notebook sources
         sources = notebook.sources.filter(category=generation_type)
         if not sources.exists():
+            sources = notebook.sources.all()
+            
+        if not sources.exists():
             return Response(
-                {"error": f"Không tìm thấy tài liệu liên quan nào cho phần ôn tập này. Vui lòng tải tài liệu lên trước khi yêu cầu sinh nội dung!"},
+                {"error": "Chưa có tài liệu liên quan nào trong sổ tay. Vui lòng tải tài liệu lên trước khi yêu cầu sinh nội dung!"},
                 status=status.HTTP_400_BAD_REQUEST
             )
             
-        # Build prompt context from filtered sources
+        # Build prompt context from sources
         sources_text = ""
         for src in sources:
             sources_text += f"--- SOURCE TITLE: {src.title} ---\nType: {src.source_type}\nContent:\n{src.content}\n\n"
             
-        # Call AI generation service with source title for dynamic mock data
-        first_title = sources.first().title
+        # Call AI generation service
+        first_title = sources.first().title if sources.exists() else notebook.name
         language = request.data.get('language', 'vi')
         ai_content = ai_service.generate_notebook_materials(sources_text, generation_type, first_title, language=language)
         
@@ -124,6 +127,52 @@ class NotebookViewSet(viewsets.ModelViewSet):
             generation_type=generation_type,
             content=ai_content
         )
+        
+        # If generation is a Quiz, also automatically create/sync a QuizSet with QuizQuestions
+        if generation_type == 'quiz':
+            try:
+                import json
+                clean_content = ai_content.strip()
+                if clean_content.startswith("```"):
+                    clean_content = re.sub(r'^```(?:json)?\s*', '', clean_content)
+                    clean_content = re.sub(r'```$', '', clean_content).strip()
+                
+                # Try json parse
+                questions_list = []
+                try:
+                    questions_list = json.loads(clean_content)
+                except Exception:
+                    pass
+
+                if isinstance(questions_list, list) and len(questions_list) > 0:
+                    user = request.user if request.user.is_authenticated else notebook.user
+                    quiz_set = QuizSet.objects.create(
+                        user=user,
+                        notebook=notebook,
+                        name=f"Trắc nghiệm: {first_title}",
+                        description=f"Bài tập trắc nghiệm sinh tự động từ tài liệu: {first_title}",
+                        tag="Bài tập trắc nghiệm"
+                    )
+                    for idx, q_data in enumerate(questions_list):
+                        q_text = q_data.get('question') or q_data.get('question_text', '')
+                        options = q_data.get('options', [])
+                        corr = q_data.get('correct_option') or q_data.get('answer', 'A')
+                        if isinstance(corr, int) and 0 <= corr < len(options):
+                            corr = chr(65 + corr)
+                        corr = str(corr).upper()
+                        exp = q_data.get('explanation', '')
+                        if q_text and options:
+                            QuizQuestion.objects.create(
+                                quiz=quiz_set,
+                                question_text=q_text,
+                                options=options,
+                                correct_option=corr,
+                                explanation=exp,
+                                order=idx
+                            )
+            except Exception as e:
+                # Log but do not fail generation response
+                print("Auto-create QuizSet error:", e)
         
         serializer = AIGenerationSerializer(gen_obj)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -189,6 +238,9 @@ class NoteViewSet(viewsets.ModelViewSet):
         return Response(response_serializer.data, status=status.HTTP_200_OK)
 
 
+import re
+import json
+
 class SourceViewSet(viewsets.ModelViewSet):
     serializer_class = SourceSerializer
     queryset = Source.objects.all()
@@ -197,6 +249,92 @@ class SourceViewSet(viewsets.ModelViewSet):
         if self.request.user.is_authenticated:
             return Source.objects.filter(notebook__user=self.request.user)
         return Source.objects.all()
+
+    @action(detail=True, methods=['post'], url_path='generate_quiz')
+    def generate_quiz(self, request, pk=None):
+        """
+        Generate AI Quiz directly from this specific source and save to QuizSet and AIGeneration.
+        """
+        source = self.get_object()
+        notebook = source.notebook
+        language = request.data.get('language', 'vi')
+        
+        sources_text = f"--- SOURCE TITLE: {source.title} ---\nType: {source.source_type}\nContent:\n{source.content}\n\n"
+        ai_content = ai_service.generate_notebook_materials(sources_text, 'quiz', source.title, language=language)
+        
+        # Save to AIGeneration
+        gen_obj = AIGeneration.objects.create(
+            notebook=notebook,
+            generation_type='quiz',
+            content=ai_content
+        )
+        
+        # Parse and save to QuizSet
+        quiz_set = None
+        try:
+            clean_content = ai_content.strip()
+            if clean_content.startswith("```"):
+                clean_content = re.sub(r'^```(?:json)?\s*', '', clean_content)
+                clean_content = re.sub(r'```$', '', clean_content).strip()
+            questions_list = json.loads(clean_content)
+            if isinstance(questions_list, list) and len(questions_list) > 0:
+                user = request.user if request.user.is_authenticated else (notebook.user if notebook else None)
+                if not user:
+                    user, _ = User.objects.get_or_create(username='student', email='student@example.com')
+                
+                quiz_set = QuizSet.objects.create(
+                    user=user,
+                    notebook=notebook,
+                    name=f"Trắc nghiệm: {source.title}",
+                    description=f"Bài tập trắc nghiệm tự động sinh từ tài liệu: {source.title}",
+                    tag="Bài tập trắc nghiệm"
+                )
+                for idx, q_data in enumerate(questions_list):
+                    q_text = q_data.get('question') or q_data.get('question_text', '')
+                    options = q_data.get('options', [])
+                    corr = q_data.get('correct_option') or q_data.get('answer', 'A')
+                    if isinstance(corr, int) and 0 <= corr < len(options):
+                        corr = chr(65 + corr)
+                    corr = str(corr).upper()
+                    exp = q_data.get('explanation', '')
+                    if q_text and options:
+                        QuizQuestion.objects.create(
+                            quiz=quiz_set,
+                            question_text=q_text,
+                            options=options,
+                            correct_option=corr,
+                            explanation=exp,
+                            order=idx
+                        )
+        except Exception as e:
+            print("Error creating QuizSet from source:", e)
+            
+        return Response({
+            'generation': AIGenerationSerializer(gen_obj).data,
+            'quiz_set': QuizSetSerializer(quiz_set).data if quiz_set else None
+        }, status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=['post'], url_path='generate_flashcards')
+    def generate_flashcards(self, request, pk=None):
+        """
+        Generate AI Flashcards directly from this specific source and save to AIGeneration.
+        """
+        source = self.get_object()
+        notebook = source.notebook
+        language = request.data.get('language', 'vi')
+        
+        sources_text = f"--- SOURCE TITLE: {source.title} ---\nType: {source.source_type}\nContent:\n{source.content}\n\n"
+        ai_content = ai_service.generate_notebook_materials(sources_text, 'flashcards', source.title, language=language)
+        
+        gen_obj = AIGeneration.objects.create(
+            notebook=notebook,
+            generation_type='flashcards',
+            content=ai_content
+        )
+        
+        return Response({
+            'generation': AIGenerationSerializer(gen_obj).data
+        }, status=status.HTTP_201_CREATED)
 
 
 class QuizSetViewSet(viewsets.ModelViewSet):
@@ -302,6 +440,56 @@ class AIGenerationViewSet(viewsets.ModelViewSet):
         if self.request.user.is_authenticated:
             return AIGeneration.objects.filter(notebook__user=self.request.user)
         return AIGeneration.objects.all()
+
+    @action(detail=True, methods=['post'], url_path='convert_to_quiz')
+    def convert_to_quiz(self, request, pk=None):
+        """
+        Convert this AI generation into a persistent QuizSet with QuizQuestions.
+        """
+        gen = self.get_object()
+        notebook = gen.notebook
+        clean_content = gen.content.strip()
+        if clean_content.startswith("```"):
+            clean_content = re.sub(r'^```(?:json)?\s*', '', clean_content)
+            clean_content = re.sub(r'```$', '', clean_content).strip()
+        
+        try:
+            questions_list = json.loads(clean_content)
+            if not isinstance(questions_list, list) or len(questions_list) == 0:
+                return Response({'error': 'No questions found in this generation.'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            user = request.user if request.user.is_authenticated else (notebook.user if notebook else None)
+            if not user:
+                user, _ = User.objects.get_or_create(username='student', email='student@example.com')
+                
+            quiz_set = QuizSet.objects.create(
+                user=user,
+                notebook=notebook,
+                name=f"Bộ câu hỏi đã chuyển đổi (#{gen.id})",
+                description=f"Chuyển đổi từ tài liệu ôn tập AI đã lưu.",
+                tag="Bài tập trắc nghiệm"
+            )
+            for idx, q_data in enumerate(questions_list):
+                q_text = q_data.get('question') or q_data.get('question_text', '')
+                options = q_data.get('options', [])
+                corr = q_data.get('correct_option') or q_data.get('answer', 'A')
+                if isinstance(corr, int) and 0 <= corr < len(options):
+                    corr = chr(65 + corr)
+                corr = str(corr).upper()
+                exp = q_data.get('explanation', '')
+                if q_text and options:
+                    QuizQuestion.objects.create(
+                        quiz=quiz_set,
+                        question_text=q_text,
+                        options=options,
+                        correct_option=corr,
+                        explanation=exp,
+                        order=idx
+                    )
+            return Response(QuizSetSerializer(quiz_set).data, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({'error': f'Failed to parse questions: {str(e)}'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 from rest_framework.decorators import api_view
 from django.utils import timezone

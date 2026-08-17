@@ -106,101 +106,108 @@
                 el.classList.remove('hidden');
                 el.innerHTML = catGens.map(gen => {
                     let renderedContent = '';
-                    if (gen.generation_type === 'quiz' || gen.generation_type === 'flashcards') {
+                    if (gen.isQuizSet) {
+                        renderedContent = `
+                            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 space-y-3 shadow-sm">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[10px] font-bold uppercase text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 px-2 py-0.5 rounded-md">Bài tập trắc nghiệm</span>
+                                    <span class="text-[10px] text-slate-400 font-semibold">${gen.attempts_count || 0} lượt làm</span>
+                                </div>
+                                <h5 class="font-bold text-slate-900 dark:text-white text-xs">${escapeHtml(gen.name || 'Bài tập trắc nghiệm')}</h5>
+                                <div class="flex items-center gap-2 pt-1">
+                                    <button onclick="openQuizPlayModal(${gen.id})" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-3 rounded-xl text-xs transition flex items-center justify-center space-x-1.5">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                        <span>Làm bài</span>
+                                    </button>
+                                    <button onclick="openQuizReviewModal(${gen.id})" class="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium py-2 px-3 rounded-xl text-xs hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                                        <span>Chi tiết</span>
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    } else if (gen.generation_type === 'quiz' || gen.generation_type === 'flashcards') {
                         try {
-                            if (gen.isQuizSet && Array.isArray(gen.questions)) {
-                                renderedContent = gen.questions.map((q, idx) => {
-                                    const qId = `quiz-${gen.id}-${idx}`;
-                                    const options = Array.isArray(q.options) ? q.options : [];
-                                    const correctOpt = (q.correct_option || 'A').toUpperCase();
-                                    return `
-                                    <div class="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-xl p-4 space-y-3 text-left">
-                                        <div class="font-bold text-slate-850 dark:text-slate-200 text-xs">Câu ${idx + 1}: ${q.question_text || ''}</div>
-                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2" id="${qId}-options">
-                                            ${options.map((opt, optIdx) => {
-                                                const letter = String.fromCharCode(65 + optIdx);
-                                                return `
-                                                <button onclick="checkQuizAnswer('${qId}', '${letter}', '${correctOpt}', ${optIdx})" id="${qId}-opt-${optIdx}" class="w-full text-left bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3.5 py-2.5 rounded-xl text-[11px] text-slate-650 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition font-medium">
-                                                    ${typeof formatQuizOption === 'function' ? formatQuizOption(opt, optIdx) : opt}
-                                                </button>
-                                                `;
-                                            }).join('')}
-                                        </div>
-                                        <div id="${qId}-result" class="hidden text-[11px] font-bold p-3 rounded-xl"></div>
-                                        <div id="${qId}-explanation" class="hidden text-[10px] text-slate-500 dark:text-slate-400 italic bg-slate-100 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
-                                            Giải thích: ${q.explanation || 'Không có giải thích'}
-                                        </div>
-                                    </div>
-                                    `;
-                                }).join('');
-                            } else if (gen.content) {
-                                let cleanContent = String(gen.content).trim();
-                                if (cleanContent.startsWith("```")) {
-                                    cleanContent = cleanContent.replace(/^```(?:json)?/, "");
-                                    cleanContent = cleanContent.replace(/```$/, "");
-                                    cleanContent = cleanContent.trim();
-                                }
-                                const items = JSON.parse(cleanContent);
-                                if (gen.generation_type === 'quiz') {
-                                    renderedContent = items.map((q, idx) => {
-                                        const qId = `quiz-${gen.id}-${idx}`;
-                                        const options = Array.isArray(q.options) ? q.options : [];
-                                        const correctOpt = (q.answer || q.correct_option || 'A').toUpperCase();
-                                        return `
-                                        <div class="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-xl p-4 space-y-3 text-left">
-                                            <div class="font-bold text-slate-850 dark:text-slate-200 text-xs">Câu ${idx + 1}: ${q.question || q.question_text || ''}</div>
-                                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2" id="${qId}-options">
-                                                ${options.map((opt, optIdx) => {
-                                                    const letter = String.fromCharCode(65 + optIdx);
-                                                    return `
-                                                    <button onclick="checkQuizAnswer('${qId}', '${letter}', '${correctOpt}', ${optIdx})" id="${qId}-opt-${optIdx}" class="w-full text-left bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3.5 py-2.5 rounded-xl text-[11px] text-slate-650 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition font-medium">
-                                                        ${typeof formatQuizOption === 'function' ? formatQuizOption(opt, optIdx) : opt}
-                                                    </button>
-                                                    `;
-                                                }).join('')}
-                                            </div>
-                                            <div id="${qId}-result" class="hidden text-[11px] font-bold p-3 rounded-xl"></div>
-                                            <div id="${qId}-explanation" class="hidden text-[10px] text-slate-500 dark:text-slate-400 italic bg-slate-100 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
-                                                Giải thích: ${q.explanation || 'Không có giải thích'}
-                                            </div>
-                                        </div>
-                                        `;
-                                    }).join('');
-                                } else {
-                                    renderedContent = items.map((f,idx) =>`
-                                        <div class="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-xl p-6 text-center">
-                                            <div id="front-${gen.id}-${idx}">
-                                                <div class = "text-[10px] font-bold text-slate-400 uppercase mb-3">
-                                                    Question
-                                                </div>
-                                            
-                                                <div class = "text-sm font-bold text-slate-800 dark:text-slate-200">
-                                                    ${f.question}
-                                                </div>
-                                            </div>
-
-                                            <div id = "back-${gen.id}-${idx}" class ="hidden">
-                                                <div class = "text-[10px] font-bold text-brand-500 uppercase mb-3">
-                                                    Answer
-                                                </div>
-
-                                                <div class = "text-sm text-slate-700 dark:text-slate-300">
-                                                    ${f.answer}
-                                                </div>
-                                            </div>
-
-                                            <button
-                                                onclick="flipCard('${gen.id}-${idx}')"
-                                                class = "mt-4 bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-xl text-xs font-bold"
-                                            >
-                                                flip
+                            let cleanContent = gen.content.trim();
+                            if (cleanContent.startsWith("```")) {
+                                cleanContent = cleanContent.replace(/^```(?:json)?/, "");
+                                cleanContent = cleanContent.replace(/```$/, "");
+                                cleanContent = cleanContent.trim();
+                            }
+                            const items = JSON.parse(cleanContent);
+                            if (gen.generation_type === 'quiz') {
+                                renderedContent = `
+                                    <div class="space-y-3">
+                                        <div class="flex items-center justify-between bg-indigo-50/60 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/30 rounded-xl p-3">
+                                            <span class="text-xs font-bold text-indigo-900 dark:text-indigo-300">Bộ câu hỏi trắc nghiệm (${items.length} câu)</span>
+                                            <button onclick="openQuizReviewModal(${gen.id})" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-3 py-1.5 rounded-lg text-xs transition flex items-center space-x-1.5">
+                                                <span>Xem chi tiết</span>
                                             </button>
                                         </div>
-                                    `).join('');
-                                }
+                                        ${items.map((q, idx) => {
+                                            const qId = `quiz-${gen.id}-${idx}`;
+                                            return `
+                                            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 space-y-3 text-left">
+                                                <div class="font-bold text-slate-900 dark:text-slate-200 text-xs">Câu ${idx + 1}: ${escapeHtml(q.question || q.question_text || '')}</div>
+                                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2" id="${qId}-options">
+                                                    ${(q.options || []).map((opt, optIdx) => {
+                                                        const letter = String.fromCharCode(65 + optIdx);
+                                                        const corr = (q.answer || q.correct_option || 'A').toString().toUpperCase();
+                                                        return `
+                                                        <button onclick="checkQuizAnswer('${qId}', '${letter}', '${corr}', ${optIdx})" id="${qId}-opt-${optIdx}" class="w-full text-left bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 px-3.5 py-2.5 rounded-xl text-xs text-slate-700 dark:text-slate-300 hover:bg-indigo-50/50 dark:hover:bg-indigo-950/30 transition font-medium">
+                                                            ${formatQuizOption(opt, optIdx)}
+                                                        </button>
+                                                        `;
+                                                    }).join('')}
+                                                </div>
+                                                <div id="${qId}-result" class="hidden text-xs font-semibold p-3 rounded-xl"></div>
+                                                <div id="${qId}-explanation" class="hidden text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
+                                                    Giải thích: ${escapeHtml(q.explanation || '')}
+                                                </div>
+                                            </div>
+                                            `;
+                                        }).join('')}
+                                    </div>
+                                `;
+                            } else {
+                                renderedContent = `
+                                    <div class="space-y-3">
+                                        <div class="flex items-center justify-between bg-indigo-50/60 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/30 rounded-xl p-3">
+                                            <span class="text-xs font-bold text-indigo-900 dark:text-indigo-300">Bộ thẻ ghi nhớ (${items.length} thẻ)</span>
+                                            <button onclick="openFlashcardReviewModal(${gen.id})" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-3 py-1.5 rounded-lg text-xs transition flex items-center space-x-1.5">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                                                <span>Chế độ từng câu</span>
+                                            </button>
+                                        </div>
+                                        ${items.slice(0, 3).map((f, idx) => `
+                                            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 text-center space-y-3 shadow-sm">
+                                                <div id="front-${gen.id}-${idx}">
+                                                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Thẻ ${idx + 1} / ${items.length} (Câu hỏi)</div>
+                                                    <div class="text-xs font-semibold text-slate-900 dark:text-white">${escapeHtml(f.question || '')}</div>
+                                                </div>
+
+                                                <div id="back-${gen.id}-${idx}" class="hidden">
+                                                    <div class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-1.5">Đáp án</div>
+                                                    <div class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">${escapeHtml(f.answer || '')}</div>
+                                                </div>
+
+                                                <button onclick="flipCard('${gen.id}-${idx}')" class="mt-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-4 py-1.5 rounded-xl text-xs font-medium transition flex items-center justify-center space-x-1.5 mx-auto">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                                    <span>Lật thẻ</span>
+                                                </button>
+                                            </div>
+                                        `).join('')}
+                                        ${items.length > 3 ? `
+                                            <div class="text-center pt-1">
+                                                <button onclick="openFlashcardReviewModal(${gen.id})" class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
+                                                    Xem toàn bộ ${items.length} thẻ ghi nhớ →
+                                                </button>
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                `;
                             }
                         } catch (e) {
-                            renderedContent = `<pre class="text-[11px] bg-slate-900 text-brand-400 p-4 rounded-xl overflow-auto whitespace-pre-wrap text-left">${gen.content || ''}</pre>`;
+                            renderedContent = `<pre class="text-[11px] bg-slate-900 text-indigo-400 p-4 rounded-xl overflow-auto whitespace-pre-wrap text-left">${escapeHtml(gen.content)}</pre>`;
                         }
                     } else {
                         if (gen.generation_type === 'mind_map' && gen.content.includes("mindmap")) {
@@ -217,14 +224,14 @@
                                 <div class="space-y-3 text-left w-full mt-2">
                                     <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-100/60 dark:bg-slate-900/40 p-2.5 rounded-2xl border border-slate-200 dark:border-slate-800/80">
                                         <div class="flex flex-wrap items-center gap-1.5">
-                                            <button onclick="addJsMindChildNode('ws-${gen.id}')" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-1 px-2.5 rounded-lg text-[9px] transition shadow">➕ Nhánh con</button>
-                                            <button onclick="editJsMindNodeName('ws-${gen.id}')" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-1 px-2.5 rounded-lg text-[9px] transition shadow">✏️ Sửa tên</button>
-                                            <button onclick="removeJsMindNode('ws-${gen.id}')" class="bg-rose-500 hover:bg-rose-600 text-white font-bold py-1 px-2.5 rounded-lg text-[9px] transition shadow">🗑️ Xóa</button>
-                                            <button onclick="updateSavedMindmap(${gen.id})" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1 px-2.5 rounded-lg text-[9px] transition shadow">💾 Lưu</button>
-                                            <button onclick="openMindmapReviewModal(${gen.id})" class="bg-brand-600 hover:bg-brand-700 text-white font-bold py-1 px-2.5 rounded-lg text-[9px] transition shadow flex items-center space-x-1"><span>🔍</span> <span>Phóng to</span></button>
+                                            <button onclick="addJsMindChildNode('ws-${gen.id}')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-1 px-2.5 rounded-lg text-xs transition shadow-sm">Thêm nhánh</button>
+                                            <button onclick="editJsMindNodeName('ws-${gen.id}')" class="bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-medium py-1 px-2.5 rounded-lg text-xs transition">Sửa tên</button>
+                                            <button onclick="removeJsMindNode('ws-${gen.id}')" class="bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 hover:bg-rose-100 font-medium py-1 px-2.5 rounded-lg text-xs transition">Xóa</button>
+                                            <button onclick="updateSavedMindmap(${gen.id})" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-1 px-2.5 rounded-lg text-xs transition shadow-sm">Lưu</button>
+                                            <button onclick="openMindmapReviewModal(${gen.id})" class="bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-medium py-1 px-2.5 rounded-lg text-xs transition hover:bg-slate-300 dark:hover:bg-slate-700">Phóng to</button>
                                         </div>
                                         <div class="flex items-center space-x-1 border-l border-slate-200 dark:border-slate-700 pl-2">
-                                            <span class="text-[8px] font-bold text-slate-400 uppercase">Màu:</span>
+                                            <span class="text-[10px] font-medium text-slate-400 uppercase">Màu:</span>
                                             <button onclick="changeJsMindNodeColor('ws-${gen.id}', '#6366f1')" class="w-4 h-4 rounded-full bg-[#6366f1] hover:scale-110 transition ring-1 ring-white/50"></button>
                                             <button onclick="changeJsMindNodeColor('ws-${gen.id}', '#10b981')" class="w-4 h-4 rounded-full bg-[#10b981] hover:scale-110 transition ring-1 ring-white/50"></button>
                                             <button onclick="changeJsMindNodeColor('ws-${gen.id}', '#f43f5e')" class="w-4 h-4 rounded-full bg-[#f43f5e] hover:scale-110 transition ring-1 ring-white/50"></button>
@@ -232,7 +239,7 @@
                                         </div>
                                     </div>
                                     <div class="relative w-full border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-950">
-                                        <div class="absolute top-2 left-3 text-[8px] font-bold text-slate-400 z-10 select-none">Đúp chuột để sửa, kéo để di chuyển</div>
+                                        <div class="absolute top-2 left-3 text-[10px] font-medium text-slate-400 z-10 select-none">Đúp chuột để sửa, kéo để di chuyển</div>
                                         <div id="${wsUniqueId}" style="width:100%;height:300px;"></div>
                                     </div>
                                 </div>
@@ -247,17 +254,18 @@
                         } else if (gen.generation_type === 'report') {
                             renderedContent = `
                                 <div class="space-y-3 text-left">
-                                    <div class="flex justify-between items-center bg-slate-100/60 dark:bg-slate-900/40 p-2 rounded-xl border border-slate-200 dark:border-slate-800/80">
-                                        <span class="text-[10px] font-bold text-slate-500 uppercase">Báo cáo tóm tắt</span>
-                                        <button onclick="openReportReviewModal(${gen.id})" class="text-[10px] bg-brand-600 hover:bg-brand-700 text-white font-semibold px-2.5 py-1 rounded-lg transition flex items-center space-x-1">
-                                            <span>📑</span> <span>Xem toàn bộ báo cáo</span>
+                                    <div class="flex justify-between items-center bg-slate-50 dark:bg-slate-900 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800">
+                                        <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">Báo cáo tóm tắt</span>
+                                        <button onclick="openReportReviewModal(${gen.id})" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-3 py-1.5 rounded-lg transition flex items-center space-x-1.5 shadow-sm">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                            <span>Xem toàn bộ</span>
                                         </button>
                                     </div>
-                                    <div class="whitespace-pre-wrap text-xs text-slate-700 dark:text-slate-350 bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-100 dark:border-slate-800 font-mono leading-relaxed text-left max-h-60 overflow-y-auto">${escapeHtml(gen.content)}</div>
+                                    <div class="whitespace-pre-wrap text-xs text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-100 dark:border-slate-800 leading-relaxed text-left max-h-60 overflow-y-auto">${escapeHtml(gen.content)}</div>
                                 </div>
                             `;
                         } else {
-                            renderedContent = `<div class="whitespace-pre-wrap text-xs text-slate-700 dark:text-slate-350 bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-100 dark:border-slate-800 font-mono leading-relaxed text-left">${escapeHtml(gen.content)}</div>`;
+                            renderedContent = `<div class="whitespace-pre-wrap text-xs text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-100 dark:border-slate-800 leading-relaxed text-left">${escapeHtml(gen.content)}</div>`;
                         }
                     }
 

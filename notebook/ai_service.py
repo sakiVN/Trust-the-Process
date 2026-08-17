@@ -105,17 +105,81 @@ def generate_rebuttal(initial_content, language='vi'):
 
 def generate_notebook_materials(sources_text, generation_type='quiz', source_title='', language='vi'):
     """
-    Generates study materials (quiz, flashcards, mind map, etc.) based on all sources offline.
+    Generates study materials (quiz, flashcards, mind map, etc.) based on all sources.
+    Uses Gemini API if key is available, or falls back to smart offline services.
     """
-    # Route to the appropriate feature service
+    # 1. Try Gemini API first if configured
+    if GEMINI_API_KEY:
+        try:
+            if generation_type == 'quiz':
+                lang_name = "tiếng Việt" if language == 'vi' else ("Japanese" if language == 'jp' else "English")
+                prompt = (
+                    f"Dựa vào nội dung tài liệu học tập sau đây (Tiêu đề: {source_title}):\n\n"
+                    f"{sources_text[:4000]}\n\n"
+                    f"Hãy tạo bộ 4 đến 6 câu hỏi trắc nghiệm ôn tập (Multiple Choice Quiz) bằng {lang_name}. "
+                    f"Mỗi câu hỏi phải có đúng 4 lựa chọn (A, B, C, D), chỉ định rõ đáp án đúng và phần giải thích chi tiết.\n"
+                    f"Yêu cầu trả về đúng định dạng JSON thuần túy (danh sách các object), KHÔNG bọc thêm văn bản giải thích thừa:\n"
+                    f"[\n"
+                    f"  {{\n"
+                    f"    \"question\": \"Nội dung câu hỏi?\",\n"
+                    f"    \"options\": [\"A. Lựa chọn 1\", \"B. Lựa chọn 2\", \"C. Lựa chọn 3\", \"D. Lựa chọn 4\"],\n"
+                    f"    \"answer\": \"A\",\n"
+                    f"    \"correct_option\": \"A\",\n"
+                    f"    \"explanation\": \"Giải thích vì sao đáp án này đúng...\"\n"
+                    f"  }}\n"
+                    f"]"
+                )
+                res = call_gemini_api(prompt, "Bạn là chuyên gia giáo dục biên soạn đề kiểm tra trắc nghiệm tư duy.")
+                if res and not res.startswith("Gemini API"):
+                    clean_res = res.replace("```json", "").replace("```", "").strip()
+                    parsed = json.loads(clean_res)
+                    if isinstance(parsed, list) and len(parsed) > 0:
+                        return json.dumps(parsed, ensure_ascii=False, indent=2)
+
+            elif generation_type == 'flashcards':
+                lang_name = "tiếng Việt" if language == 'vi' else ("Japanese" if language == 'jp' else "English")
+                prompt = (
+                    f"Dựa vào nội dung tài liệu học tập sau đây (Tiêu đề: {source_title}):\n\n"
+                    f"{sources_text[:4000]}\n\n"
+                    f"Hãy trích xuất bộ 5 đến 8 thẻ ghi nhớ (Flashcards) các thuật ngữ, khái niệm và định nghĩa quan trọng nhất bằng {lang_name}.\n"
+                    f"Yêu cầu trả về định dạng JSON thuần túy (danh sách các object):\n"
+                    f"[\n"
+                    f"  {{\n"
+                    f"    \"question\": \"Khái niệm / Thuật ngữ / Câu hỏi?\",\n"
+                    f"    \"answer\": \"Định nghĩa / Giải thích chi tiết\"\n"
+                    f"  }}\n"
+                    f"]"
+                )
+                res = call_gemini_api(prompt, "Bạn là trợ lý học tập thông minh chuyên trích xuất Flashcards ghi nhớ nhanh.")
+                if res and not res.startswith("Gemini API"):
+                    clean_res = res.replace("```json", "").replace("```", "").strip()
+                    parsed = json.loads(clean_res)
+                    if isinstance(parsed, list) and len(parsed) > 0:
+                        return json.dumps(parsed, ensure_ascii=False, indent=2)
+                        
+            elif generation_type == 'report':
+                lang_name = "tiếng Việt" if language == 'vi' else ("Japanese" if language == 'jp' else "English")
+                prompt = (
+                    f"Hãy tạo một bản Báo cáo tóm tắt học thuật hoàn chỉnh bằng {lang_name} dựa trên tài liệu sau (Tiêu đề: {source_title}):\n\n"
+                    f"{sources_text[:4000]}"
+                )
+                res = call_gemini_api(prompt, "Bạn là chuyên gia tổng hợp và viết báo cáo học thuật chuyên nghiệp.")
+                if res and not res.startswith("Gemini API"):
+                    return res
+
+        except Exception as e:
+            # Fallback to local services on any exception
+            pass
+
+    # 2. Local fallback feature services
     try:
         if generation_type == 'flashcards':
             from .features.flashcard import service as flashcard_service
-            return flashcard_service.generate(sources_text, source_title)
+            return flashcard_service.generate(sources_text, source_title, language=language)
             
         elif generation_type == 'quiz':
             from .features.quiz import service as quiz_service
-            return quiz_service.generate(sources_text, source_title)
+            return quiz_service.generate(sources_text, source_title, language=language)
             
         elif generation_type == 'report':
             from .features.report import service as report_service

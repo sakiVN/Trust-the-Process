@@ -314,6 +314,104 @@ class NotebookAPITests(APITestCase):
         self.assertEqual(AIGeneration.objects.count(), 0)
 
 
+class QuizAndFlashcardFeatureTests(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='quizstudent', password='testpassword')
+        self.client.force_authenticate(user=self.user)
+        self.notebook = Notebook.objects.create(
+            user=self.user,
+            name="Sổ tay Lập trình Python & AI",
+            description="Tài liệu tự học trực quan"
+        )
+        self.source = Source.objects.create(
+            notebook=self.notebook,
+            title="Nguyên lý Học máy và Trí tuệ nhân tạo",
+            source_type="text",
+            category="all",
+            content="Trí tuệ nhân tạo (AI) là ngành khoa học máy tính nghiên cứu cách máy móc suy nghĩ và học tập. Học máy (Machine Learning) là một tập con của AI tập trung vào việc học từ dữ liệu."
+        )
+
+    def test_generate_material_with_category_all_fallback(self):
+        """Verify generate_material successfully falls back to sources.all() when category=generation_type is absent."""
+        url = reverse('notebook-generate-material', kwargs={'pk': self.notebook.pk})
+        data = {'generation_type': 'quiz', 'language': 'vi'}
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['generation_type'], 'quiz')
+        
+        # Verify AIGeneration and QuizSet auto-creation
+        self.assertEqual(AIGeneration.objects.count(), 1)
+        from .models import QuizSet
+        self.assertTrue(QuizSet.objects.filter(notebook=self.notebook).exists())
+
+    def test_source_generate_quiz_action(self):
+        """Verify generate_quiz action on SourceViewSet generates quiz and creates QuizSet."""
+        url = reverse('source-generate-quiz', kwargs={'pk': self.source.pk})
+        response = self.client.post(url, {'language': 'vi'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertIn('generation', response.data)
+        self.assertIn('quiz_set', response.data)
+        self.assertIsNotNone(response.data['quiz_set'])
+
+    def test_source_generate_flashcards_action(self):
+        """Verify generate_flashcards action on SourceViewSet generates flashcards."""
+        url = reverse('source-generate-flashcards', kwargs={'pk': self.source.pk})
+        response = self.client.post(url, {'language': 'vi'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertIn('generation', response.data)
+        self.assertEqual(response.data['generation']['generation_type'], 'flashcards')
+
+    def test_quiz_attempt_submit_and_retake(self):
+        """Verify quiz submission and retake attempt flow."""
+        from .models import QuizSet, QuizQuestion, QuizAttempt
+        quiz = QuizSet.objects.create(
+            user=self.user,
+            notebook=self.notebook,
+            name="Kiểm tra AI cơ bản",
+            description="Bài tập tự luyện"
+        )
+        q1 = QuizQuestion.objects.create(
+            quiz=quiz,
+            question_text="AI là viết tắt của từ gì?",
+            options=["A. Artificial Intelligence", "B. Automated Internet", "C. Apple iOS", "D. Animal Intelligence"],
+            correct_option="A",
+            explanation="AI là viết tắt của Artificial Intelligence.",
+            order=0
+        )
+        q2 = QuizQuestion.objects.create(
+            quiz=quiz,
+            question_text="Học máy là tập con của cái gì?",
+            options=["A. Hệ điều hành", "B. Trí tuệ nhân tạo (AI)", "C. Phần cứng", "D. Trình duyệt"],
+            correct_option="B",
+            explanation="Machine Learning là tập con của AI.",
+            order=1
+        )
+
+        submit_url = reverse('quizattempt-submit-attempt')
+
+        # First attempt: 2/2 correct
+        resp1 = self.client.post(submit_url, {
+            'quiz': quiz.id,
+            'answers': {str(q1.id): 'A', str(q2.id): 'B'}
+        }, format='json')
+        self.assertEqual(resp1.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(resp1.data['score'], 2)
+        self.assertEqual(resp1.data['total'], 2)
+        self.assertEqual(resp1.data['percentage'], 100.0)
+
+        # Retake attempt: 1/2 correct
+        resp2 = self.client.post(submit_url, {
+            'quiz': quiz.id,
+            'answers': {str(q1.id): 'A', str(q2.id): 'C'}
+        }, format='json')
+        self.assertEqual(resp2.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(resp2.data['score'], 1)
+        self.assertEqual(resp2.data['percentage'], 50.0)
+
+        # Verify 2 attempts saved in DB
+        self.assertEqual(QuizAttempt.objects.filter(quiz=quiz).count(), 2)
+
+
 class PageRoutingTests(TestCase):
     def test_landing_page_root(self):
         """Verify root URL (/) renders the landing page correctly."""
@@ -344,5 +442,6 @@ class PageRoutingTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'EduBrain')
         self.assertContains(response, 'Trở về trang chủ')
+
 
 

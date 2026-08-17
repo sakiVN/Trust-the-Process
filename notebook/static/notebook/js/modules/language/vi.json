@@ -234,5 +234,14 @@
   "key_tag_infographic": "Infographics",
   "key_tag_data_table": "Data Table",
   "key_search_no_results": "Không tìm thấy kết quả nào cho",
-  "key_table_filter_quiz": "Bài tập (Quiz)"
+  "key_table_filter_quiz": "Bài tập (Quiz)",
+  "key_flashcard_restart": "Về đầu",
+  "key_flashcard_flip": "Lật thẻ",
+  "key_flashcard_prev": "Câu trước",
+  "key_flashcard_next": "Câu sau",
+  "key_flashcard_finish": "Hoàn thành",
+  "key_flashcard_question": "Câu hỏi",
+  "key_flashcard_answer": "Đáp án",
+  "key_flashcard_flip_hint_front": "Nhấn vào thẻ hoặc phím Space để xem đáp án",
+  "key_flashcard_flip_hint_back": "Nhấn vào thẻ hoặc phím Space để xem lại câu hỏi"
 }

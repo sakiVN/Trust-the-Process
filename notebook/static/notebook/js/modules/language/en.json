@@ -234,5 +234,14 @@
   "key_tag_infographic": "Infographics",
   "key_tag_data_table": "Data Table",
   "key_search_no_results": "No results found for",
-  "key_table_filter_quiz": "Quiz"
+  "key_table_filter_quiz": "Quiz",
+  "key_flashcard_restart": "Restart",
+  "key_flashcard_flip": "Flip",
+  "key_flashcard_prev": "Previous",
+  "key_flashcard_next": "Next",
+  "key_flashcard_finish": "Finish",
+  "key_flashcard_question": "Question",
+  "key_flashcard_answer": "Answer",
+  "key_flashcard_flip_hint_front": "Click card or press Space to see answer",
+  "key_flashcard_flip_hint_back": "Click card or press Space to view question again"
 }

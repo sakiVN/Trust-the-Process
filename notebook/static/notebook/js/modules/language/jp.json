@@ -234,5 +234,14 @@
   "key_tag_infographic": "インフォグラフィック",
   "key_tag_data_table": "データテーブル",
   "key_search_no_results": "検索結果が見つかりませんでした:",
-  "key_table_filter_quiz": "クイズ (Quiz)"
+  "key_table_filter_quiz": "クイズ (Quiz)",
+  "key_flashcard_restart": "最初へ",
+  "key_flashcard_flip": "裏返す",
+  "key_flashcard_prev": "前へ",
+  "key_flashcard_next": "次へ",
+  "key_flashcard_finish": "完了",
+  "key_flashcard_question": "問題",
+  "key_flashcard_answer": "解答",
+  "key_flashcard_flip_hint_front": "カードをクリックまたはSpaceキーで答えを表示",
+  "key_flashcard_flip_hint_back": "カードをクリックまたはSpaceキーで問題に戻る"
 }
